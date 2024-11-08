@@ -7,12 +7,19 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = () => {
+  const handleLogin = (e) => {
     // Aquí podrías agregar la lógica de validación más adelante
-    navigate('/home'); // Redirigir a la página de inicio
+    e.preventDefault()
+    if(username.length > 0 && password.length > 0){
+      navigate('/home'); // Redirigir a la página de inicio
+    }else{
+      alert("complete los campos para iniciar sesion.")
+    }
   };
 
   return (
+    <> 
+    <h1>Bien venidos al sistema de gestion de alunos</h1>
     <div className="contenedorLogin">
         <form className='form'>
             <h2>Iniciar Sesión</h2>
@@ -41,6 +48,7 @@ const Login = () => {
         <button className="boton" onClick={handleLogin}>Iniciar Sesión</button>
         </form>
     </div>
+    </>
   );
 };
 

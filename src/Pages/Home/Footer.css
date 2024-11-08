@@ -1,0 +1,40 @@
+.footer{
+    bottom: 0;
+	width: 100%;
+	background-color: #24262b;
+	padding: 10px 0;
+	text-align: center; /*para colocar todo centrados*/
+}
+ 
+.footer-row{
+	display: flex;
+}
+.footer-links{
+	width: 50%;
+	padding: 0 10px;
+}
+.footer-links h4{
+	font-size: 20px;
+	color: #ffffff; /*color de los titulos */
+	margin-bottom: 25px; /*para que le de una separacion de los titulos a los links*/
+	font-weight: 700;    /*para que el titulo no sea tan grueso el titulo*/
+	border-bottom: 3px solid #00c3ff;  /*para las lineas de los titulos*/
+	padding-bottom: 2px;  /*para separar los titulos de las lineas*/
+	display: inline-block;  /*para que las lineas tengan el mismo tamaño de los titulos*/
+}
+ 
+@media( max-width:400px){  /*para que cuando llegue alos 400px se pponga todo debajo de otro*/
+	.footer-row{
+		text-align: center;
+	}
+	.footer-links{
+		width: 100%;
+		margin-bottom: 30px;
+	}
+}
+.copy{
+	background-color: #2d2d33;
+	color: white;
+    padding: 20px;
+    margin-bottom: 0;
+}
