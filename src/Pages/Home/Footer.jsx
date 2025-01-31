@@ -17,7 +17,7 @@ const Footer = () =>{
                         </ul>
                     </div>
                 </div>
-             <p className="copy">todos los derechos revados </p>
+             <p className="copy">todos los derechos reservados </p>
 
             </footer>             
         </div>

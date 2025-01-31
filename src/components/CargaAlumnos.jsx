@@ -28,7 +28,7 @@ function Alumno() {
     };
 
     return (
-        <div className="contenedorFormulario">
+        <div className="container">
             <h2 className='tituloForm'>Formulario de Alumno</h2>
             <form onSubmit={handleSubmit}>
                 <label>
