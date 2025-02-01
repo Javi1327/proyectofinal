@@ -19,7 +19,10 @@ const Login = () => {
 
   return (
     <> 
-    <h1>Bien venidos al sistema de gestion de alunos</h1>
+    <div className="HeaderBienvenida">
+      <h1>Bienvenidos al Sistema de Gestion de Alumnos</h1>
+      <h2>Por favor inicie sesion</h2>
+    </div> 
     <div className="contenedorLogin">
         <form className='form'>
             <h2>Iniciar Sesión</h2>

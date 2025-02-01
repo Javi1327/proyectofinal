@@ -1,40 +1,62 @@
-.footer{
-    bottom: 0;
-	width: 100%;
-	background-color: #24262b;
-	padding: 10px 0;
-	text-align: center; /*para colocar todo centrados*/
+.footer {
+    background-color: #0275BC;
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
 }
- 
-.footer-row{
-	display: flex;
+
+.footer-row {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
 }
-.footer-links{
-	width: 50%;
-	padding: 0 10px;
+
+.footer-links {
+    margin: 10px 20px;
 }
-.footer-links h4{
-	font-size: 20px;
-	color: #ffffff; /*color de los titulos */
-	margin-bottom: 25px; /*para que le de una separacion de los titulos a los links*/
-	font-weight: 700;    /*para que el titulo no sea tan grueso el titulo*/
-	border-bottom: 3px solid #00c3ff;  /*para las lineas de los titulos*/
-	padding-bottom: 2px;  /*para separar los titulos de las lineas*/
-	display: inline-block;  /*para que las lineas tengan el mismo tamaño de los titulos*/
+
+.footer-links h4 {
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+    border-bottom: 2px solid white;
+    display: inline-block;
+    padding-bottom: 5px;
 }
- 
-@media( max-width:400px){  /*para que cuando llegue alos 400px se pponga todo debajo de otro*/
-	.footer-row{
-		text-align: center;
-	}
-	.footer-links{
-		width: 100%;
-		margin-bottom: 30px;
-	}
+
+.footer-links p, .footer-links ul li p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
 }
-.copy{
-	background-color: #2d2d33;
-	color: white;
-    padding: 20px;
-    margin-bottom: 0;
+
+.copy {
+    font-size: 0.8rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    padding-top: 10px;
+    margin: 0;
+}
+
+/* Efectos al pasar el mouse */
+.footer-links h4:hover {
+    color: #FFD700;
+    cursor: pointer;
+}
+
+.footer-links p:hover {
+    color: #FFD700;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .footer-row {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .footer-links {
+        margin: 10px 0;
+    }
 }

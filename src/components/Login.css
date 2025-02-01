@@ -4,25 +4,101 @@
     height: 100vh;
     justify-content: center;
     align-items: center;
+    background-color: azure;
 }
 
 .input{
     display: flex;
     flex-direction: column;
+    color: white;
+    margin-bottom: 15px;
+}
+
+.input input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.input input:focus {
+    border-color: #025f94;
+    outline: none;
 }
 
 .form{
-    background-color: gray;
+    background-color: rgb(2, 117, 188);
     padding: 20px;
     border-radius: 10px;
-    height: 70%;
-    width: 20%;
+    width: 300px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.form:hover {
+    transform: scale(1.06);
+    transition: transform 0.3s ease; 
 }
 
 .boton{
     margin-top: 20px;
+    padding: 10px 20px;
+    background-color: white;
+    color: rgb(2, 117, 188);
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.boton:hover{
+    background-color: #025f94;
+    color: white;
+    transform: scale(1.05);
 }
 
 .label{
     text-align: start;
+    margin-bottom: 5px;
+}
+
+.HeaderBienvenida{
+    text-align: center;
+    background-color: rgb(2, 117, 188);
+    padding: 1% 0;
+}
+
+.HeaderBienvenida h1, .HeaderBienvenida h2 {
+    margin: 0;
+    color: white;
+}
+
+h2{
+    text-align: center;
+    color: white;
+}
+
+@media (max-width: 500px) {
+    .contenedorLogin {
+        padding: 20px;
+    }
+    
+    .form {
+        width: 90%;
+        padding: 15px;
+    }
+    
+    .HeaderBienvenida h1 {
+        font-size: 1.5rem;
+    }
+    
+    .HeaderBienvenida h2 {
+        font-size: 1.2rem;
+    }
+    
+    .boton {
+        font-size: 0.9rem;
+    }
 }
