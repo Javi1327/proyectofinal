@@ -17,6 +17,7 @@ const Footer = () =>{
                         </ul>
                     </div>
                 </div>
+
              <p className="copy">Todos los derechos reservados</p>
 
             </footer>             

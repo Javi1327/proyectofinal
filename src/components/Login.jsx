@@ -19,6 +19,7 @@ const Login = () => {
 
   return (
     <> 
+
     <div className="HeaderBienvenida">
       <h1>Bienvenidos al Sistema de Gestion de Alumnos</h1>
       <h2>Por favor inicie sesion</h2>
