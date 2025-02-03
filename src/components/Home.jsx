@@ -2,22 +2,25 @@
 import React from 'react';
 import Header from '../Pages/Home/Header';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../context/UserContext'; // Corrección en la ruta
+import AlumnoView from "../pages/AlumnoView";
+import ProfesorView from "../pages/ProfesorView";
+import PreceptorView from "../pages/PreceptorView";
 
-const Home = () => {
+export default function Home() {
+  const { userType } = useUser();
   const navigate = useNavigate();
 
-  const handleNavigate = () => {
-    navigate('/carga-alumnos');
-  };
+  if (!userType) {
+    return <div>Cargando...</div>; // O redirigir al login si es necesario
+  }
 
   return (
-    <div>
-      <Header/>
-      <h2>Página de Inicio</h2>
-      <p>¡Bienvenido a la página de inicio!</p>
-      <button onClick={handleNavigate}>Carga de Alumnos</button>
+    <div className="p-4">
+      <Header />
+      {userType === 'alumno' && <AlumnoView />}
+      {userType === 'profesor' && <ProfesorView />}
+      {userType === 'preceptor' && <PreceptorView />}
     </div>
   );
-};
-
-export default Home;
+}
