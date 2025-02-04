@@ -1,6 +1,5 @@
 // src/components/Home.jsx
 import React from 'react';
-import Header from '../Pages/Home/Header';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext'; // Corrección en la ruta
 import AlumnoView from "../pages/AlumnoView";
@@ -17,7 +16,6 @@ export default function Home() {
 
   return (
     <div className="p-4">
-      <Header />
       {userType === 'alumno' && <AlumnoView />}
       {userType === 'profesor' && <ProfesorView />}
       {userType === 'preceptor' && <PreceptorView />}

@@ -1,0 +1,52 @@
+/* src/components/ProfesorView.css */
+.profesor-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #f5faff; /* Fondo suave */
+  padding: 2rem;
+}
+
+.profesor-view h2 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+}
+
+.botones-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 2 columnas */
+  gap: 2rem; /* Espacio entre los botones */
+}
+
+.funcion-btn {
+  background-color: #0275BC; /* Azul principal */
+  color: white;
+  font-size: 1.5rem; /* Texto grande */
+  padding: 2rem 3rem; /* Botones grandes */
+  border: none;
+  border-radius: 16px; /* Bordes redondeados */
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+}
+
+.funcion-btn:hover {
+  background-color: #035a8c; /* Azul más oscuro al pasar el mouse */
+  transform: scale(1.05); /* Efecto de agrandamiento */
+}
+
+@media (max-width: 768px) {
+  .botones-container {
+    grid-template-columns: 1fr; /* En pantallas chicas, los botones se apilan */
+    gap: 1.5rem;
+  }
+
+  .funcion-btn {
+    padding: 1.5rem 2rem;
+    font-size: 1.3rem;
+  }
+}
