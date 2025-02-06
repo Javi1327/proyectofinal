@@ -11,10 +11,20 @@ function Alumno() {
     const [FechaNacimiento, setFechaNacimiento] = useState("");
     const [Genero, setGenero] = useState("");
     const [Grado, setGrado] = useState("");
+    const [mensaje, setMensaje] = useState("");  // Estado para los mensajes
+    const [error, setError] = useState(false);   // Estado para controlar si es un error o éxito
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        // Muestra los datos en la consola (puedes cambiarlo para enviarlos a un backend, por ejemplo)
+
+        // Validación básica de ejemplo
+        if (!Nombre || !Apellido || !Correo) {
+            setError(true);
+            setMensaje("Por favor, completa todos los campos obligatorios.");
+            return;
+        }
+
+        // Simular un envío exitoso
         console.log({
             Nombre,
             Apellido,
@@ -25,96 +35,79 @@ function Alumno() {
             Genero,
             Grado
         });
+
+        // Mostrar mensaje de éxito
+        setError(false);
+        setMensaje("Alumno cargado exitosamente!");
+
+        // Limpiar los campos después de enviar
+        setNombre("");
+        setApellido("");
+        setCorreo("");
+        setTelefono("");
+        setDireccion("");
+        setFechaNacimiento("");
+        setGenero("");
+        setGrado("");
     };
 
     return (
         <div className="container">
             <h2 className='tituloForm'>Formulario de Alumno</h2>
+
+            {/* Mostrar mensaje de éxito o error */}
+            {mensaje && (
+                <div className={error ? 'mensaje-error' : 'mensaje-exito'}>
+                    {mensaje}
+                </div>
+            )}
+
             <form onSubmit={handleSubmit}>
                 <label>
                     Nombre:
-                    <input
-                        type="text"
-                        value={Nombre}
-                        onChange={(e) => setNombre(e.target.value)}
-                        required
-                    />
+                    <input type="text" value={Nombre} onChange={(e) => setNombre(e.target.value)} required />
                 </label>
-                <br /><br />
+
                 <label>
                     Apellido:
-                    <input
-                        type="text"
-                        value={Apellido}
-                        onChange={(e) => setApellido(e.target.value)}
-                        required
-                    />
+                    <input type="text" value={Apellido} onChange={(e) => setApellido(e.target.value)} required />
                 </label>
-                <br /><br />
+
                 <label>
                     Correo:
-                    <input
-                        type="email"
-                        value={Correo}
-                        onChange={(e) => setCorreo(e.target.value)}
-                        required
-                    />
+                    <input type="email" value={Correo} onChange={(e) => setCorreo(e.target.value)} required />
                 </label>
-                <br /><br />
+
                 <label>
                     Teléfono:
-                    <input
-                        type="tel"
-                        value={Telefono}
-                        onChange={(e) => setTelefono(e.target.value)}
-                        required
-                    />
+                    <input type="tel" value={Telefono} onChange={(e) => setTelefono(e.target.value)} required />
                 </label>
-                <br /><br />
+
                 <label>
                     Dirección:
-                    <input
-                        type="text"
-                        value={Direccion}
-                        onChange={(e) => setDireccion(e.target.value)}
-                        required
-                    />
+                    <input type="text" value={Direccion} onChange={(e) => setDireccion(e.target.value)} required />
                 </label>
-                <br /><br />
+
                 <label>
                     Fecha de Nacimiento:
-                    <input
-                        type="date"
-                        value={FechaNacimiento}
-                        onChange={(e) => setFechaNacimiento(e.target.value)}
-                        required
-                    />
+                    <input type="date" value={FechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)} required />
                 </label>
-                <br /><br />
+
                 <label>
                     Género:
-                    <select
-                        value={Genero}
-                        onChange={(e) => setGenero(e.target.value)}
-                        required
-                    >
+                    <select value={Genero} onChange={(e) => setGenero(e.target.value)} required>
                         <option value="">Selecciona</option>
                         <option value="Masculino">Masculino</option>
                         <option value="Femenino">Femenino</option>
                         <option value="Otro">Otro</option>
                     </select>
                 </label>
-                <br /><br />
+
                 <label>
                     Grado:
-                    <input
-                        type="text"
-                        value={Grado}
-                        onChange={(e) => setGrado(e.target.value)}
-                        required
-                    />
+                    <input type="text" value={Grado} onChange={(e) => setGrado(e.target.value)} required />
                 </label>
-                <br /><br />
+
                 <button type="submit">Enviar</button>
             </form>
         </div>

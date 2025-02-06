@@ -1,0 +1,24 @@
+.ver-cursos {
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .cursos-lista {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .curso-item {
+    background-color: #f1f1f1;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .curso-item:hover {
+    background-color: #e1e1e1;
+  }
+  

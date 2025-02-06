@@ -26,19 +26,19 @@
     margin-left: -10px;
   }
   
-  .navbar .menu-icons svg {
-    cursor: pointer;
-    transition: transform 0.2s ease, color 0.2s ease;
-    width: 24px;  /* Ajusta el tamaño del ícono */
-    height: 24px; /* Ajusta el tamaño del ícono */
-    color: white; /* Asegúrate de que el ícono sea visible con el color adecuado */
-  }
-  
-  .navbar .menu-icons svg:hover {
-    transform: scale(1.1);
-    color: #ff0000; /* Azul más claro al pasar el mouse */
-  }
-  
+ .navbar .menu-icons svg {
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+  width: 24px;  /* Ajusta el tamaño del ícono */
+  height: 24px; /* Ajusta el tamaño del ícono */
+  color: white; /* Asegúrate de que el ícono sea visible con el color adecuado */
+}
+
+.navbar .menu-icons svg:hover {
+  transform: scale(1.1);
+  color: #d1eaff; /* Azul más claro al pasar el mouse */
+}
+
   
   .navbar-right {
     display: flex;
