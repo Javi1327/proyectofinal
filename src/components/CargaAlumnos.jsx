@@ -9,7 +9,6 @@ function Alumno() {
     const [Telefono, setTelefono] = useState("");
     const [Direccion, setDireccion] = useState("");
     const [FechaNacimiento, setFechaNacimiento] = useState("");
-    const [Genero, setGenero] = useState("");
     const [Grado, setGrado] = useState("");
     const [mensaje, setMensaje] = useState("");  // Estado para los mensajes
     const [error, setError] = useState(false);   // Estado para controlar si es un error o éxito
@@ -32,7 +31,6 @@ function Alumno() {
             Telefono,
             Direccion,
             FechaNacimiento,
-            Genero,
             Grado
         });
 
@@ -47,7 +45,6 @@ function Alumno() {
         setTelefono("");
         setDireccion("");
         setFechaNacimiento("");
-        setGenero("");
         setGrado("");
     };
 
@@ -93,15 +90,6 @@ function Alumno() {
                     <input type="date" value={FechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)} required />
                 </label>
 
-                <label>
-                    Género:
-                    <select value={Genero} onChange={(e) => setGenero(e.target.value)} required>
-                        <option value="">Selecciona</option>
-                        <option value="Masculino">Masculino</option>
-                        <option value="Femenino">Femenino</option>
-                        <option value="Otro">Otro</option>
-                    </select>
-                </label>
 
                 <label>
                     Grado:
