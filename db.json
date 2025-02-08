@@ -1,24 +1,48 @@
 {
-    "alumnos": [
-      {
-        "id": 1,
-        "nombre": "Juan Perez",
-        "curso": "3A",
-        "notas": [
-          { "materia": "Matemática", "nota1": 8 ,"nota2": 9 },
-          { "materia": "Historia", "nota1": 7 ,"nota2": 8 }
-        ],
-        "isHabilitado": true
-      },
-      {
-        "id": 2,
-        "nombre": "Maria Gomez",
-        "curso": "4B",
-        "notas": [
-            { "materia": "Matemática", "nota1": 8 ,"nota2": 10 },
-            { "materia": "Historia", "nota1": 6 ,"nota2": 8 }
-        ],
-        "isHabilitado": true
-      }
-    ]
+  "alumnos": [
+    {
+      "id": "1",
+      "Nombre": "Agustin",
+      "Apellido": "Romero",
+      "Correo": "agus@gmail.com",
+      "Telefono": "1130714500",
+      "Direccion": "Salvigny 5968",
+      "FechaNacimiento": "2003-07-04",
+      "Grado": "6A",
+      "isHabilitado": true
+    },
+    {
+      "id": "2",
+      "Nombre": "Lautaro",
+      "Apellido": "Garcia",
+      "Correo": "lauta@gmail.com",
+      "Telefono": "1130714500",
+      "Direccion": "Bilba 123",
+      "FechaNacimiento": "2003-07-04",
+      "Grado": "6A",
+      "isHabilitado": true
+    },
+    {
+      "id": "3",
+      "Nombre": "Maria",
+      "Apellido": "Gutierrez",
+      "Correo": "Maria@gmail.com",
+      "Telefono": "1187654321",
+      "Direccion": "Av Luro 3200",
+      "FechaNacimiento": "2003-07-04",
+      "Grado": "4A",
+      "isHabilitado": true
+    },
+    {
+      "id": "4",
+      "Nombre": "Matias",
+      "Apellido": "Sosa",
+      "Correo": "Matias22@gmail.com",
+      "Telefono": "1187654333",
+      "Direccion": "Jujuy 206",
+      "FechaNacimiento": "2003-07-04",
+      "Grado": "2A",
+      "isHabilitado": true
+    }
+  ]
 }
