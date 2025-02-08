@@ -29,6 +29,7 @@ const App = () => {
           <Route path="/preceptor" element={<PreceptorView />} />
           <Route path="/preceptor/cargar-alumnos" element={<Alumno />} />
           <Route path="/preceptor/ver-alumnos" element={<VerAlumnos />} />
+          <Route path="/preceptor/ver-cursos" element={<VerCursos />} />
         </Routes>
         <Footer />
       </BrowserRouter>

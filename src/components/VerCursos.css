@@ -1,24 +1,35 @@
-.ver-cursos {
-    padding: 20px;
-    text-align: center;
-  }
-  
-  .cursos-lista {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .curso-item {
-    background-color: #f1f1f1;
-    margin: 10px 0;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .curso-item:hover {
-    background-color: #e1e1e1;
-  }
-  
+.cursos-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* Espacio entre los botones */
+  margin-bottom: 20px;
+}
+
+.curso-btn {
+  background-color: #0275BC;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.curso-btn:hover {
+  background-color: #025a91;
+}
+
+.agregar-btn {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #0275BC;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.agregar-btn:hover {
+  background-color: #025a91;
+}
