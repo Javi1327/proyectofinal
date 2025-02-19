@@ -44,5 +44,91 @@
       "Grado": "2A",
       "isHabilitado": true
     }
+  ],
+  "cursos": [
+    {
+      "id": "1",
+      "nombre": "1A"
+    },
+    {
+      "id": "2",
+      "nombre": "1B"
+    },
+    {
+      "id": "3",
+      "nombre": "2A"
+    },
+    {
+      "id": "4",
+      "nombre": "2B"
+    },
+    {
+      "id": "5",
+      "nombre": "3A"
+    },
+    {
+      "id": "6",
+      "nombre": "3B"
+    },
+    {
+      "id": "7",
+      "nombre": "4A"
+    },
+    {
+      "id": "8",
+      "nombre": "4B"
+    },
+    {
+      "id": "9",
+      "nombre": "5A"
+    },
+    {
+      "id": "10",
+      "nombre": "5B"
+    },
+    {
+      "id": "11",
+      "nombre": "6A"
+    },
+    {
+      "id": "12",
+      "nombre": "6B"
+    }
+  ],
+  "notas": [
+    {
+      "id": "1",
+      "curso": "6A",
+      "alumnoId": "1",
+      "nota1": 7,
+      "nota2": 8
+    },
+    {
+      "id": "2",
+      "curso": "6A",
+      "alumnoId": "2",
+      "nota1": 6,
+      "nota2": 7
+    },
+    {
+      "id": "3",
+      "curso": "6A",
+      "alumnoId": "3",
+      "nota1": 9,
+      "nota2": 10
+    },
+    {
+      "id": "4",
+      "curso": "2A",
+      "alumnoId": "4",
+      "nota1": 6,
+      "nota2": 7
+    },
+    {
+      "id": "ce2e",
+      "alumnoId": "1",
+      "curso": "6A",
+      "nota1": "4"
+    }
   ]
 }
