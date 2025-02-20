@@ -1,134 +1,58 @@
 {
   "alumnos": [
     {
-      "id": "1",
-      "Nombre": "Agustin",
-      "Apellido": "Romero",
-      "Correo": "agus@gmail.com",
-      "Telefono": "1130714500",
-      "Direccion": "Salvigny 5968",
-      "FechaNacimiento": "2003-07-04",
-      "Grado": "6A",
-      "isHabilitado": true
+      "id": "123",
+      "isHabilitado": true,
+      "nombre": "Juan",
+      "apellido": "Pérez",
+      "dni": 45678901,
+      "grado": "5A",
+      "direccion": "Calle Falsa 123",
+      "telefono": "123456789",
+      "correoElectronico": "juan.perez@email.com",
+      "fechaNacimiento": "2008-05-12",
+      "asistencia": ["2024-02-15", "2024-02-16"],
+      "materias": [
+        {
+          "materia": "Matemáticas",
+          "nota1": 8,
+          "nota2": 9,
+          "promedio": 8.5
+        },
+        {
+          "materia": "Historia",
+          "nota1": 7,
+          "nota2": 8,
+          "promedio": 7.5
+        }
+      ]
     },
     {
-      "id": "2",
-      "Nombre": "Lautaro",
-      "Apellido": "Garcia",
-      "Correo": "lauta@gmail.com",
-      "Telefono": "1130714500",
-      "Direccion": "Bilba 123",
-      "FechaNacimiento": "2003-07-04",
-      "Grado": "6A",
-      "isHabilitado": true
-    },
-    {
-      "id": "3",
-      "Nombre": "Maria",
-      "Apellido": "Gutierrez",
-      "Correo": "Maria@gmail.com",
-      "Telefono": "1187654321",
-      "Direccion": "Av Luro 3200",
-      "FechaNacimiento": "2003-07-04",
-      "Grado": "6A",
-      "isHabilitado": true
-    },
-    {
-      "id": "4",
-      "Nombre": "Matias",
-      "Apellido": "Sosa",
-      "Correo": "Matias22@gmail.com",
-      "Telefono": "1187654333",
-      "Direccion": "Jujuy 206",
-      "FechaNacimiento": "2003-07-04",
-      "Grado": "2A",
-      "isHabilitado": true
-    }
-  ],
-  "cursos": [
-    {
-      "id": "1",
-      "nombre": "1A"
-    },
-    {
-      "id": "2",
-      "nombre": "1B"
-    },
-    {
-      "id": "3",
-      "nombre": "2A"
-    },
-    {
-      "id": "4",
-      "nombre": "2B"
-    },
-    {
-      "id": "5",
-      "nombre": "3A"
-    },
-    {
-      "id": "6",
-      "nombre": "3B"
-    },
-    {
-      "id": "7",
-      "nombre": "4A"
-    },
-    {
-      "id": "8",
-      "nombre": "4B"
-    },
-    {
-      "id": "9",
-      "nombre": "5A"
-    },
-    {
-      "id": "10",
-      "nombre": "5B"
-    },
-    {
-      "id": "11",
-      "nombre": "6A"
-    },
-    {
-      "id": "12",
-      "nombre": "6B"
-    }
-  ],
-  "notas": [
-    {
-      "id": "1",
-      "curso": "6A",
-      "alumnoId": "1",
-      "nota1": 7,
-      "nota2": 8
-    },
-    {
-      "id": "2",
-      "curso": "6A",
-      "alumnoId": "2",
-      "nota1": 6,
-      "nota2": 7
-    },
-    {
-      "id": "3",
-      "curso": "6A",
-      "alumnoId": "3",
-      "nota1": 9,
-      "nota2": 10
-    },
-    {
-      "id": "4",
-      "curso": "2A",
-      "alumnoId": "4",
-      "nota1": 6,
-      "nota2": 7
-    },
-    {
-      "id": "ce2e",
-      "alumnoId": "1",
-      "curso": "6A",
-      "nota1": "4"
+      "id": "456",
+      "isHabilitado": true,
+      "nombre": "María",
+      "apellido": "González",
+      "dni": 45712345,
+      "grado": "5A",
+      "direccion": "Avenida Siempreviva 742",
+      "telefono": "987654321",
+      "correoElectronico": "maria.gonzalez@email.com",
+      "fechaNacimiento": "2008-07-22",
+      "asistencia": ["2024-02-14", "2024-02-16"],
+      "materias": [
+        {
+          "materia": "Matemáticas",
+          "nota1": 6,
+          "nota2": 7,
+          "promedio": 6.5
+        },
+        {
+          "materia": "Historia",
+          "nota1": 9,
+          "nota2": 8,
+          "promedio": 8.5
+        }
+      ]
     }
   ]
 }
