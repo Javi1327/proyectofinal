@@ -7,7 +7,6 @@ function Alumno() {
     const [Nombre, setNombre] = useState("");
     const [Apellido, setApellido] = useState("");
     const [Correo, setCorreo] = useState("");
-    const [Dni, setDni] = useState("");
     const [Telefono, setTelefono] = useState("");
     const [Direccion, setDireccion] = useState("");
     const [FechaNacimiento, setFechaNacimiento] = useState("");
@@ -18,8 +17,7 @@ function Alumno() {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        // Validación básica de ejemplo
-        if (!Nombre || !Apellido || !Correo || !Dni) {
+        if (!Nombre || !Apellido || !Correo) {
             setError(true);
             setMensaje("Por favor, completa todos los campos obligatorios.");
             return;
@@ -29,7 +27,6 @@ function Alumno() {
             Nombre,
             Apellido,
             Correo,
-            Dni,
             Telefono,
             Direccion,
             FechaNacimiento,
@@ -43,15 +40,19 @@ function Alumno() {
             setError(false);
             setMensaje("Alumno cargado exitosamente!");
 
-        // Limpiar los campos después de enviar
-        setNombre("");
-        setApellido("");
-        setCorreo("");
-        setDni("");
-        setTelefono("");
-        setDireccion("");
-        setFechaNacimiento("");
-        setGrado("");
+            // Limpiar los campos después de enviar
+            setNombre("");
+            setApellido("");
+            setCorreo("");
+            setTelefono("");
+            setDireccion("");
+            setFechaNacimiento("");
+            setGrado("");
+        } catch (err) {
+            console.error("Error al enviar los datos:", err);
+            setError(true);
+            setMensaje("Hubo un error al cargar el alumno. Inténtalo de nuevo.");
+        }
     };
 
     return (
@@ -67,32 +68,27 @@ function Alumno() {
             <form onSubmit={handleSubmit}>
                 <label>
                     Nombre:
-                    <input type="text" value={Nombre} onChange={(e) => setNombre(e.target.value)} required maxLength="30" />
+                    <input type="text" value={Nombre} onChange={(e) => setNombre(e.target.value)} required />
                 </label>
 
                 <label>
                     Apellido:
-                    <input type="text" value={Apellido} onChange={(e) => setApellido(e.target.value)} required maxLength="30"/>
+                    <input type="text" value={Apellido} onChange={(e) => setApellido(e.target.value)} required />
                 </label>
 
                 <label>
                     Correo:
-                    <input type="email" value={Correo} onChange={(e) => setCorreo(e.target.value)} required maxLength="30"/>
-                </label>
-
-                <label>
-                    DNI:
-                    <input type="text" value={Dni} onChange={(e) => setDni(e.target.value)} required maxLength="10" pattern="\d*"/>
+                    <input type="email" value={Correo} onChange={(e) => setCorreo(e.target.value)} required />
                 </label>
 
                 <label>
                     Teléfono:
-                    <input type="tel" value={Telefono} onChange={(e) => setTelefono(e.target.value)} maxLength="15" pattern="\d*" />
+                    <input type="tel" value={Telefono} onChange={(e) => setTelefono(e.target.value)} required />
                 </label>
 
                 <label>
                     Dirección:
-                    <input type="text" value={Direccion} onChange={(e) => setDireccion(e.target.value)} required maxLength="30"/>
+                    <input type="text" value={Direccion} onChange={(e) => setDireccion(e.target.value)} required />
                 </label>
 
                 <label>
@@ -102,7 +98,7 @@ function Alumno() {
 
                 <label>
                     Grado:
-                    <input type="text" value={Grado} onChange={(e) => setGrado(e.target.value)} required maxLength="5"/>
+                    <input type="text" value={Grado} onChange={(e) => setGrado(e.target.value)} required />
                 </label>
 
                 <button type="submit">Enviar</button>
