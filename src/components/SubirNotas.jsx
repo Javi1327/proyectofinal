@@ -4,8 +4,8 @@ import './SubirNotas.css';
 export default function SubirNotas() {
   const [nombreAlumno, setNombreAlumno] = useState('');
   const [materia, setMateria] = useState('');
-  const [nota, setNota] = useState('');
-  const [tipoNota, setTipoNota] = useState('nota1');
+  const [nota1, setNota1] = useState('');
+  const [nota2, setNota2] = useState('');
   const [mensaje, setMensaje] = useState('');
 
   const handleSubmit = (e) => {
@@ -13,8 +13,8 @@ export default function SubirNotas() {
     setMensaje(`Nota registrada correctamente para ${nombreAlumno}`);
     setNombreAlumno('');
     setMateria('');
-    setNota('');
-    setTipoNota('nota1');
+    setNota1('');
+    setNota2('')
   };
 
   return (
@@ -27,6 +27,7 @@ export default function SubirNotas() {
           value={nombreAlumno}
           onChange={(e) => setNombreAlumno(e.target.value)}
           required
+          maxLength="30"
         />
 
         <label>Materia:</label>
@@ -35,26 +36,28 @@ export default function SubirNotas() {
           value={materia}
           onChange={(e) => setMateria(e.target.value)}
           required
+          maxLength="30"
         />
 
-        <label>Nota:</label>
+        <label>Nota 1:</label>
         <input
           type="number"
           min="1"
           max="10"
-          value={nota}
-          onChange={(e) => setNota(e.target.value)}
+          value={nota1}
+          onChange={(e) => setNota1(e.target.value)}
           required
         />
 
-        <label>Tipo de Nota:</label>
-        <select
-          value={tipoNota}
-          onChange={(e) => setTipoNota(e.target.value)}
-        >
-          <option value="nota1">Nota 1</option>
-          <option value="nota2">Nota 2</option>
-        </select>
+        <label>Nota 2:</label>
+        <input
+          type="number"
+          min="1"
+          max="10"
+          value={nota2}
+          onChange={(e) => setNota2(e.target.value)}
+          required
+        />
 
         <button type="submit">Subir Nota</button>
       </form>
