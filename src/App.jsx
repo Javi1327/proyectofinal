@@ -13,6 +13,10 @@ import VerCursos from './components/VerCursos';
 import PreceptorView from './pages/PreceptorView';
 import Alumno from './components/CargaAlumnos';
 import VerAlumnos from './components/VerAlumnos';
+import Asistencia from './components/Asistencia';
+import VerNotas from './components/VerNotas';
+import AlumnoView from './pages/AlumnoView';
+import VerNotasAlumnos from './components/VerNotasAlumnos';
 
 const App = () => {
   return (
@@ -26,9 +30,14 @@ const App = () => {
           <Route path="/profesor" element={<ProfesorView />} />
           <Route path="/profesor/subir-notas" element={<SubirNotas />} />
           <Route path="/profesor/ver-cursos" element={<VerCursos />} />
+          <Route path="/profesor/ver-notas" element={<VerNotas />} />
           <Route path="/preceptor" element={<PreceptorView />} />
           <Route path="/preceptor/cargar-alumnos" element={<Alumno />} />
           <Route path="/preceptor/ver-alumnos" element={<VerAlumnos />} />
+          <Route path="/preceptor/ver-cursos" element={<VerCursos />} />
+          <Route path='/preceptor/Dar-asistencias' element={<Asistencia />} />
+          <Route path="/alumno" element={<AlumnoView />} />
+          <Route path="/alumno/ver-notas" element={<VerNotasAlumnos />} />
         </Routes>
         <Footer />
       </BrowserRouter>

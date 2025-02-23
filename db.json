@@ -1,24 +1,58 @@
 {
-    "alumnos": [
-      {
-        "id": 1,
-        "nombre": "Juan Perez",
-        "curso": "3A",
-        "notas": [
-          { "materia": "Matemática", "nota1": 8 ,"nota2": 9 },
-          { "materia": "Historia", "nota1": 7 ,"nota2": 8 }
-        ],
-        "isHabilitado": true
-      },
-      {
-        "id": 2,
-        "nombre": "Maria Gomez",
-        "curso": "4B",
-        "notas": [
-            { "materia": "Matemática", "nota1": 8 ,"nota2": 10 },
-            { "materia": "Historia", "nota1": 6 ,"nota2": 8 }
-        ],
-        "isHabilitado": true
-      }
-    ]
+  "alumnos": [
+    {
+      "id": "123",
+      "isHabilitado": true,
+      "nombre": "Juan",
+      "apellido": "Pérez",
+      "dni": 45678901,
+      "grado": "5A",
+      "direccion": "Calle Falsa 123",
+      "telefono": "123456789",
+      "correoElectronico": "juan.perez@email.com",
+      "fechaNacimiento": "2008-05-12",
+      "asistencia": ["2024-02-15", "2024-02-16"],
+      "materias": [
+        {
+          "materia": "Matemáticas",
+          "nota1": 8,
+          "nota2": 9,
+          "promedio": 8.5
+        },
+        {
+          "materia": "Historia",
+          "nota1": 7,
+          "nota2": 8,
+          "promedio": 7.5
+        }
+      ]
+    },
+    {
+      "id": "456",
+      "isHabilitado": true,
+      "nombre": "María",
+      "apellido": "González",
+      "dni": 45712345,
+      "grado": "5A",
+      "direccion": "Avenida Siempreviva 742",
+      "telefono": "987654321",
+      "correoElectronico": "maria.gonzalez@email.com",
+      "fechaNacimiento": "2008-07-22",
+      "asistencia": ["2024-02-14", "2024-02-16"],
+      "materias": [
+        {
+          "materia": "Matemáticas",
+          "nota1": 6,
+          "nota2": 7,
+          "promedio": 6.5
+        },
+        {
+          "materia": "Historia",
+          "nota1": 9,
+          "nota2": 8,
+          "promedio": 8.5
+        }
+      ]
+    }
+  ]
 }

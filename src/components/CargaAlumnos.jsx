@@ -1,5 +1,6 @@
 // App.js
 import React, { useState } from 'react';
+import axios from 'axios';  // Importamos axios para manejar las solicitudes HTTP
 import './CargaAlumnos.css';
 
 function Alumno() {
@@ -11,10 +12,10 @@ function Alumno() {
     const [Direccion, setDireccion] = useState("");
     const [FechaNacimiento, setFechaNacimiento] = useState("");
     const [Grado, setGrado] = useState("");
-    const [mensaje, setMensaje] = useState("");  // Estado para los mensajes
-    const [error, setError] = useState(false);   // Estado para controlar si es un error o éxito
+    const [mensaje, setMensaje] = useState("");
+    const [error, setError] = useState(false);
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         // Validación básica de ejemplo
@@ -24,8 +25,7 @@ function Alumno() {
             return;
         }
 
-        // Simular un envío exitoso
-        console.log({
+        const nuevoAlumno = {
             Nombre,
             Apellido,
             Correo,
@@ -33,12 +33,15 @@ function Alumno() {
             Telefono,
             Direccion,
             FechaNacimiento,
-            Grado
-        });
+            Grado,
+            isHabilitado: true // Añadimos este campo para el estado del alumno
+        };
 
-        // Mostrar mensaje de éxito
-        setError(false);
-        setMensaje("Alumno cargado exitosamente!");
+        try {
+            // Hacemos la solicitud POST a la API
+            await axios.post('http://localhost:3001/alumnos', nuevoAlumno);
+            setError(false);
+            setMensaje("Alumno cargado exitosamente!");
 
         // Limpiar los campos después de enviar
         setNombre("");
@@ -55,7 +58,6 @@ function Alumno() {
         <div className="container">
             <h2 className='tituloForm'>Formulario de Alumno</h2>
 
-            {/* Mostrar mensaje de éxito o error */}
             {mensaje && (
                 <div className={error ? 'mensaje-error' : 'mensaje-exito'}>
                     {mensaje}
@@ -97,7 +99,6 @@ function Alumno() {
                     Fecha de Nacimiento:
                     <input type="date" value={FechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)} required />
                 </label>
-
 
                 <label>
                     Grado:

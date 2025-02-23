@@ -1,17 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './VerAlumnos.css';
 
-// Componente VerAlumnos
 const VerAlumnos = () => {
-  const [alumnos, setAlumnos] = useState([
-    { id: 1, nombre: 'Juan', apellido: 'Pérez', correo: 'juan@email.com', telefono: '1234567890', direccion: 'Calle Ficticia 123', fechaNacimiento: '2000-01-01', grado: '10', isHabilitado: true },
-    { id: 2, nombre: 'Ana', apellido: 'García', correo: 'ana@email.com', telefono: '0987654321', direccion: 'Calle Imaginaria 456', fechaNacimiento: '2002-02-02', grado: '11', isHabilitado: true },
-    { id: 3, nombre: 'Carlos', apellido: 'López', correo: 'carlos@email.com', telefono: '1122334455', direccion: 'Avenida Real 789', fechaNacimiento: '2001-03-03', grado: '12', isHabilitado: true },
-  ]);
-  
+  const [alumnos, setAlumnos] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [alumnoToEdit, setAlumnoToEdit] = useState(null);
-  
   const [Nombre, setNombre] = useState('');
   const [Apellido, setApellido] = useState('');
   const [Correo, setCorreo] = useState('');
@@ -19,76 +13,95 @@ const VerAlumnos = () => {
   const [Direccion, setDireccion] = useState('');
   const [FechaNacimiento, setFechaNacimiento] = useState('');
   const [Grado, setGrado] = useState('');
-  
-  const [searchTerm, setSearchTerm] = useState('');  // Estado para almacenar la búsqueda
-  const [sortField, setSortField] = useState('apellido'); // Campo para ordenar
-  const [sortAsc, setSortAsc] = useState(true); // Estado para controlar el orden
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortField, setSortField] = useState('Apellido');
+  const [sortAsc, setSortAsc] = useState(true);
 
-  // Función para eliminar alumno
-  const eliminarAlumno = (id) => {
-    setAlumnos(alumnos.map(alumno => 
-      alumno.id === id ? { ...alumno, isHabilitado: false } : alumno
-    ));
+  // Cargar datos desde la API
+  useEffect(() => {
+    obtenerAlumnos();
+  }, []);
+
+  const obtenerAlumnos = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/alumnos');
+      console.log(response.data); // Verificamos la estructura de los datos
+      setAlumnos(response.data);
+    } catch (err) {
+      console.error('Error al obtener los alumnos:', err);
+    }
   };
 
+  // Función para eliminar alumno
+  const eliminarAlumno = async (id) => {
+    try {
+      // Actualizamos el estado en el servidor usando PATCH
+      await axios.patch(`http://localhost:3001/alumnos/${id}`, { isHabilitado: false });
+  
+      // Actualizamos el estado en el frontend
+      setAlumnos(alumnos.map(alumno =>
+        alumno.id === id ? { ...alumno, isHabilitado: false } : alumno
+      ));
+    } catch (err) {
+      console.error('Error al eliminar el alumno:', err);
+    }
+  };
+  
   // Abrir modal de edición
   const openEditModal = (alumno) => {
     setAlumnoToEdit(alumno);
-    setNombre(alumno.nombre);
-    setApellido(alumno.apellido);
-    setCorreo(alumno.correo);
-    setTelefono(alumno.telefono);
-    setDireccion(alumno.direccion);
-    setFechaNacimiento(alumno.fechaNacimiento);
-    setGrado(alumno.grado);
+    setNombre(alumno.Nombre);
+    setApellido(alumno.Apellido);
+    setCorreo(alumno.Correo);
+    setTelefono(alumno.Telefono);
+    setDireccion(alumno.Direccion);
+    setFechaNacimiento(alumno.FechaNacimiento);
+    setGrado(alumno.Grado);
     setIsModalOpen(true);
   };
 
-  // Cerrar modal
   const closeModal = () => {
     setIsModalOpen(false);
     setAlumnoToEdit(null);
   };
 
-  // Guardar los cambios de los datos editados
   const handleSave = () => {
     setAlumnos(alumnos.map(alumno =>
-      alumno.id === alumnoToEdit.id ? { 
-        ...alumno, 
-        nombre: Nombre, 
-        apellido: Apellido, 
-        correo: Correo, 
-        telefono: Telefono, 
-        direccion: Direccion, 
-        fechaNacimiento: FechaNacimiento, 
-        grado: Grado 
+      alumno.id === alumnoToEdit.id ? {
+        ...alumno,
+        Nombre,
+        Apellido,
+        Correo,
+        Telefono,
+        Direccion,
+        FechaNacimiento,
+        Grado
       } : alumno
     ));
     closeModal();
   };
 
-  // Filtrar los alumnos según el término de búsqueda
+  // Filtrar alumnos habilitados y por búsqueda
   const filteredAlumnos = alumnos
     .filter(alumno => alumno.isHabilitado)
-    .filter(alumno => 
-      alumno.apellido.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      alumno.grado.toLowerCase().includes(searchTerm.toLowerCase())
+    .filter(alumno =>
+      alumno.Apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      alumno.Grado.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-  // Ordenar la lista de alumnos por el campo seleccionado y el orden
+  // Ordenar alumnos
   const sortedAlumnos = filteredAlumnos.sort((a, b) => {
     if (a[sortField] < b[sortField]) return sortAsc ? -1 : 1;
     if (a[sortField] > b[sortField]) return sortAsc ? 1 : -1;
     return 0;
   });
 
-  // Cambiar el campo y el orden al hacer clic en el encabezado de "Nombre" o "Apellido"
   const toggleSort = (field) => {
     if (field === sortField) {
-      setSortAsc(!sortAsc);  // Cambiar solo el orden si ya estamos ordenando por el mismo campo
+      setSortAsc(!sortAsc);
     } else {
       setSortField(field);
-      setSortAsc(true); // Por defecto ordenar ascendente al cambiar el campo
+      setSortAsc(true);
     }
   };
 
@@ -96,7 +109,6 @@ const VerAlumnos = () => {
     <div>
       <h2>Lista de Alumnos</h2>
 
-      {/* Barra de búsqueda */}
       <input
         type="text"
         placeholder="Buscar por Apellido o Grado"
@@ -108,8 +120,8 @@ const VerAlumnos = () => {
       <table>
         <thead>
           <tr>
-            <th onClick={() => toggleSort('nombre')}>Nombre</th>
-            <th onClick={() => toggleSort('apellido')}>Apellido</th>
+            <th onClick={() => toggleSort('Nombre')}>Nombre</th>
+            <th onClick={() => toggleSort('Apellido')}>Apellido</th>
             <th>Correo</th>
             <th>Teléfono</th>
             <th>Dirección</th>
@@ -121,13 +133,13 @@ const VerAlumnos = () => {
         <tbody>
           {sortedAlumnos.map(alumno => (
             <tr key={alumno.id}>
-              <td>{alumno.nombre}</td>
-              <td>{alumno.apellido}</td>
-              <td>{alumno.correo}</td>
-              <td>{alumno.telefono}</td>
-              <td>{alumno.direccion}</td>
-              <td>{alumno.fechaNacimiento}</td>
-              <td>{alumno.grado}</td>
+              <td>{alumno.Nombre}</td>
+              <td>{alumno.Apellido}</td>
+              <td>{alumno.Correo}</td>
+              <td>{alumno.Telefono}</td>
+              <td>{alumno.Direccion}</td>
+              <td>{alumno.FechaNacimiento}</td>
+              <td>{alumno.Grado}</td>
               <td>
                 <button onClick={() => openEditModal(alumno)}>Editar</button>
                 <button onClick={() => eliminarAlumno(alumno.id)}>Eliminar</button>
