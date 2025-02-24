@@ -24,8 +24,8 @@ const ProfesorView = () => {
         <button onClick={() => handleNavigate('ver-cursos')} className="funcion-btn">
           Ver Cursos
         </button>
-        <button onClick={() => handleNavigate('ver-tareas')} className="funcion-btn">
-          Ver Tareas
+        <button onClick={() => handleNavigate('tareas-profesor')} className="funcion-btn">
+          Subir/Ver Tareas
         </button>
       </div>
     </div>

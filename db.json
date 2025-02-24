@@ -11,7 +11,10 @@
       "telefono": "123456789",
       "correoElectronico": "juan.perez@email.com",
       "fechaNacimiento": "2008-05-12",
-      "asistencia": ["2024-02-15", "2024-02-16"],
+      "asistencia": [
+        "2024-02-15",
+        "2024-02-16"
+      ],
       "materias": [
         {
           "materia": "Matemáticas",
@@ -38,7 +41,10 @@
       "telefono": "987654321",
       "correoElectronico": "maria.gonzalez@email.com",
       "fechaNacimiento": "2008-07-22",
-      "asistencia": ["2024-02-14", "2024-02-16"],
+      "asistencia": [
+        "2024-02-14",
+        "2024-02-16"
+      ],
       "materias": [
         {
           "materia": "Matemáticas",
@@ -53,6 +59,26 @@
           "promedio": 8.5
         }
       ]
+    }
+  ],
+  "tareas": [
+    {
+      "id": "1",
+      "titulo": "Ensayo sobre la Revolución Francesa",
+      "descripcion": "Redactar un ensayo de 500 palabras.",
+      "fechaEntrega": "2025-03-01",
+      "archivoProfesor": "ensayo_revolucion.pdf",
+      "tareasEnviadas": [
+        "misblogs.png"
+      ]
+    },
+    {
+      "id": "2",
+      "titulo": "Ejercicios de Matemática",
+      "descripcion": "Resolver los ejercicios 1 a 10 de la guía.",
+      "fechaEntrega": "2025-03-05",
+      "archivoProfesor": null,
+      "tareasEnviadas": []
     }
   ]
 }

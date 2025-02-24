@@ -19,7 +19,7 @@ const AlumnoView = () => {
         <button onClick={() => handleNavigate("ver-asistencia")} className="funcion-btn">
           Ver Asistencia
         </button>
-        <button onClick={() => handleNavigate("tareas")} className="funcion-btn">
+        <button onClick={() => handleNavigate("tareas-alumno")} className="funcion-btn">
           Entregar / Descargar Tareas
         </button>
         <button onClick={() => handleNavigate("foro")} className="funcion-btn">
