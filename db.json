@@ -80,5 +80,26 @@
       "archivoProfesor": null,
       "tareasEnviadas": []
     }
+  ],
+  "temasForo": [
+    {
+      "id": "1",
+      "titulo": "Problemas con la tarea de matemáticas",
+      "descripcion": "No entiendo cómo resolver el ejercicio 3 de la tarea. ¿Alguien me puede ayudar?",
+      "autor": "Juan Pérez",
+      "comentarios": [
+        {
+          "autor": "María González",
+          "comentario": "Yo también tengo problemas con ese ejercicio, ¿te puedo ayudar?"
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "titulo": "Recomendaciones para el examen de Historia",
+      "descripcion": "¿Qué temas deberían ser más importantes para estudiar para el examen?",
+      "autor": "María González",
+      "comentarios": []
+    }
   ]
 }

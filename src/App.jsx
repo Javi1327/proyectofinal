@@ -19,6 +19,7 @@ import AlumnoView from './pages/AlumnoView';
 import VerNotasAlumnos from './components/VerNotasAlumnos';
 import TareasAlumno from './components/TareasAlumno';
 import TareasProfesor from './components/TareasProfesor';
+import Foro from './components/Foro';
 
 const App = () => {
   return (
@@ -42,6 +43,7 @@ const App = () => {
           <Route path="/alumno" element={<AlumnoView />} />
           <Route path="/alumno/ver-notas" element={<VerNotasAlumnos />} />
           <Route path="/alumno/tareas-alumno" element={<TareasAlumno />} />
+          <Route path="/alumno/foro" element={<Foro />} />
         </Routes>
         <Footer />
       </BrowserRouter>

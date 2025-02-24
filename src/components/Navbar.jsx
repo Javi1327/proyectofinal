@@ -23,7 +23,7 @@ const Navbar = () => {
         <span className="navbar-username">Hola, {user?.name || "Usuario"}</span>
       </div>
       <div className="navbar-right">
-        <MessageCircle className="navbar-icon" onClick={() => navigate('/foro')} />
+        <MessageCircle className="navbar-icon" onClick={() => navigate('/alumno/foro')} />
         <User className="navbar-icon" onClick={() => navigate('/perfil')} />
         <Settings className="navbar-icon" onClick={() => navigate('/configuraciones')} />
         <LogOut className="navbar-icon" onClick={logout} />
