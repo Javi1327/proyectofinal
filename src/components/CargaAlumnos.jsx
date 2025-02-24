@@ -7,6 +7,7 @@ function Alumno() {
     const [Nombre, setNombre] = useState("");
     const [Apellido, setApellido] = useState("");
     const [Correo, setCorreo] = useState("");
+    const [Dni, setDni] = useState("");
     const [Telefono, setTelefono] = useState("");
     const [Direccion, setDireccion] = useState("");
     const [FechaNacimiento, setFechaNacimiento] = useState("");
@@ -17,7 +18,7 @@ function Alumno() {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        if (!Nombre || !Apellido || !Correo) {
+        if (!Nombre || !Apellido || !Correo || !Dni) {
             setError(true);
             setMensaje("Por favor, completa todos los campos obligatorios.");
             return;
@@ -27,6 +28,7 @@ function Alumno() {
             Nombre,
             Apellido,
             Correo,
+            Dni,
             Telefono,
             Direccion,
             FechaNacimiento,
@@ -44,6 +46,7 @@ function Alumno() {
             setNombre("");
             setApellido("");
             setCorreo("");
+            setDni("");
             setTelefono("");
             setDireccion("");
             setFechaNacimiento("");
@@ -68,27 +71,32 @@ function Alumno() {
             <form onSubmit={handleSubmit}>
                 <label>
                     Nombre:
-                    <input type="text" value={Nombre} onChange={(e) => setNombre(e.target.value)} required />
+                    <input type="text" value={Nombre} onChange={(e) => setNombre(e.target.value)} required maxLength="30"/>
                 </label>
 
                 <label>
                     Apellido:
-                    <input type="text" value={Apellido} onChange={(e) => setApellido(e.target.value)} required />
+                    <input type="text" value={Apellido} onChange={(e) => setApellido(e.target.value)} required maxLength="30"/>
                 </label>
 
                 <label>
                     Correo:
-                    <input type="email" value={Correo} onChange={(e) => setCorreo(e.target.value)} required />
+                    <input type="email" value={Correo} onChange={(e) => setCorreo(e.target.value)} required maxLength="30"/>
                 </label>
 
                 <label>
+                    DNI:
+                    <input type="text" value={Dni} onChange={(e) => setDni(e.target.value)} required maxLength="10" pattern="\d*"/>
+               </label>
+
+                <label>
                     Teléfono:
-                    <input type="tel" value={Telefono} onChange={(e) => setTelefono(e.target.value)} required />
+                    <input type="tel" value={Telefono} onChange={(e) => setTelefono(e.target.value)} required maxLength="15" pattern="\d*" />
                 </label>
 
                 <label>
                     Dirección:
-                    <input type="text" value={Direccion} onChange={(e) => setDireccion(e.target.value)} required />
+                    <input type="text" value={Direccion} onChange={(e) => setDireccion(e.target.value)} required maxLength="30" />
                 </label>
 
                 <label>
@@ -98,7 +106,7 @@ function Alumno() {
 
                 <label>
                     Grado:
-                    <input type="text" value={Grado} onChange={(e) => setGrado(e.target.value)} required />
+                    <input type="text" value={Grado} onChange={(e) => setGrado(e.target.value)} required maxLength="5"/>
                 </label>
 
                 <button type="submit">Enviar</button>
