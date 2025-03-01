@@ -1,9 +1,14 @@
 // App.js
 import React, { useState } from 'react';
-import axios from 'axios';  // Importamos axios para manejar las solicitudes HTTP
+import { useNavigate } from "react-router-dom";
+//import axios from 'axios';  // Importamos axios para manejar las solicitudes HTTP
 import './CargaAlumnos.css';
 
 function Alumno() {
+    const navigate = useNavigate();
+
+    const backurl = import.meta.env.VITE_URL_BACK;
+
     const [Nombre, setNombre] = useState("");
     const [Apellido, setApellido] = useState("");
     const [Correo, setCorreo] = useState("");
@@ -25,38 +30,61 @@ function Alumno() {
         }
 
         const nuevoAlumno = {
-            Nombre,
-            Apellido,
-            Correo,
-            Dni,
-            Telefono,
-            Direccion,
-            FechaNacimiento,
-            Grado,
-            isHabilitado: true // Añadimos este campo para el estado del alumno
+            nombre: Nombre,
+            apellido: Apellido,
+            correoElectronico: Correo,
+            dni: Dni,
+            telefono: Telefono,
+            direccion: Direccion,
+            fechaNacimiento: FechaNacimiento,
+            grado: Grado,
+            //isHabilitado: true // Añadimos este campo para el estado del alumno
         };
 
         try {
-            // Hacemos la solicitud POST a la API
-            await axios.post('http://localhost:3001/alumnos', nuevoAlumno);
-            setError(false);
-            setMensaje("Alumno cargado exitosamente!");
-
-            // Limpiar los campos después de enviar
-            setNombre("");
-            setApellido("");
-            setCorreo("");
-            setDni("");
-            setTelefono("");
-            setDireccion("");
-            setFechaNacimiento("");
-            setGrado("");
+            let respuesta = await fetchback(nuevoAlumno);
+            if (respuesta === -1) {
+                respuesta = await fetchback(nuevoAlumno);
+            }
+    
+            if (respuesta) {
+                alert("Alumno creado");
+                navigate("/preceptor");
+            } else {
+                alert("Alumno no creado");
+            }
         } catch (err) {
             console.error("Error al enviar los datos:", err);
             setError(true);
             setMensaje("Hubo un error al cargar el alumno. Inténtalo de nuevo.");
         }
     };
+
+    const fetchback = async (nuevoAlumno) => {
+        const response = await fetch(`${backurl}alumnos/`,{
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+           // "Authorization":accessToken
+          },
+          body: JSON.stringify(nuevoAlumno),
+        }); // metodo body headers 
+        /*if(response.status === 401){
+          const res = await handleRefreshToken();
+          if(res === -1){
+            navigate("/login");
+          }
+          
+        }*/
+        const responsejson = await response.json();
+        console.log(responsejson.data);
+        console.log("Respuesta del servidor:", responsejson);
+        if (response.ok) {
+          return responsejson.data
+        }else{
+          return null
+        }
+      };
 
     return (
         <div className="container">
