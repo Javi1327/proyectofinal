@@ -1,20 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+//import axios from 'axios';
 import './VerAlumnos.css';
 
 const VerAlumnos = () => {
+
+  const backurl = import.meta.env.VITE_URL_BACK;
+
   const [alumnos, setAlumnos] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [alumnoToEdit, setAlumnoToEdit] = useState(null);
   const [Nombre, setNombre] = useState('');
   const [Apellido, setApellido] = useState('');
   const [Correo, setCorreo] = useState('');
+  const [Dni, setDni] = useState("");
   const [Telefono, setTelefono] = useState('');
   const [Direccion, setDireccion] = useState('');
   const [FechaNacimiento, setFechaNacimiento] = useState('');
   const [Grado, setGrado] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortField, setSortField] = useState('Apellido');
+  const [sortField, setSortField] = useState('apellido');
   const [sortAsc, setSortAsc] = useState(true);
 
   // Cargar datos desde la API
@@ -24,11 +28,19 @@ const VerAlumnos = () => {
 
   const obtenerAlumnos = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/alumnos');
-      console.log(response.data); // Verificamos la estructura de los datos
-      setAlumnos(response.data);
+      const response = await fetch(`${backurl}alumnos`);
+      if (!response.ok) {
+        throw new Error(`Error en la respuesta del servidor: ${response.statusText}`);
+      }
+      const result = await response.json();
+      console.log(result); // Verificamos la estructura de los datos
+      //setAlumnos(data);
+      console.log(result.data)
+      setAlumnos(Array.isArray(result.data) ? result.data : []);
     } catch (err) {
       console.error('Error al obtener los alumnos:', err);
+      setAlumnos([]);
+      alert('No se pudo cargar la lista de alumnos. Por favor, inténtalo de nuevo más tarde.');
     }
   };
 
@@ -36,12 +48,21 @@ const VerAlumnos = () => {
   const eliminarAlumno = async (id) => {
     try {
       // Actualizamos el estado en el servidor usando PATCH
-      await axios.patch(`http://localhost:3001/alumnos/${id}`, { isHabilitado: false });
-  
+      //await axios.patch(`http://localhost:3001/alumnos/${id}`, { isHabilitado: false });
+      const response = await fetch(`${backurl}alumnos/${id}`, {
+        method: "DELETE",
+        headers: {"Content-Type": "application/json"}
+      }) 
       // Actualizamos el estado en el frontend
-      setAlumnos(alumnos.map(alumno =>
-        alumno.id === id ? { ...alumno, isHabilitado: false } : alumno
-      ));
+      //setAlumnos(alumnos.map(alumno =>
+      //  alumno.id === id ? { ...alumno, isHabilitado: false } : alumno
+      //));
+      if (response.ok) {
+        // Actualizamos el estado en el frontend
+        setAlumnos(alumnos.filter(alumno => alumno.id !== id)); // Cambiado aquí
+      } else {
+        console.error('Error al eliminar el alumno:', response.statusText);
+      }
     } catch (err) {
       console.error('Error al eliminar el alumno:', err);
     }
@@ -50,13 +71,14 @@ const VerAlumnos = () => {
   // Abrir modal de edición
   const openEditModal = (alumno) => {
     setAlumnoToEdit(alumno);
-    setNombre(alumno.Nombre);
-    setApellido(alumno.Apellido);
-    setCorreo(alumno.Correo);
-    setTelefono(alumno.Telefono);
-    setDireccion(alumno.Direccion);
-    setFechaNacimiento(alumno.FechaNacimiento);
-    setGrado(alumno.Grado);
+    setNombre(alumno.nombre);
+    setApellido(alumno.apellido);
+    setCorreo(alumno.correoElectronico);
+    setDni(alumno.dni)
+    setTelefono(alumno.telefono);
+    setDireccion(alumno.direccion);
+    setFechaNacimiento(alumno.fechaNacimiento);
+    setGrado(alumno.grado);
     setIsModalOpen(true);
   };
 
@@ -69,13 +91,14 @@ const VerAlumnos = () => {
     setAlumnos(alumnos.map(alumno =>
       alumno.id === alumnoToEdit.id ? {
         ...alumno,
-        Nombre,
-        Apellido,
-        Correo,
-        Telefono,
-        Direccion,
-        FechaNacimiento,
-        Grado
+        nombre: Nombre,
+        apellido: Apellido,
+        correoElectronico: Correo,
+        dni: Dni,
+        telefono: Telefono,
+        direccion: Direccion,
+        fechaNacimiento: FechaNacimiento,
+        grado: Grado,
       } : alumno
     ));
     closeModal();
@@ -85,8 +108,8 @@ const VerAlumnos = () => {
   const filteredAlumnos = alumnos
     .filter(alumno => alumno.isHabilitado)
     .filter(alumno =>
-      alumno.Apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      alumno.Grado.toLowerCase().includes(searchTerm.toLowerCase())
+      alumno.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      alumno.grado.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
   // Ordenar alumnos
@@ -120,9 +143,10 @@ const VerAlumnos = () => {
       <table>
         <thead>
           <tr>
-            <th onClick={() => toggleSort('Nombre')}>Nombre</th>
-            <th onClick={() => toggleSort('Apellido')}>Apellido</th>
+            <th onClick={() => toggleSort('nombre')}>Nombre</th>
+            <th onClick={() => toggleSort('apellido')}>Apellido</th>
             <th>Correo</th>
+            <th>Dni</th>
             <th>Teléfono</th>
             <th>Dirección</th>
             <th>Fecha Nacimiento</th>
@@ -133,16 +157,17 @@ const VerAlumnos = () => {
         <tbody>
           {sortedAlumnos.map(alumno => (
             <tr key={alumno.id}>
-              <td>{alumno.Nombre}</td>
-              <td>{alumno.Apellido}</td>
-              <td>{alumno.Correo}</td>
-              <td>{alumno.Telefono}</td>
-              <td>{alumno.Direccion}</td>
-              <td>{alumno.FechaNacimiento}</td>
-              <td>{alumno.Grado}</td>
+              <td>{alumno.nombre}</td>
+              <td>{alumno.apellido}</td>
+              <td>{alumno.correoElectronico}</td>
+              <td>{alumno.dni}</td>
+              <td>{alumno.telefono}</td>
+              <td>{alumno.direccion}</td>
+              <td>{alumno.fechaNacimiento}</td>
+              <td>{alumno.grado}</td>
               <td>
                 <button onClick={() => openEditModal(alumno)}>Editar</button>
-                <button onClick={() => eliminarAlumno(alumno.id)}>Eliminar</button>
+                <button className='eliminar' onClick={() => eliminarAlumno(alumno.id)}>Eliminar</button>
               </td>
             </tr>
           ))}
@@ -175,8 +200,12 @@ const VerAlumnos = () => {
               <input type="text" value={Direccion} onChange={(e) => setDireccion(e.target.value)} />
             </label>
             <label>
+              Dni:
+              <input type="text" value={Dni} onChange={(e) => setDni(e.target.value)} />
+            </label>
+            <label>
               Fecha de Nacimiento:
-              <input type="date" value={FechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)} />
+              <input type="date" value={FechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)}  max={new Date().toISOString().split("T")[0]} />
             </label>
             <label>
               Grado:

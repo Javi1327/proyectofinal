@@ -129,7 +129,7 @@ function Alumno() {
 
                 <label>
                     Fecha de Nacimiento:
-                    <input type="date" value={FechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)} required />
+                    <input type="date" value={FechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)} required  max={new Date().toISOString().split("T")[0]} />
                 </label>
 
                 <label>

@@ -57,7 +57,13 @@ th {
     font-size: 14px;
   }
   
-
+  .eliminar{
+    background-color: rgb(241, 65, 65);
+  }
+  .eliminar:hover{
+    background-color: rgb(255, 1, 1);
+  }
+  
   
   /* Modal */
   .modal-overlay {
@@ -71,10 +77,11 @@ th {
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    overflow-y: scroll;
   }
   
   .modal-content {
-    background-color: white;
+    background-color: rgb(255, 255, 255);
     padding: 20px;
     border-radius: 4px;
     width: 400px;
