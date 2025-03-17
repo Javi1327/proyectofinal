@@ -7,8 +7,9 @@ const Login = () => {
   const { loginAsAlumno, loginAsProfesor, loginAsPreceptor } = useUser();
   const navigate = useNavigate();
   const [selectedRole, setSelectedRole] = useState(null); // Estado para el rol seleccionado
-  const [formData, setFormData] = useState({ username: '', password: '' }); // Estado para los datos del formulario
-
+  const [formData, setFormData] = useState({ username: '', password: '' });  //Estado para los datos del formulario
+  const [error, setError] = useState(''); // Estado para manejar errores
+ 
   const handleRoleSelect = (role) => {
     setSelectedRole(role); // Muestra el formulario después de seleccionar el rol
   };
@@ -21,16 +22,49 @@ const Login = () => {
     }));
   };
 
-  const handleLoginSubmit = (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    if (selectedRole === 'alumno') {
-      loginAsAlumno();
-    } else if (selectedRole === 'profesor') {
-      loginAsProfesor();
-    } else if (selectedRole === 'preceptor') {
-      loginAsPreceptor();
+    setError(''); // Limpiar errores previos
+
+    try {
+      if (selectedRole === 'alumno') {
+        // Aquí deberías hacer la llamada a tu API para autenticar al alumno
+        const response = await fetch(`${import.meta.env.VITE_URL_BACK}auth/loginAlumno`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            nombre: formData.username, // Nombre del alumno
+            dni: formData.password, // DNI como contraseña
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Nombre de alumno o DNI incorrectos.');
+        }
+
+        const data = await response.json();
+        // Extraer accesstoken, refreshtoken y alumnoId
+        const { accesstoken, refreshtoken, id } = data.data;
+        console.log("el id del alumno es ", id)
+        // Almacena los tokens en el almacenamiento local
+        localStorage.setItem('accesstoken', accesstoken);
+        localStorage.setItem('refreshtoken', refreshtoken);
+
+        // Almacena el ID, nombre y DNI en el estado o contexto
+        loginAsAlumno(id, formData.username, formData.password); // Llama a la función de login con el ID del estudiante
+
+      } else if (selectedRole === 'profesor') {
+        loginAsProfesor();
+      } else if (selectedRole === 'preceptor') {
+        loginAsPreceptor();
+      }
+
+      navigate('/home'); // Redirigir al Home después de iniciar sesión
+    } catch (error) {
+      setError(error.message); // Manejo de errores
     }
-    navigate('/home'); // Redirigir al Home después de iniciar sesión
   };
 
   return (
@@ -60,12 +94,13 @@ const Login = () => {
           <input
             type="password"
             name="password"
-            placeholder="Contraseña"
+            placeholder="DNI"
             value={formData.password}
             onChange={handleInputChange}
             required
           />
           <button type="submit">Iniciar Sesión</button>
+          {error && <p style={{ color: 'red' }}>{error}</p>} {/* Mostrar errores */}
           <button type="button" className="back-button" onClick={() => setSelectedRole(null)}>
             Volver
           </button>
@@ -76,6 +111,3 @@ const Login = () => {
 };
 
 export default Login;
-
-
-
