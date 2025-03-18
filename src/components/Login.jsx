@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
 const Login = () => {
-  const { loginAsAlumno, loginAsProfesor, loginAsPreceptor } = useUser();
+  const { loginAsAlumno, loginAsProfesor, loginAsPreceptor, loginAsAdmin } = useUser();
   const navigate = useNavigate();
   const [selectedRole, setSelectedRole] = useState(null); // Estado para el rol seleccionado
   const [formData, setFormData] = useState({ username: '', password: '' });  //Estado para los datos del formulario
@@ -59,6 +59,8 @@ const Login = () => {
         loginAsProfesor();
       } else if (selectedRole === 'preceptor') {
         loginAsPreceptor();
+      } else if (selectedRole === 'admin') {
+        loginAsAdmin();
       }
 
       navigate('/home'); // Redirigir al Home después de iniciar sesión
@@ -79,6 +81,7 @@ const Login = () => {
           <button onClick={() => handleRoleSelect('alumno')}>Login como Alumno</button>
           <button onClick={() => handleRoleSelect('profesor')}>Login como Profesor</button>
           <button onClick={() => handleRoleSelect('preceptor')}>Login como Preceptor</button>
+          <button onClick={() => handleRoleSelect('admin')}>Login como Administrador</button>
         </div>
       ) : (
         <form className="login-form" onSubmit={handleLoginSubmit}>

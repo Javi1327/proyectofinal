@@ -22,9 +22,10 @@ export const UserProvider = ({ children }) => {
   // Esta función es solo un ejemplo para simular el login
   const loginAsProfesor = () => setUserType("profesor");
   const loginAsPreceptor = () => setUserType("preceptor");
+  const loginAsAdmin = () => setUserType("admin");
 
   return (
-    <UserContext.Provider value={{ userType, alumnoId, loginAsAlumno, loginAsProfesor, loginAsPreceptor }}>
+    <UserContext.Provider value={{ userType, alumnoId, loginAsAlumno, loginAsProfesor, loginAsPreceptor, loginAsAdmin }}>
       {children}
     </UserContext.Provider>
   );

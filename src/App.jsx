@@ -20,6 +20,11 @@ import VerNotasAlumnos from './components/VerNotasAlumnos';
 import TareasAlumno from './components/TareasAlumno';
 import TareasProfesor from './components/TareasProfesor';
 import Foro from './components/Foro';
+import AdminView from './Pages/AdminView';
+import CrearMaterias from './components/CrearMaterias';
+import CrearUsuario from './components/CrearUsuario';
+import AsignarCursos from './components/AsignarCursos';
+import VerUsuarios from './components/VerUsuarios';
 
 const App = () => {
   return (
@@ -44,6 +49,11 @@ const App = () => {
           <Route path="/alumno/ver-notas" element={<VerNotasAlumnos />} />
           <Route path="/alumno/tareas-alumno" element={<TareasAlumno />} />
           <Route path="/alumno/foro" element={<Foro />} />
+          <Route path="/admin" element={<AdminView />} />
+          <Route path="/admin/crear-usuario" element={<CrearUsuario />} />
+          <Route path='/admin/ver-usuarios' element={<VerUsuarios />} />
+          <Route path='/admin/crear-materias' element={<CrearMaterias />} />
+          <Route path='/admin/asignar-cursos' element={<AsignarCursos />} />
         </Routes>
         <Footer />
       </BrowserRouter>
