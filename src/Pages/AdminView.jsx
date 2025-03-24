@@ -22,9 +22,6 @@ return (
         <button onClick={() => handleNavigate("crear-materias")} className="funcion-btn">
           Crear Materias
         </button>
-        <button onClick={() => handleNavigate("asignar-cursos")} className="funcion-btn">
-          Asignar Cursos
-        </button>
       </div>
     </div>
   );

@@ -22,7 +22,7 @@ import TareasProfesor from './components/TareasProfesor';
 import Foro from './components/Foro';
 import AdminView from './Pages/AdminView';
 import CrearMaterias from './components/CrearMaterias';
-import CrearUsuario from './components/CrearUsuario';
+import CrearUsuario from './components/CrearUSUario';
 import AsignarCursos from './components/AsignarCursos';
 import VerUsuarios from './components/VerUsuarios';
 

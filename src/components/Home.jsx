@@ -5,6 +5,7 @@ import { useUser } from '../context/UserContext'; // Corrección en la ruta
 import AlumnoView from "../pages/AlumnoView";
 import ProfesorView from "../pages/ProfesorView";
 import PreceptorView from "../pages/PreceptorView";
+import AdminView from '../Pages/AdminView';
 
 export default function Home() {
   const { userType } = useUser();
@@ -19,6 +20,7 @@ export default function Home() {
       {userType === 'alumno' && <AlumnoView />}
       {userType === 'profesor' && <ProfesorView />}
       {userType === 'preceptor' && <PreceptorView />}
+      {userType === 'admin' && <AdminView />}
     </div>
   );
 }
