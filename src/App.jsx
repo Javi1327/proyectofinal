@@ -22,9 +22,9 @@ import TareasProfesor from './components/TareasProfesor';
 import Foro from './components/Foro';
 import AdminView from './Pages/AdminView';
 import CrearMaterias from './components/CrearMaterias';
-import CrearUsuario from './components/CrearUSUario';
-import AsignarCursos from './components/AsignarCursos';
-import VerUsuarios from './components/VerUsuarios';
+import AdminUsuarios from './components/AdminUsuarios';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 const App = () => {
   return (
@@ -50,10 +50,8 @@ const App = () => {
           <Route path="/alumno/tareas-alumno" element={<TareasAlumno />} />
           <Route path="/alumno/foro" element={<Foro />} />
           <Route path="/admin" element={<AdminView />} />
-          <Route path="/admin/crear-usuario" element={<CrearUsuario />} />
-          <Route path='/admin/ver-usuarios' element={<VerUsuarios />} />
+          <Route path="/admin/administrar-usuarios" element={<AdminUsuarios/>}/>
           <Route path='/admin/crear-materias' element={<CrearMaterias />} />
-          <Route path='/admin/asignar-cursos' element={<AsignarCursos />} />
         </Routes>
         <Footer />
       </BrowserRouter>

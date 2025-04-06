@@ -1,31 +1,27 @@
-// src/context/UserContext.jsx
 import React, { createContext, useContext, useState } from "react";
 
 // Crear un contexto para el usuario
-const UserContext = createContext();
+export const UserContext = createContext();
 
-// Crear el proveedor del contextoÑ
+// Crear el proveedor del contexto
 export const UserProvider = ({ children }) => {
-  const [userType, setUserType] = useState(null); // Estado para el tipo de usuario
-  const [alumnoId, setAlumnoId] = useState(null); // Estado para el ID del alumno
+  const [userRole, setUserRole] = useState(null); // Tipo de usuario (admin, profesor, preceptor, alumno)
+  const [userId, setUserId] = useState(null); // ID del usuario (alumno, profesor, etc.)
   const [nombre, setNombre] = useState(null);
   const [dni, setDni] = useState(null);
-
-  // Funciones de login
-  const loginAsAlumno = (id, nombreAlumno, dniAlumno) => {
-    setUserType("alumno");
-    setAlumnoId(id); // Establecer el ID del alumno al iniciar sesión
-    setNombre(nombreAlumno); // Almacenar el nombre
-    setDni(dniAlumno); // Almacenar el DNI
-  };
+  const [email, setEmail] = useState(null); // Para profesores/admins
   
-  // Esta función es solo un ejemplo para simular el login
-  const loginAsProfesor = () => setUserType("profesor");
-  const loginAsPreceptor = () => setUserType("preceptor");
-  const loginAsAdmin = () => setUserType("admin");
+  // Función para iniciar sesión con diferentes roles
+  const loginUser = (role, id, nombreUsuario, dniUsuario, emailUsuario = null) => {
+    setUserRole(role);
+    setUserId(id);
+    setNombre(nombreUsuario);
+    setDni(dniUsuario);
+    setEmail(emailUsuario);
+  };
 
   return (
-    <UserContext.Provider value={{ userType, alumnoId, loginAsAlumno, loginAsProfesor, loginAsPreceptor, loginAsAdmin }}>
+    <UserContext.Provider value={{ userRole, userId, nombre, dni, email, loginUser }}>
       {children}
     </UserContext.Provider>
   );
@@ -33,4 +29,7 @@ export const UserProvider = ({ children }) => {
 
 // Hook para usar el contexto en otros componentes
 export const useUser = () => useContext(UserContext);
+
+
+
 
