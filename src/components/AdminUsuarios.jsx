@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form, Table } from 'react-bootstrap';
+import { Modal, Button, Form } from 'react-bootstrap';
 import axios from 'axios';
 import './AdminUsuarios.css';
 import { ToastContainer, toast } from 'react-toastify';
@@ -19,9 +19,7 @@ const AdminUsuarios = () => {
   const [materiaSeleccionada, setMateriaSeleccionada] = useState('');
   const [fechaNacimiento, setFechaNacimiento] = useState('');
   const [cursosFiltrados, setCursosFiltrados] = useState([]);
-  const [cursoSeleccionado, setCursoSeleccionado] = useState("");
-
-
+  const [cursoSeleccionado, setCursoSeleccionado] = useState('');
 
   const roleRoutes = {
     alumno: "alumnos",
@@ -30,15 +28,11 @@ const AdminUsuarios = () => {
     admin: "admins",
   };
 
-  // Obtener las materias para el profesor
   useEffect(() => {
     if (selectedRole === 'profesor') {
-      axios.get('http://localhost:3000/materias')  // Asegúrate de que la URL del backend es correcta
+      axios.get('http://localhost:3000/materias')
         .then((response) => {
-          // Verificamos la estructura de la respuesta y ajustamos la carga
           setMaterias(response.data);
-          console.log("Materias desde backend:", response.data); // log para verificar las materias, despues sacar
-
         })
         .catch((error) => console.error('Error al obtener materias:', error));
     }
@@ -54,7 +48,6 @@ const AdminUsuarios = () => {
       setCursosFiltrados([]);
     }
   }, [materiaSeleccionada, materias]);
-  
 
   const handleClose = () => {
     setShowModal(false);
@@ -68,75 +61,135 @@ const AdminUsuarios = () => {
     setGrado('');
     setMateriaSeleccionada('');
     setFechaNacimiento('');
+    setCursoSeleccionado('');
   };
 
   const handleShow = () => setShowModal(true);
+
+  const validarCampos = () => {
+    if (!selectedRole) return toast.error("Seleccioná un rol."), false;
+    if (!nombre.trim() || !apellido.trim()) return toast.error("Nombre y apellido son obligatorios."), false;
+    if (!dni.trim() || !/^\d{8}$/.test(dni)) return toast.error("DNI inválido. Debe tener 8 dígitos."), false;
+
+    switch (selectedRole) {
+      case 'profesor':
+        if (!correoElectronico.trim() || !materiaSeleccionada || !cursoSeleccionado) {
+          toast.error("Todos los campos para profesor son obligatorios.");
+          return false;
+        }
+        break;
+      case 'alumno':
+        if (!grado || !direccion.trim() || !fechaNacimiento) {
+          toast.error("Todos los campos para alumno son obligatorios.");
+          return false;
+        }
+        break;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = async () => {
+    if (!validarCampos()) return;
+  
+    try {
+      const endpoint = roleRoutes[selectedRole];
+      const modelos = ['admins', 'alumnos', 'profesores', 'preceptores'];
+  
+      // Validar DNI globalmente
+      const dniDuplicado = await Promise.any(
+        modelos.map((ruta) =>
+          axios
+            .get(`http://localhost:3000/${ruta}/buscar?dni=${dni}`)
+            .then(() => true) // Lo encontró → duplicado
+            .catch((err) => {
+              if (err.response?.status === 404) return false; // No encontrado → no es duplicado
+              throw err; // Otro error (servidor, etc) → reventar
+            })
+        )
+      ).catch((error) => {
+        if (error instanceof AggregateError) return false; // Ninguno lo encontró
+        throw error; // Error inesperado
+      });
+      
+      if (dniDuplicado) {
+        toast.error("Ya existe un usuario con ese DNI en el sistema.");
+        return;
+      }
+      
+      // Validar correo electrónico si está presente
+      if (correoElectronico) {
+        const correoDuplicado = await Promise.any(
+          modelos.map((ruta) =>
+            axios
+              .get(`http://localhost:3000/${ruta}/buscar?correoElectronico=${correoElectronico}`)
+              .then(() => true)
+              .catch((err) => {
+                if (err.response?.status === 404) return false;
+                throw err;
+              })
+          )
+        ).catch((error) => {
+          if (error instanceof AggregateError) return false;
+          throw error;
+        });
+      
+        if (correoDuplicado) {
+          toast.error("Ya existe un usuario con ese correo electrónico.");
+          return;
+        }
+      }
+      
+  
+      // Si llegamos acá, todo está OK para crear el usuario
+      const newUserData = {
+        nombre,
+        apellido,
+        dni: Number(dni),
+        correoElectronico,
+        telefono,
+        direccion,
+        grado,
+        fechaNacimiento: fechaNacimiento ? new Date(fechaNacimiento).toISOString() : null,
+      };
+  
+      if (selectedRole === 'profesor') {
+        newUserData.materiasAsignadas = [materiaSeleccionada];
+        newUserData.cursosAsignados = [cursoSeleccionado];
+      }
+  
+      if (selectedRole === 'alumno') {
+        newUserData.materiasAlumno = [];
+      }
+  
+      // Eliminar campos vacíos
+      Object.keys(newUserData).forEach(
+        (key) =>
+          (newUserData[key] === '' || newUserData[key] === null || newUserData[key] === undefined) &&
+          delete newUserData[key]
+      );
+  
+      await axios.post(`http://localhost:3000/${endpoint}`, newUserData);
+      toast.success("Usuario creado con éxito!");
+      handleClose();
+    } catch (error) {
+      console.error("Error al crear el usuario:", error);
+      toast.error("Hubo un error al crear el usuario.");
+    }
+  };
   
 
-    const handleSubmit = async () => {
-      try {
-        const newUserData = {
-          selectedRole,
-          nombre,
-          apellido,
-          dni:Number(dni),
-          correoElectronico,
-          telefono,
-          direccion,
-          grado,
-          materiaSeleccionada,
-          cursoSeleccionado,
-          fechaNacimiento: fechaNacimiento ? new Date(fechaNacimiento).toISOString() : null,
-          materias: [
-            {
-              idMateria: materiaSeleccionada,
-              cursosAsignados: [cursoSeleccionado]
-            }
-          ]
-        };
-
-            // Eliminar campos vacíos o no aplicables
-    Object.keys(newUserData).forEach((key) => {
-        if (
-          newUserData[key] === "" ||
-          newUserData[key] === null ||
-          newUserData[key] === undefined
-        ) {
-          delete newUserData[key];
-        }
-      });
-    
-        console.log(newUserData)
-        // Enviar los datos al backend
-        const endpoint = roleRoutes[selectedRole];
-        const response = await axios.post(`http://localhost:3000/${endpoint}`, newUserData);
-        console.log('Usuario creado:', response.data);
-        
-        // Mostrar mensaje de éxito usando Toast
-         toast.success("Usuario creado con éxito!");
-
-        // Cerrar el formulario después de enviar
-        handleClose();
-      } catch (error) {
-        console.error('Error al crear el usuario:', error);
-        toast.error("Hubo un error al crear el usuario.");
-      }
-    };
-    
   return (
     <div className="admin-usuarios-container">
       <h2>Administrar Usuarios</h2>
-
       <button className="btn-action" onClick={handleShow}>Crear Usuario</button>
 
-      {/* Modal de creación de usuario */}
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Crear Usuario</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
-            {/* Selección de Rol */}
             <Form.Group controlId="formRol">
               <Form.Label>Seleccionar Rol</Form.Label>
               <Form.Control as="select" value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)}>
@@ -148,232 +201,97 @@ const AdminUsuarios = () => {
               </Form.Control>
             </Form.Group>
 
-            {/* Nombre y Apellido siempre visibles */}
             <Form.Group controlId="formNombre">
               <Form.Label>Nombre</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Nombre"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-              />
+              <Form.Control type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} />
             </Form.Group>
             <Form.Group controlId="formApellido">
               <Form.Label>Apellido</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Apellido"
-                value={apellido}
-                onChange={(e) => setApellido(e.target.value)}
-              />
+              <Form.Control type="text" value={apellido} onChange={(e) => setApellido(e.target.value)} />
             </Form.Group>
 
-            {/* Campos según el rol seleccionado */}
-            {selectedRole === 'admin' && (
+            {['admin', 'profesor', 'preceptor', 'alumno'].includes(selectedRole) && (
+              <Form.Group controlId="formDni">
+                <Form.Label>DNI</Form.Label>
+                <Form.Control type="text" value={dni} onChange={(e) => setDni(e.target.value)} />
+              </Form.Group>
+            )}
+
+            {['admin', 'profesor', 'preceptor', 'alumno'].includes(selectedRole) && (
               <>
-                <Form.Group controlId="formDni">
-                  <Form.Label>DNI</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="DNI"
-                    value={dni}
-                    onChange={(e) => setDni(e.target.value)}
-                  />
-                </Form.Group>
                 <Form.Group controlId="formEmail">
                   <Form.Label>Email</Form.Label>
-                  <Form.Control
-                    type="email"
-                    placeholder="Email"
-                    value={correoElectronico}
-                    onChange={(e) => setCorreoElectronico(e.target.value)}
-                  />
+                  <Form.Control type="email" value={correoElectronico} onChange={(e) => setCorreoElectronico(e.target.value)} />
                 </Form.Group>
                 <Form.Group controlId="formTelefono">
                   <Form.Label>Teléfono</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Teléfono"
-                    value={telefono}
-                    onChange={(e) => setTelefono(e.target.value)}
-                  />
+                  <Form.Control type="text" value={telefono} onChange={(e) => setTelefono(e.target.value)} />
                 </Form.Group>
               </>
             )}
 
             {selectedRole === 'profesor' && (
               <>
-                <Form.Group controlId="formDni">
-                  <Form.Label>DNI</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="DNI"
-                    value={dni}
-                    onChange={(e) => setDni(e.target.value)}
-                  />
-                </Form.Group>
-                <Form.Group controlId="formEmail">
-                  <Form.Label>Email</Form.Label>
-                  <Form.Control
-                    type="email"
-                    placeholder="Email"
-                    value={correoElectronico}
-                    onChange={(e) => setCorreoElectronico(e.target.value)}
-                  />
-                </Form.Group>
-                <Form.Group controlId="formTelefono">
-                  <Form.Label>Teléfono</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Teléfono"
-                    value={telefono}
-                    onChange={(e) => setTelefono(e.target.value)}
-                  />
-                </Form.Group>
                 <Form.Group controlId="formMateria">
-                        <Form.Label>Materia</Form.Label>
-                        <Form.Control
-                            as="select"
-                            value={materiaSeleccionada}
-                            onChange={(e) => setMateriaSeleccionada(e.target.value)}
-                        >
-                            <option value="">Seleccione una materia</option>
-                            {materias.map((materia) => (
-                            <option key={materia._id} value={materia._id}>
-                                {materia.nombreMateria}
-                            </option>
-                            ))}
-                        </Form.Control>
-                        </Form.Group>
-
-                        <Form.Group controlId="formCurso">
-                        <Form.Label>Curso</Form.Label>
-                        <Form.Control
-                            as="select"
-                            value={cursoSeleccionado}
-                            onChange={(e) => setCursoSeleccionado(e.target.value)}
-                        >
-                            <option value="">Seleccione un curso</option>
-                            {cursosFiltrados.map((curso, index) => (
-                            <option key={index} value={curso}>
-                                {curso}
-                            </option>
-                            ))}
-                        </Form.Control>
-                        </Form.Group>
-
-              </>
-            )}
-
-            {selectedRole === 'preceptor' && (
-              <>
-                <Form.Group controlId="formDni">
-                  <Form.Label>DNI</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="DNI"
-                    value={dni}
-                    onChange={(e) => setDni(e.target.value)}
-                  />
+                  <Form.Label>Materia</Form.Label>
+                  <Form.Control as="select" value={materiaSeleccionada} onChange={(e) => setMateriaSeleccionada(e.target.value)}>
+                    <option value="">Seleccione una materia</option>
+                    {materias.map((materia) => (
+                      <option key={materia._id} value={materia._id}>
+                        {materia.nombreMateria}
+                      </option>
+                    ))}
+                  </Form.Control>
                 </Form.Group>
-                <Form.Group controlId="formEmail">
-                  <Form.Label>Email</Form.Label>
-                  <Form.Control
-                    type="email"
-                    placeholder="Email"
-                    value={correoElectronico}
-                    onChange={(e) => setCorreoElectronico(e.target.value)}
-                  />
-                </Form.Group>
-                <Form.Group controlId="formTelefono">
-                  <Form.Label>Teléfono</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Teléfono"
-                    value={telefono}
-                    onChange={(e) => setTelefono(e.target.value)}
-                  />
+
+                <Form.Group controlId="formCurso">
+                  <Form.Label>Curso</Form.Label>
+                  <Form.Control as="select" value={cursoSeleccionado} onChange={(e) => setCursoSeleccionado(e.target.value)}>
+                    <option value="">Seleccione un curso</option>
+                    {cursosFiltrados.map((curso, index) => (
+                      <option key={index} value={curso}>
+                        {curso}
+                      </option>
+                    ))}
+                  </Form.Control>
                 </Form.Group>
               </>
             )}
 
             {selectedRole === 'alumno' && (
               <>
-                <Form.Group controlId="formDni">
-                  <Form.Label>DNI</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="DNI"
-                    value={dni}
-                    onChange={(e) => setDni(e.target.value)}
-                  />
-                </Form.Group>
                 <Form.Group controlId="formGrado">
                   <Form.Label>Grado</Form.Label>
-                  <Form.Control
-                    as="select"
-                    value={grado}
-                    onChange={(e) => setGrado(e.target.value)}
-                  >
-                    <option value="1A">1A</option>
-                    <option value="1B">1B</option>
-                    <option value="2A">2A</option>
-                    <option value="2B">2B</option>
+                  <Form.Control as="select" value={grado} onChange={(e) => setGrado(e.target.value)}>
+                    <option value="">Seleccione un grado</option>
+                    {["1A", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5A", "5B", "6A", "6B"].map((g) => (
+                      <option key={g} value={g}>{g}</option>
+                    ))}
                   </Form.Control>
                 </Form.Group>
+
                 <Form.Group controlId="formDireccion">
                   <Form.Label>Dirección</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Dirección"
-                    value={direccion}
-                    onChange={(e) => setDireccion(e.target.value)}
-                  />
+                  <Form.Control type="text" value={direccion} onChange={(e) => setDireccion(e.target.value)} />
                 </Form.Group>
-                <Form.Group controlId="formTelefono">
-                  <Form.Label>Teléfono</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Teléfono"
-                    value={telefono}
-                    onChange={(e) => setTelefono(e.target.value)}
-                  />
-                </Form.Group>
-                <Form.Group controlId="formEmail">
-                  <Form.Label>Email</Form.Label>
-                  <Form.Control
-                    type="email"
-                    placeholder="Email"
-                    value={correoElectronico}
-                    onChange={(e) => setCorreoElectronico(e.target.value)}
-                  />
-                </Form.Group>
+
                 <Form.Group controlId="formFechaNacimiento">
                   <Form.Label>Fecha de Nacimiento</Form.Label>
-                  <Form.Control
-                    type="date"
-                    value={fechaNacimiento}
-                    onChange={(e) => setFechaNacimiento(e.target.value)}
-                  />
+                  <Form.Control type="date" value={fechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)} />
                 </Form.Group>
               </>
             )}
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Cerrar
-          </Button>
-          <Button variant="primary" onClick={handleSubmit}>
-            Crear Usuario
-          </Button>
+          <Button variant="secondary" onClick={handleClose}>Cerrar</Button>
+          <Button variant="primary" onClick={handleSubmit}>Crear Usuario</Button>
         </Modal.Footer>
       </Modal>
-      <ToastContainer/>
+
+      <ToastContainer />
     </div>
   );
 };
 
 export default AdminUsuarios;
-
-
