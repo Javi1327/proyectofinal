@@ -6,17 +6,16 @@ const cursos = ['1A', '1B', '2A', '2B', '3A', '3B', '4A', '4B', '5A', '5B', '6A'
 
 const VerCursos = () => {
   const [cursoSeleccionado, setCursoSeleccionado] = useState(null);
-  const [alumnos, setAlumnos] = useState([]);
   const [alumnosFiltrados, setAlumnosFiltrados] = useState([]);
   const [todosAlumnos, setTodosAlumnos] = useState([]);
-  const [alumnoSeleccionado, setAlumnoSeleccionado] = useState(null);
 
   // Cargar todos los alumnos al iniciar
   useEffect(() => {
     const obtenerAlumnos = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/alumnos');
-        setTodosAlumnos(response.data.filter(alumno => alumno.isHabilitado));
+        const response = await axios.get('http://localhost:3000/alumnos');
+        console.log('Respuesta de la API:', response.data);
+        setTodosAlumnos(response.data.data.filter(alumno => alumno.isHabilitado));
       } catch (err) {
         console.error('Error al obtener alumnos:', err);
       }
@@ -28,26 +27,13 @@ const VerCursos = () => {
   useEffect(() => {
     if (cursoSeleccionado) {
       const filtrados = todosAlumnos
-        .filter(alumno => alumno.Grado === cursoSeleccionado)
-        .sort((a, b) => a.Apellido.localeCompare(b.Apellido));
+        .filter(alumno => alumno.grado === cursoSeleccionado)
+        .sort((a, b) => a.apellido.localeCompare(b.apellido));
       setAlumnosFiltrados(filtrados);
+      console.log('Alumnos filtrados:', filtrados);
     }
   }, [cursoSeleccionado, todosAlumnos]);
 
-  // Función para agregar un alumno al curso
-  const agregarAlumnoACurso = async () => {
-    if (!alumnoSeleccionado) return;
-
-    try {
-      await axios.patch(`http://localhost:3001/alumnos/${alumnoSeleccionado.id}`, { Grado: cursoSeleccionado });
-      setTodosAlumnos(prev => prev.map(alumno =>
-        alumno.id === alumnoSeleccionado.id ? { ...alumno, Grado: cursoSeleccionado } : alumno
-      ));
-      setAlumnoSeleccionado(null);
-    } catch (err) {
-      console.error('Error al agregar alumno al curso:', err);
-    }
-  };
 
   return (
     <div className="container">
@@ -68,26 +54,10 @@ const VerCursos = () => {
           ) : (
             <ul>
               {alumnosFiltrados.map(alumno => (
-                <li key={alumno.id}>{alumno.Apellido}, {alumno.Nombre}</li>
+                <li key={alumno.id}>{alumno.apellido}, {alumno.nombre}</li>
               ))}
             </ul>
           )}
-
-          <h4>Agregar Alumno Existente</h4>
-          <select value={alumnoSeleccionado?.id || ''} onChange={(e) => {
-            const selected = todosAlumnos.find(alumno => alumno.id === e.target.value);
-            setAlumnoSeleccionado(selected);
-          }}>
-            <option value="">Seleccionar alumno</option>
-            {todosAlumnos
-              .filter(alumno => alumno.Grado !== cursoSeleccionado)
-              .map(alumno => (
-                <option key={alumno.id} value={alumno.id}>
-                  {alumno.Apellido}, {alumno.Nombre} ({alumno.Grado})
-                </option>
-              ))}
-          </select>
-          <button onClick={agregarAlumnoACurso}>Agregar al Curso</button>
         </div>
       )}
     </div>
@@ -95,4 +65,3 @@ const VerCursos = () => {
 };
 
 export default VerCursos;
-
