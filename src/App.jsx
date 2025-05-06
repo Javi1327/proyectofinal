@@ -14,7 +14,7 @@ import PreceptorView from './pages/PreceptorView';
 import Alumno from './components/CargaAlumnos';
 import VerAlumnos from './components/VerAlumnos';
 import Asistencia from './components/Asistencia';
-import VerNotas from './components/VerNotas';
+import CursosYNotas from './components/CursosYNotas';
 import AlumnoView from './pages/AlumnoView';
 import VerNotasAlumnos from './components/VerNotasAlumnos';
 import TareasAlumno from './components/TareasAlumno';
@@ -24,6 +24,7 @@ import AdminView from './Pages/AdminView';
 import CrearMaterias from './components/CrearMaterias';
 import AdminUsuarios from './components/AdminUsuarios';
 import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 
 const App = () => {
@@ -37,9 +38,8 @@ const App = () => {
           <Route path="/carga-alumnos" element={<CargaAlumnos />} />
           <Route path="/profesor" element={<ProfesorView />} />
           <Route path="/profesor/subir-notas" element={<SubirNotas />} />
-          <Route path="/profesor/ver-cursos" element={<VerCursos />} />
-          <Route path="/profesor/ver-notas" element={<VerNotas />} />
-          <Route path="/profesor/tareas-profesor" element={<TareasProfesor />} />
+          <Route path="/profesor/cursos-notas" element={<CursosYNotas />} />
+          <Route path="/profesor/tareas" element={<TareasProfesor />} />
           <Route path="/preceptor" element={<PreceptorView />} />
           <Route path="/preceptor/cargar-alumnos" element={<Alumno />} />
           <Route path="/preceptor/ver-alumnos" element={<VerAlumnos />} />

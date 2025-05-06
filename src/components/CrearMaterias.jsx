@@ -5,34 +5,38 @@ const CrearMateria = () => {
   const [nombreMateria, setNombreMateria] = useState('');
   const [selectedCursos, setSelectedCursos] = useState([]);
   const [materias, setMaterias] = useState([]);
+  const [cursosDisponibles, setCursosDisponibles] = useState([]);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [editingMateria, setEditingMateria] = useState(null);
 
-  const cursos = [
-    { value: '1A', label: '1A' },
-    { value: '1B', label: '1B' },
-    { value: '2A', label: '2A' },
-    { value: '2B', label: '2B' },
-    { value: '3A', label: '3A' },
-    { value: '3B', label: '3B' },
-    { value: '4A', label: '4A' },
-    { value: '4B', label: '4B' },
-    { value: '5A', label: '5A' },
-    { value: '5B', label: '5B' },
-    { value: '6A', label: '6A' },
-    { value: '6B', label: '6B' },
-  ];
-
   useEffect(() => {
-    fetch('http://localhost:3000/materias')
-      .then((response) => response.json())
+    // Primero cargamos los cursos
+    fetch('http://localhost:3000/cursos')
+      .then((res) => res.json())
       .then((data) => {
-        setMaterias(Array.isArray(data) ? data : []);
+        const opciones = data.map((curso) => ({
+          value: curso._id,
+          label: curso.nombre,
+        }));
+        setCursosDisponibles(opciones);
       })
       .catch((error) => {
-        console.error('Error al obtener materias:', error);
-        setError('Error al cargar las materias');
+        console.error('Error al cargar cursos:', error);
+      });
+  
+    // También cargamos las materias
+    fetch('http://localhost:3000/materias')
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setMaterias(data);
+        } else {
+          console.error('Formato inesperado al cargar materias:', data);
+        }
+      })
+      .catch((error) => {
+        console.error('Error al cargar materias:', error);
       });
   }, []);
 
@@ -42,15 +46,15 @@ const CrearMateria = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!nombreMateria || selectedCursos.length === 0) {
       setError('Por favor, ingrese el nombre de la materia y seleccione al menos un curso');
       setSuccessMessage('');
       return;
     }
-  
+
     const cursosToSend = selectedCursos.map((option) => option.value);
-  
+
     if (!editingMateria) {
       const materiaExistente = materias.find(
         (materia) => materia.nombreMateria.toLowerCase() === nombreMateria.toLowerCase()
@@ -61,12 +65,12 @@ const CrearMateria = () => {
         return;
       }
     }
-  
+
     const url = editingMateria
       ? `http://localhost:3000/materias/${editingMateria._id}`
       : 'http://localhost:3000/materias';
     const method = editingMateria ? 'PUT' : 'POST';
-  
+
     try {
       const response = await fetch(url, {
         method,
@@ -78,7 +82,7 @@ const CrearMateria = () => {
           cursos: cursosToSend,
         }),
       });
-  
+
       const data = await response.json();
       if (data.status === 'success') {
         setSuccessMessage(editingMateria ? 'Materia modificada con éxito' : 'Materia creada con éxito');
@@ -87,12 +91,10 @@ const CrearMateria = () => {
         setNombreMateria('');
         setSelectedCursos([]);
         fetch('http://localhost:3000/materias')
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data); // Esto te mostrará los datos obtenidos
-                setMaterias(Array.isArray(data) ? data : []);
-            });
-
+          .then((response) => response.json())
+          .then((data) => {
+            setMaterias(Array.isArray(data) ? data : []);
+          });
       } else {
         setError(data.message || 'Error al crear o modificar materia');
         setSuccessMessage('');
@@ -103,7 +105,6 @@ const CrearMateria = () => {
       setSuccessMessage('');
     }
   };
-  
 
   const handleDelete = (id) => {
     if (window.confirm('¿Estás seguro de que deseas eliminar esta materia?')) {
@@ -129,8 +130,14 @@ const CrearMateria = () => {
   const handleEditClick = (materia) => {
     setEditingMateria(materia);
     setNombreMateria(materia.nombreMateria);
-    setSelectedCursos(materia.cursos.map((curso) => ({ value: curso, label: curso })));
+    setSelectedCursos(
+      materia.cursos.map((cursoId) => {
+        const curso = cursosDisponibles.find((c) => c.value === cursoId);
+        return curso ? { value: curso.value, label: curso.label } : null; // Solo devuelve si se encuentra el curso
+      }).filter(Boolean) // Elimina los elementos nulos
+    );
   };
+  
 
   return (
     <div className="crear-materia-container">
@@ -146,7 +153,7 @@ const CrearMateria = () => {
           <h3>Seleccionar Cursos:</h3>
           <Select
             isMulti
-            options={cursos}
+            options={cursosDisponibles}
             value={selectedCursos}
             onChange={handleSelectChange}
             placeholder="Seleccionar cursos"
@@ -178,7 +185,7 @@ const CrearMateria = () => {
         {Array.isArray(materias) &&
           materias.map((materia) => (
             <li key={materia._id}>
-              {materia.nombreMateria} - Cursos: {materia.cursos.join(', ')}
+              {materia.nombreMateria} - Cursos: {materia.cursos.length}
               <button onClick={() => handleEditClick(materia)} style={{ marginLeft: '10px' }}>Editar</button>
               <button onClick={() => handleDelete(materia._id)} style={{ marginLeft: '5px' }}>Eliminar</button>
             </li>
@@ -189,5 +196,4 @@ const CrearMateria = () => {
 };
 
 export default CrearMateria;
-
 
