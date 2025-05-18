@@ -5,23 +5,43 @@ export const UserContext = createContext();
 
 // Crear el proveedor del contexto
 export const UserProvider = ({ children }) => {
-  const [userRole, setUserRole] = useState(null); // Tipo de usuario (admin, profesor, preceptor, alumno)
-  const [userId, setUserId] = useState(null); // ID del usuario (alumno, profesor, etc.)
+  const [userType, setUserType] = useState(null); // Estado para el tipo de usuario
+  const [alumnoId, setAlumnoId] = useState(null); // Estado para el ID del alumno
+  const [userId, setUserId] = useState(null);  // ID del usuario (profesor, preceptor, etc.)
   const [nombre, setNombre] = useState(null);
   const [dni, setDni] = useState(null);
-  const [email, setEmail] = useState(null); // Para profesores/admins
   
   // Función para iniciar sesión con diferentes roles
-  const loginUser = (role, id, nombreUsuario, dniUsuario, emailUsuario = null) => {
-    setUserRole(role);
-    setUserId(id);
-    setNombre(nombreUsuario);
-    setDni(dniUsuario);
-    setEmail(emailUsuario);
+  const loginAsAlumno = (id, nombreAlumno, dniAlumno) => {
+    setUserType("alumno");
+    setAlumnoId(id); // Establecer el ID del alumno al iniciar sesión
+    setNombre(nombreAlumno); // Almacenar el nombre
+    setDni(dniAlumno); // Almacenar el DNI
+  };
+ 
+  const loginAsProfesor = (id, nombreProfesor, dniProfesor) => {
+    setUserType("profesor");
+    setUserId(id); // Establecer el ID del profesor al iniciar sesión
+    setNombre(nombreProfesor); // Almacenar el nombre
+    setDni(dniProfesor); // Almacenar el DNI
+  };
+
+  const loginAsPreceptor = (id, nombrePrrceptor, dniPreceptor) => {
+    setUserType("preceptor");
+    setUserId(id); // Establecer el ID del alumno al iniciar sesión
+    setNombre(nombrePrrceptor); // Almacenar el nombre
+    setDni(dniPreceptor); // Almacenar el DNI
+  };
+
+  const loginAsAdmin = (id, nombreAdmin, dniAdmin) => {
+    setUserType("admin");
+    setUserId(id); // Establecer el ID del alumno al iniciar sesión
+    setNombre(nombreAdmin); // Almacenar el nombre
+    setDni(dniAdmin); // Almacenar el DNI
   };
 
   return (
-    <UserContext.Provider value={{ userRole, userId, nombre, dni, email, loginUser }}>
+<UserContext.Provider value={{ userType, alumnoId, loginAsAlumno, loginAsProfesor, loginAsPreceptor, loginAsAdmin }}>
       {children}
     </UserContext.Provider>
   );
@@ -29,7 +49,3 @@ export const UserProvider = ({ children }) => {
 
 // Hook para usar el contexto en otros componentes
 export const useUser = () => useContext(UserContext);
-
-
-
-

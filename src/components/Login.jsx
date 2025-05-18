@@ -29,7 +29,7 @@ const Login = () => {
     try {
       if (selectedRole === 'alumno') {
         // Aquí deberías hacer la llamada a tu API para autenticar al alumno
-        const response = await fetch(`${import.meta.env.VITE_URL_BACK}auth/loginAlumno`, {
+        const response = await fetch(`${import.meta.env.VITE_URL_BACK}login/loginAlumno`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -56,11 +56,82 @@ const Login = () => {
         loginAsAlumno(id, formData.username, formData.password); // Llama a la función de login con el ID del estudiante
 
       } else if (selectedRole === 'profesor') {
-        loginAsProfesor();
+        const response = await fetch(`${import.meta.env.VITE_URL_BACK}login/loginProfesor`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            nombre: formData.username, // Nombre del profesor
+            dni: formData.password, // DNI como contraseña
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Nombre de profesor o DNI incorrectos.');
+        }
+
+        const data = await response.json();
+        // Extraer accesstoken, refreshtoken y ProfesorId
+        const { accesstoken, refreshtoken, id } = data.data;
+        console.log("el id del alumno es ", id)
+        // Almacena los tokens en el almacenamiento local
+        localStorage.setItem('accesstoken', accesstoken);
+        localStorage.setItem('refreshtoken', refreshtoken);
+
+        loginAsProfesor(id, formData.username, formData.password);
+
       } else if (selectedRole === 'preceptor') {
-        loginAsPreceptor();
+        const response = await fetch(`${import.meta.env.VITE_URL_BACK}login/loginPreceptor`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            nombre: formData.username, // Nombre del preceptor
+            dni: formData.password, // DNI como contraseña
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Nombre de preceptor o DNI incorrectos.');
+        }
+
+        const data = await response.json();
+        // Extraer accesstoken, refreshtoken y preceptorId
+        const { accesstoken, refreshtoken, id } = data.data;
+        console.log("el id del alumno es ", id)
+        // Almacena los tokens en el almacenamiento local
+        localStorage.setItem('accesstoken', accesstoken);
+        localStorage.setItem('refreshtoken', refreshtoken);
+
+        loginAsPreceptor(id, formData.username, formData.password);
+
       } else if (selectedRole === 'admin') {
-        loginAsAdmin();
+        const response = await fetch(`${import.meta.env.VITE_URL_BACK}login/loginAdmin`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            nombre: formData.username, // Nombre del preceptor
+            dni: formData.password, // DNI como contraseña
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Nombre de preceptor o DNI incorrectos.');
+        }
+
+        const data = await response.json();
+        // Extraer accesstoken, refreshtoken y preceptorId
+        const { accesstoken, refreshtoken, id } = data.data;
+        console.log("el id del alumno es ", id)
+        // Almacena los tokens en el almacenamiento local
+        localStorage.setItem('accesstoken', accesstoken);
+        localStorage.setItem('refreshtoken', refreshtoken);
+
+        loginAsAdmin(id, formData.username, formData.password);
       }
 
       navigate('/home'); // Redirigir al Home después de iniciar sesión
