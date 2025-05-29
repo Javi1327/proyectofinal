@@ -14,9 +14,6 @@ const PreceptorView = () => {
     <div className='preceptor-view'>
       <h2>Bienvenido, Preceptor</h2>
       <div className='botones-container'>
-      <button onClick={() => handleNavigate('cargar-alumnos')} className="funcion-btn">
-        Cargar Alumnos
-      </button>
       <button onClick={() => handleNavigate('ver-alumnos')} className="funcion-btn">
         Ver Alumnos
       </button>

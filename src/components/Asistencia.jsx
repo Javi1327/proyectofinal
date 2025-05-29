@@ -1,85 +1,122 @@
 import React, { useState, useEffect } from "react";
+import axios from 'axios';
 import "./Asistencia.css";
 
+const cursoss = ['1A', '1B', '2A', '2B', '3A', '3B', '4A', '4B', '5A', '5B', '6A', '6B'];
+
 const Asistencia = () => {
-  const [cursos, setCursos] = useState([]);
-  const [alumnos, setAlumnos] = useState([]);
+  const [todosAlumnos, setTodosAlumnos] = useState([]);
+  const [alumnosFiltrados, setAlumnosFiltrados] = useState([]);
   const [cursoSeleccionado, setCursoSeleccionado] = useState("");
   const [asistencia, setAsistencia] = useState({});
-  const [fecha, setFecha] = useState(new Date().toISOString().split("T")[0]);
 
   useEffect(() => {
-    fetch("http://localhost:3001/cursos")
-      .then((res) => res.json())
-      .then((data) => setCursos(data))
-      .catch((error) => console.error("Error cargando cursos:", error));
+    const obtenerAlumnos = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/alumnos');
+        setTodosAlumnos(response.data.data.filter(alumno => alumno.isHabilitado));
+      } catch (err) {
+        console.error('Error al obtener alumnos:', err);
+      }
+    };
+    obtenerAlumnos();
   }, []);
 
-  const cargarAlumnos = (curso) => {
-    setCursoSeleccionado(curso);
-    fetch(`http://localhost:3001/alumnos?curso=${curso}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setAlumnos(data);
-        const estadoInicial = data.reduce((acc, alumno) => {
-          acc[alumno.id] = true; // Por defecto, todos presentes
-          return acc;
-        }, {});
-        setAsistencia(estadoInicial);
-      })
-      .catch((error) => console.error("Error cargando alumnos:", error));
+  // Filtrar alumnos por curso
+  useEffect(() => {
+    if (cursoSeleccionado) {
+      const filtrados = todosAlumnos
+        .filter(alumno => alumno.grado === cursoSeleccionado)
+        .sort((a, b) => a.apellido.localeCompare(b.apellido));
+      setAlumnosFiltrados(filtrados);
+      const estadoInicial = filtrados.reduce((acc, alumno) => {
+        acc[alumno._id] = [];  
+        return acc;
+      }, {});
+      setAsistencia(estadoInicial);
+    }
+  }, [cursoSeleccionado, todosAlumnos]);
+
+  const marcarAsistencia = (id, estado) => {
+    console.log("Estado de asistencia antes de marcar:", asistencia);
+    console.log("ID de alumno:", id);
+
+    const nuevaAsistencia = Array.isArray(asistencia[id]) ? [...asistencia[id]] : []; 
+    const fechaActual = new Date().toISOString().split("T")[0]; // Formato de fecha YYYY-MM-DD
+     
+    if (estado) {
+      // Si es presente, agrega la fecha
+      if (!nuevaAsistencia.includes(fechaActual)) {
+        nuevaAsistencia.push(fechaActual);
+      }
+    } else {
+      // Si es ausente, elimina la fecha (si existe)
+      const index = nuevaAsistencia.indexOf(fechaActual);
+      if (index > -1) {
+        nuevaAsistencia.splice(index, 1);
+      }
+    }
+
+    setAsistencia((prev) => ({ ...prev, [id]: nuevaAsistencia }));
   };
 
-  const marcarAsistencia = (id) => {
-    setAsistencia((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  const guardarAsistencia = () => {
-    const registro = {
-      fecha,
-      curso: cursoSeleccionado,
-      asistencia,
-    };
-
-    fetch("http://localhost:3001/asistencias", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(registro),
-    })
-      .then(() => alert("Asistencia guardada!"))
-      .catch((error) => console.error("Error guardando asistencia:", error));
+  const guardarAsistencia = async () => {
+    console.log("Estado de asistencia antes de guardar:", asistencia); 
+    const registros = alumnosFiltrados.map(alumno => ({
+      id: alumno._id,
+      asistencia: asistencia[alumno._id] ? asistencia[alumno._id].map(fecha => ({ fecha: fecha, presente: true })) : [],
+    }))
+    .filter(registro => registro.asistencia.length > 0);
+  
+    console.log("Registros a guardar:", registros); // Verifica los registros
+    
+    try {
+      await Promise.all(registros.map(registro => {
+        if (registro.id) {  // Verifica que el ID no sea undefined
+          console.log(`Guardando asistencia para el alumno ID: ${registro.id}`); // Verifica el ID
+          return axios.put(`http://localhost:3000/alumnos/${registro.id}`, { asistencia: registro.asistencia });
+        } else {
+          console.error("ID de alumno no definido:", registro);
+          return Promise.reject(new Error("ID de alumno no definido"));
+        }
+      }));
+      alert("Asistencia guardada!");
+    } catch (error) {
+      console.error("Error guardando asistencia:", error);
+    }
   };
 
   return (
     <div>
-      <h2>Registro de Asistencia</h2>
-      <label>Seleccionar curso:</label>
-      <select onChange={(e) => cargarAlumnos(e.target.value)}>
-        <option value="">-- Seleccione --</option>
-        {cursos.length > 0 ? (
-          cursos.map((curso, index) => (
-            <option key={index} value={curso.nombre || curso}>
-              {curso.nombre || curso}
-            </option>
-          ))
-        ) : (
-          <option disabled>Cargando cursos...</option>
-        )}
-      </select>
+      <h2>Lista de Cursos para Asistencias</h2>
+      <div className="cursos-grid">
+        {cursoss.map(curso => (
+          <button key={curso} onClick={() => setCursoSeleccionado(curso)} className="curso-btn">
+            {curso}
+          </button>
+        ))}
+      </div>
 
       {cursoSeleccionado && (
-        <div>
+        <div className="curso-detalle">
           <h3>Alumnos de {cursoSeleccionado}</h3>
-          <ul>
-            {alumnos.map((alumno) => (
-              <li key={alumno.id}>
-                {alumno.nombre} {alumno.apellido}
-                <button onClick={() => marcarAsistencia(alumno.id)}>
-                  {asistencia[alumno.id] ? "Presente" : "Ausente"}
-                </button>
-              </li>
-            ))}
-          </ul>
+          {alumnosFiltrados.length === 0 ? (
+            <p>No hay alumnos en este curso.</p>
+          ) : (
+            <ul>
+              {alumnosFiltrados.map(alumno => (
+                <li key={alumno._id}>
+                  {alumno.apellido}, {alumno.nombre}
+                  <button onClick={() => marcarAsistencia(alumno._id, true)}>
+                    Presente
+                  </button>
+                  <button onClick={() => marcarAsistencia(alumno._id, false)}>
+                    Ausente
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
           <button onClick={guardarAsistencia}>Guardar Asistencia</button>
         </div>
       )}
