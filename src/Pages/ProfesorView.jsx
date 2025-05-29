@@ -1,31 +1,26 @@
-// src/components/ProfesorView.jsx
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import './ProfesorView.css'; // Asegúrate de importar el CSS
+import { useNavigate } from 'react-router-dom'; // Importar el hook useNavigate
+import './ProfesorView.css';
 
 const ProfesorView = () => {
-  const navigate = useNavigate();
-
-  // Función para redirigir a las vistas correspondientes
-  const handleNavigate = (funcion) => {
-    navigate(`/profesor/${funcion}`);
-  };
+  const navigate = useNavigate(); // Crear la función de navegación
 
   return (
     <div className="profesor-view">
       <h2>Bienvenido, Profesor</h2>
+
       <div className="botones-container">
-        <button onClick={() => handleNavigate('subir-notas')} className="funcion-btn">
+        <button
+          className="funcion-btn"
+          onClick={() => navigate('/profesor/subir-notas')} // Redirige a la ruta correspondiente
+        >
           Subir Notas
         </button>
-        <button onClick={() => handleNavigate('ver-notas')} className="funcion-btn">
-          Ver Notas
-        </button>
-        <button onClick={() => handleNavigate('ver-cursos')} className="funcion-btn">
-          Ver Cursos
-        </button>
-        <button onClick={() => handleNavigate('tareas-profesor')} className="funcion-btn">
-          Subir/Ver Tareas
+        <button
+          className="funcion-btn"
+          onClick={() => navigate('/profesor/mis-cursos')} // Redirige a la ruta correspondiente
+        >
+          Mis Cursos
         </button>
       </div>
     </div>
@@ -33,5 +28,3 @@ const ProfesorView = () => {
 };
 
 export default ProfesorView;
-
-

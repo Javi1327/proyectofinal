@@ -3,6 +3,7 @@ import { Modal, Button, Form } from 'react-bootstrap';
 import axios from 'axios';
 import './AdminUsuarios.css';
 import { ToastContainer, toast } from 'react-toastify';
+import Select from 'react-select';
 import 'react-toastify/dist/ReactToastify.css';
 
 const AdminUsuarios = () => {
@@ -19,7 +20,12 @@ const AdminUsuarios = () => {
   const [materiaSeleccionada, setMateriaSeleccionada] = useState('');
   const [fechaNacimiento, setFechaNacimiento] = useState('');
   const [cursosFiltrados, setCursosFiltrados] = useState([]);
-  const [cursoSeleccionado, setCursoSeleccionado] = useState('');
+  const [cursoSeleccionado, setCursoSeleccionado] = useState([]);
+
+  const opcionesCursos = cursosFiltrados.map(curso => ({
+    value: curso._id,      // el ID que se enviará al backend
+    label: curso.nombre    // el nombre que se mostrará en el selector
+  }));
 
   const roleRoutes = {
     alumno: "alumnos",
@@ -35,19 +41,34 @@ const AdminUsuarios = () => {
           setMaterias(response.data);
         })
         .catch((error) => console.error('Error al obtener materias:', error));
+  
+      axios.get('http://localhost:3000/cursos')
+        .then((response) => {
+          setCursosFiltrados(response.data);
+        })
+        .catch((error) => console.error('Error al obtener cursos:', error));
     }
-  }, [selectedRole]);
+  }, [selectedRole]);  
 
   useEffect(() => {
-    if (materiaSeleccionada && materias.length > 0) {
-      const materia = materias.find((m) => m._id === materiaSeleccionada);
-      if (materia && materia.cursos) {
-        setCursosFiltrados(materia.cursos);
-      }
+    if (materiaSeleccionada) {
+      axios.get(`http://localhost:3000/materias/${materiaSeleccionada}`)
+        .then(response => {
+          const cursosMateria = response.data.cursos; // asumimos que este es un array de _id
+          axios.get('http://localhost:3000/cursos')
+            .then(cursosResponse => {
+              const cursosRelacionados = cursosResponse.data.filter(curso =>
+                cursosMateria.includes(curso._id)
+              );
+              setCursosFiltrados(cursosRelacionados);
+            });
+        })
+        .catch(error => console.error('Error al filtrar cursos por materia:', error));
     } else {
-      setCursosFiltrados([]);
+      setCursosFiltrados([]); // vaciar si no hay materia seleccionada
     }
-  }, [materiaSeleccionada, materias]);
+  }, [materiaSeleccionada]);
+  
 
   const handleClose = () => {
     setShowModal(false);
@@ -61,7 +82,7 @@ const AdminUsuarios = () => {
     setGrado('');
     setMateriaSeleccionada('');
     setFechaNacimiento('');
-    setCursoSeleccionado('');
+    setCursoSeleccionado([]);
   };
 
   const handleShow = () => setShowModal(true);
@@ -91,11 +112,11 @@ const AdminUsuarios = () => {
 
   const handleSubmit = async () => {
     if (!validarCampos()) return;
-  
+
     try {
       const endpoint = roleRoutes[selectedRole];
       const modelos = ['admins', 'alumnos', 'profesores', 'preceptores'];
-  
+
       // Validar DNI globalmente
       const dniDuplicado = await Promise.any(
         modelos.map((ruta) =>
@@ -111,12 +132,12 @@ const AdminUsuarios = () => {
         if (error instanceof AggregateError) return false; // Ninguno lo encontró
         throw error; // Error inesperado
       });
-      
+
       if (dniDuplicado) {
         toast.error("Ya existe un usuario con ese DNI en el sistema.");
         return;
       }
-      
+
       // Validar correo electrónico si está presente
       if (correoElectronico) {
         const correoDuplicado = await Promise.any(
@@ -133,14 +154,14 @@ const AdminUsuarios = () => {
           if (error instanceof AggregateError) return false;
           throw error;
         });
-      
+
         if (correoDuplicado) {
           toast.error("Ya existe un usuario con ese correo electrónico.");
           return;
         }
       }
-      
-  
+
+
       // Si llegamos acá, todo está OK para crear el usuario
       const newUserData = {
         nombre,
@@ -152,23 +173,35 @@ const AdminUsuarios = () => {
         grado,
         fechaNacimiento: fechaNacimiento ? new Date(fechaNacimiento).toISOString() : null,
       };
-  
+
       if (selectedRole === 'profesor') {
-        newUserData.materiasAsignadas = [materiaSeleccionada];
-        newUserData.cursosAsignados = [cursoSeleccionado];
+        newUserData.materiaAsignada = materiaSeleccionada;
+        newUserData.cursosAsignados = Array.isArray(cursoSeleccionado)
+          ? cursoSeleccionado // Varios cursos asignados
+          : [cursoSeleccionado]; // Un solo curso asignado, en array para ser consistente
       }
-  
+
+
       if (selectedRole === 'alumno') {
         newUserData.materiasAlumno = [];
       }
-  
-      // Eliminar campos vacíos
+
       Object.keys(newUserData).forEach(
-        (key) =>
-          (newUserData[key] === '' || newUserData[key] === null || newUserData[key] === undefined) &&
-          delete newUserData[key]
+        (key) => {
+          const value = newUserData[key];
+          const isEmptyArray = Array.isArray(value) && value.length === 0;
+          const isEmptyString = value === '' || value === null || value === undefined;
+          if (isEmptyArray || isEmptyString) {
+            delete newUserData[key];
+          }
+        }
       );
-  
+      console.log("Materia seleccionada:", materiaSeleccionada);
+      console.log("Cursos seleccionados:", cursoSeleccionado);
+      console.log("Objeto enviado:", newUserData);
+
+
+      // Enviar la solicitud POST
       await axios.post(`http://localhost:3000/${endpoint}`, newUserData);
       toast.success("Usuario creado con éxito!");
       handleClose();
@@ -177,7 +210,7 @@ const AdminUsuarios = () => {
       toast.error("Hubo un error al crear el usuario.");
     }
   };
-  
+
 
   return (
     <div className="admin-usuarios-container">
@@ -243,17 +276,21 @@ const AdminUsuarios = () => {
                     ))}
                   </Form.Control>
                 </Form.Group>
-
                 <Form.Group controlId="formCurso">
-                  <Form.Label>Curso</Form.Label>
-                  <Form.Control as="select" value={cursoSeleccionado} onChange={(e) => setCursoSeleccionado(e.target.value)}>
-                    <option value="">Seleccione un curso</option>
-                    {cursosFiltrados.map((curso, index) => (
-                      <option key={index} value={curso}>
-                        {curso}
-                      </option>
-                    ))}
-                  </Form.Control>
+                  <Form.Label>Cursos Asignados</Form.Label>
+                  <Select
+                    isMulti
+                    options={opcionesCursos}
+                    value={cursoSeleccionado.map(cursoId => {
+                      const curso = cursosFiltrados.find(c => c._id === cursoId);
+                      return curso ? { value: curso._id, label: curso.nombre } : null;
+                    }).filter(Boolean)}
+                    onChange={(selectedOptions) => {
+                      const selectedCursos = selectedOptions ? selectedOptions.map(option => option.value) : [];
+                      setCursoSeleccionado(selectedCursos);
+                    }}
+                    placeholder="Selecciona uno o más cursos"
+                  />
                 </Form.Group>
               </>
             )}
