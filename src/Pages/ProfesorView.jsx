@@ -18,15 +18,9 @@ const ProfesorView = () => {
         </button>
         <button
           className="funcion-btn"
-          onClick={() => navigate('/profesor/cursos-notas')} // Redirige a la ruta correspondiente
+          onClick={() => navigate('/profesor/mis-cursos')} // Redirige a la ruta correspondiente
         >
           Mis Cursos
-        </button>
-        <button
-          className="funcion-btn"
-          onClick={() => navigate('/profesor/tareas')} // Redirige a la ruta correspondiente
-        >
-          Tareas del Curso
         </button>
       </div>
     </div>

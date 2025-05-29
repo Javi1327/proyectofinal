@@ -1,91 +1,154 @@
 import React, { useState, useEffect } from 'react';
-import Select from 'react-select';
 import './SubirNotas.css';
 
 export default function SubirNotas() {
   const backurl = import.meta.env.VITE_URL_BACK;
-  
+  const profesorId = "6823ad3a5bf3f827d552f75e"; // ACA HAY QUE PONER EL ID DEL PROFESOR LOGUEADO 
+
   const [alumnos, setAlumnos] = useState([]);
   const [gradoSeleccionado, setGradoSeleccionado] = useState('');
   const [alumnoSeleccionado, setAlumnoSeleccionado] = useState('');
-  const [materias, setMaterias] = useState([]);
-  const [materiaSeleccionada, setMateriaSeleccionada] = useState(null); // Nuevo estado para la materia seleccionada
+  const [alumnoActual, setAlumnoActual] = useState(null); // Datos completos del alumno seleccionado
+  const [materia, setMateria] = useState(null);
+  const [profesor, setProfesor] = useState(null);
   const [nota1, setNota1] = useState('');
   const [nota2, setNota2] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  // Cargar materias al inicio
+  // Cargar datos del profesor, materia y cursos asignados
   useEffect(() => {
-    const fetchMaterias = async () => {
+    const fetchProfesor = async () => {
       try {
-        const res = await fetch(`${backurl}materias`);
+        const res = await fetch(`${backurl}profesores/${profesorId}`);
         const data = await res.json();
-        if (Array.isArray(data.data)) {
-          const options = data.data.map(materia => ({
-            value: materia._id,
-            label: materia.nombreMateria
-          }));
-          setMaterias(options);
-        } else {
-          console.error('La respuesta no contiene un array de materias:', data);
+        if (data?.data) {
+          setProfesor(data.data);
+          setMateria(data.data.materiaAsignada);
         }
       } catch (error) {
-        console.error('Error cargando materias:', error);
+        console.error("Error al obtener el profesor:", error);
       }
     };
-
-    fetchMaterias();
+    fetchProfesor();
   }, [backurl]);
 
-  // Cargar los cursos cuando el componente se monta
+  // Cargar alumnos cuando se seleccione un curso (grado)
   useEffect(() => {
     const fetchAlumnos = async () => {
       if (gradoSeleccionado) {
         setLoading(true);
         try {
-          const res = await fetch(`${backurl}alumnos?grado=${gradoSeleccionado}`);
-          if (!res.ok) throw new Error('Error en la respuesta de la API');
+          const res = await fetch(`${backurl}cursos/${gradoSeleccionado}/alumnos`);
           const data = await res.json();
           if (Array.isArray(data.data)) {
             setAlumnos(data.data);
           } else {
-            console.error('La respuesta no es un array:', data);
             setAlumnos([]);
           }
         } catch (error) {
           console.error('Error cargando alumnos:', error);
+          setAlumnos([]);
         } finally {
           setLoading(false);
         }
+      } else {
+        setAlumnos([]);
       }
+      // Limpiar alumno seleccionado y datos cuando cambie el curso
+      setAlumnoSeleccionado('');
+      setAlumnoActual(null);
+      setNota1('');
+      setNota2('');
+      setMensaje('');
     };
 
     fetchAlumnos();
   }, [gradoSeleccionado, backurl]);
-  // Cargar las notas del curso seleccionado
-  
+
+  // Cargar datos completos del alumno seleccionado
+  useEffect(() => {
+    const fetchAlumno = async () => {
+      if (alumnoSeleccionado) {
+        try {
+          const res = await fetch(`${backurl}alumnos/${alumnoSeleccionado}`);
+          const data = await res.json();
+          if (data?.data) {
+            setAlumnoActual(data.data);
+
+            // Si la materia ya tiene notas, cargarlas en los inputs
+            const matAlumno = data.data.materiasAlumno.find(
+              m => m.materia._id === materia?._id
+            );
+            if (matAlumno) {
+              setNota1(matAlumno.nota1?.toString() || '');
+              setNota2(matAlumno.nota2?.toString() || '');
+            } else {
+              setNota1('');
+              setNota2('');
+            }
+
+            setMensaje('');
+          } else {
+            setAlumnoActual(null);
+          }
+        } catch (error) {
+          console.error("Error al cargar datos del alumno:", error);
+          setAlumnoActual(null);
+        }
+      } else {
+        setAlumnoActual(null);
+        setNota1('');
+        setNota2('');
+      }
+    };
+
+    fetchAlumno();
+  }, [alumnoSeleccionado, materia, backurl]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMensaje('');
     setSubmitting(true);
-    setMensaje('');  
-    // Crear el objeto de datos para enviar
-    const datosNota = {
-      materias: [
-        {
-          materia: materiaSeleccionada.value, // Asegúrate de que esto sea un ID válido de materia
-          nota1: parseFloat(nota1),
-          nota2: parseFloat(nota2),
-          //nota1:nota1,
-          //nota2:nota2,
-        }        
-      ]    
-    };
-    console.log('Datos a enviar:', JSON.stringify(datosNota));
 
-     // Enviar la solicitud para actualizar las notas
-     try {
+    if (!alumnoSeleccionado || !alumnoActual) {
+      setMensaje("Seleccioná un alumno válido.");
+      setSubmitting(false);
+      return;
+    }
+
+    if (!materia?._id) {
+      setMensaje("Materia asignada no disponible.");
+      setSubmitting(false);
+      return;
+    }
+
+  // Siempre se suben notas por primera vez → solo se carga una materia
+    const materiasActualizadas = [{
+      materia: materia._id,
+      nota1: parseFloat(nota1),
+      nota2: parseFloat(nota2),
+    }];
+
+
+
+    // Construir objeto para enviar al backend (según schema esperado)
+    const datosNota = {
+      nombre: alumnoActual.nombre,
+      apellido: alumnoActual.apellido,
+      dni: alumnoActual.dni,
+      grado: gradoSeleccionado, // el ID del curso
+      direccion: alumnoActual.direccion,
+      telefono: alumnoActual.telefono,
+      correoElectronico: alumnoActual.correoElectronico,
+      fechaNacimiento: alumnoActual.fechaNacimiento,
+      asistencia: alumnoActual.asistencia || [],
+      materiasAlumno: materiasActualizadas,
+    };
+    console.log("Datos enviados al backend:", datosNota);
+
+    try {
       const res = await fetch(`${backurl}alumnos/${alumnoSeleccionado}`, {
         method: 'PUT',
         headers: { "Content-Type": "application/json" },
@@ -93,17 +156,18 @@ export default function SubirNotas() {
       });
 
       if (res.ok) {
-        setMensaje(`Nota registrada correctamente para el alumno con ID: ${alumnoSeleccionado}`);
-        setAlumnoSeleccionado('');
-        setMateriaSeleccionada(null);
+        setMensaje("Nota registrada correctamente");
         setNota1('');
         setNota2('');
+        setAlumnoSeleccionado('');
+        setAlumnoActual(null);
       } else {
-        throw new Error('Error al registrar la nota');
+        const errorData = await res.json();
+        setMensaje(errorData.message || "Error al registrar la nota");
       }
     } catch (error) {
-      console.error('Error al subir la nota:', error);
-      setMensaje('Error al registrar la nota');
+      console.error("Error al subir la nota:", error);
+      setMensaje("Error al registrar la nota");
     } finally {
       setSubmitting(false);
     }
@@ -112,26 +176,34 @@ export default function SubirNotas() {
   return (
     <div className="subir-notas-container">
       <h2>Subir Calificaciones</h2>
-      <label>Seleccionar Grado:</label>
-      <select onChange={(e) => setGradoSeleccionado(e.target.value)}>
+      {profesor && materia && (
+        <p>
+          Profesor: <strong>{profesor.nombre} {profesor.apellido}</strong> | Materia asignada: <strong>{materia.nombreMateria || "No disponible"}</strong>
+        </p>
+      )}
+
+      <label>Seleccionar Curso:</label>
+      <select onChange={(e) => setGradoSeleccionado(e.target.value)} value={gradoSeleccionado}>
         <option value="">-- Seleccione --</option>
-        <option value="1°">1°</option>
-        <option value="2A°">2A°</option>
-        <option value="3w°">3°</option>  
+        {profesor?.cursosAsignados?.map((curso) => (
+          <option key={curso._id} value={curso._id}>{curso.nombre}</option>
+        ))}
       </select>
 
       {gradoSeleccionado && (
         <div>
-          <h3>Alumnos de {gradoSeleccionado}</h3>
+          <h3>Alumnos del curso seleccionado</h3>
           {loading ? (
             <p>Cargando alumnos...</p>
           ) : (
             <ul>
               {alumnos.map((alumno) => (
-                <li key={alumno.id}
-                style={{ backgroundColor: alumno.id === alumnoSeleccionado ? '#c5e4ff' : 'transparent' }} >
+                <li
+                  key={alumno._id}
+                  style={{ backgroundColor: alumno._id === alumnoSeleccionado ? '#c5e4ff' : 'transparent' }}
+                >
                   {alumno.nombre} {alumno.apellido}
-                  <button onClick={() => setAlumnoSeleccionado(alumno.id)}>Seleccionar</button>
+                  <button onClick={() => setAlumnoSeleccionado(alumno._id)}>Seleccionar</button>
                 </li>
               ))}
             </ul>
@@ -140,14 +212,6 @@ export default function SubirNotas() {
       )}
 
       <form onSubmit={handleSubmit}>
-         
-        <label>Materia:</label>
-        <Select
-        options={materias}
-        onChange={(selectedOption) => setMateriaSeleccionada(selectedOption)}
-        isClearable
-        />
-
         <label>Nota 1:</label>
         <input
           type="number"
@@ -168,7 +232,7 @@ export default function SubirNotas() {
           required
         />
 
-        <button type="submit" disabled={submitting}>Subir Nota</button>
+        <button type="submit" disabled={submitting || !alumnoSeleccionado}>Subir Nota</button>
       </form>
 
       {mensaje && <p>{mensaje}</p>}

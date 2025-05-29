@@ -175,10 +175,7 @@ const AdminUsuarios = () => {
       };
 
       if (selectedRole === 'profesor') {
-        newUserData.materiasAsignadas = Array.isArray(materiaSeleccionada)
-          ? materiaSeleccionada
-          : [materiaSeleccionada]; // Si es un array de materias
-
+        newUserData.materiaAsignada = materiaSeleccionada;
         newUserData.cursosAsignados = Array.isArray(cursoSeleccionado)
           ? cursoSeleccionado // Varios cursos asignados
           : [cursoSeleccionado]; // Un solo curso asignado, en array para ser consistente
