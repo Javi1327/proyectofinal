@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import './SubirNotas.css';
+import { useUser } from '../context/UserContext';
 
 export default function SubirNotas() {
   const backurl = import.meta.env.VITE_URL_BACK;
-  const profesorId = "6823ad3a5bf3f827d552f75e"; // ACA HAY QUE PONER EL ID DEL PROFESOR LOGUEADO 
+  const { userId, userType } = useUser(); // ⬅️ Obtenemos el ID y tipo de usuario desde el contexto
 
   const [alumnos, setAlumnos] = useState([]);
   const [gradoSeleccionado, setGradoSeleccionado] = useState('');
   const [alumnoSeleccionado, setAlumnoSeleccionado] = useState('');
-  const [alumnoActual, setAlumnoActual] = useState(null); // Datos completos del alumno seleccionado
+  const [alumnoActual, setAlumnoActual] = useState(null);
   const [materia, setMateria] = useState(null);
   const [profesor, setProfesor] = useState(null);
   const [nota1, setNota1] = useState('');
@@ -20,21 +21,22 @@ export default function SubirNotas() {
   // Cargar datos del profesor, materia y cursos asignados
   useEffect(() => {
     const fetchProfesor = async () => {
-      try {
-        const res = await fetch(`${backurl}profesores/${profesorId}`);
-        const data = await res.json();
-        if (data?.data) {
-          setProfesor(data.data);
-          setMateria(data.data.materiaAsignada);
+      if (userType === "profesor" && userId) {
+        try {
+          const res = await fetch(`${backurl}profesores/${userId}`);
+          const data = await res.json();
+          if (data?.data) {
+            setProfesor(data.data);
+            setMateria(data.data.materiaAsignada);
+          }
+        } catch (error) {
+          console.error("Error al obtener el profesor:", error);
         }
-      } catch (error) {
-        console.error("Error al obtener el profesor:", error);
       }
     };
     fetchProfesor();
-  }, [backurl]);
+  }, [backurl, userId, userType]);
 
-  // Cargar alumnos cuando se seleccione un curso (grado)
   useEffect(() => {
     const fetchAlumnos = async () => {
       if (gradoSeleccionado) {
@@ -56,7 +58,6 @@ export default function SubirNotas() {
       } else {
         setAlumnos([]);
       }
-      // Limpiar alumno seleccionado y datos cuando cambie el curso
       setAlumnoSeleccionado('');
       setAlumnoActual(null);
       setNota1('');
@@ -67,7 +68,6 @@ export default function SubirNotas() {
     fetchAlumnos();
   }, [gradoSeleccionado, backurl]);
 
-  // Cargar datos completos del alumno seleccionado
   useEffect(() => {
     const fetchAlumno = async () => {
       if (alumnoSeleccionado) {
@@ -76,8 +76,6 @@ export default function SubirNotas() {
           const data = await res.json();
           if (data?.data) {
             setAlumnoActual(data.data);
-
-            // Si la materia ya tiene notas, cargarlas en los inputs
             const matAlumno = data.data.materiasAlumno.find(
               m => m.materia._id === materia?._id
             );
@@ -88,7 +86,6 @@ export default function SubirNotas() {
               setNota1('');
               setNota2('');
             }
-
             setMensaje('');
           } else {
             setAlumnoActual(null);
@@ -124,21 +121,17 @@ export default function SubirNotas() {
       return;
     }
 
-  // Siempre se suben notas por primera vez → solo se carga una materia
     const materiasActualizadas = [{
       materia: materia._id,
       nota1: parseFloat(nota1),
       nota2: parseFloat(nota2),
     }];
 
-
-
-    // Construir objeto para enviar al backend (según schema esperado)
     const datosNota = {
       nombre: alumnoActual.nombre,
       apellido: alumnoActual.apellido,
       dni: alumnoActual.dni,
-      grado: gradoSeleccionado, // el ID del curso
+      grado: gradoSeleccionado,
       direccion: alumnoActual.direccion,
       telefono: alumnoActual.telefono,
       correoElectronico: alumnoActual.correoElectronico,

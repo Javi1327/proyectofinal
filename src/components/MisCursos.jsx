@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import { Modal, Button, Form } from "react-bootstrap";
+import { useUser } from "../context/UserContext"; // <- IMPORTANTE
 
 const MisCursos = () => {
+  const { userId } = useUser(); // <- Usar userId desde el contexto
   const [profesor, setProfesor] = useState(null);
   const [cursos, setCursos] = useState([]);
   const [cursoActivo, setCursoActivo] = useState(null);
@@ -11,16 +13,15 @@ const MisCursos = () => {
   const [alumnosCurso, setAlumnosCurso] = useState([]);
   const [materiaAsignada, setMateriaAsignada] = useState(null);
 
-  // Estado para edición
   const [showEditarModal, setShowEditarModal] = useState(false);
   const [alumnoEditar, setAlumnoEditar] = useState(null);
   const [nota1Editar, setNota1Editar] = useState("");
   const [nota2Editar, setNota2Editar] = useState("");
 
-  const profesorId = "6823ad3a5bf3f827d552f75e"; // Cambiar a dinámico luego
-
   useEffect(() => {
-    axios.get(`http://localhost:3000/profesores/${profesorId}`)
+    if (!userId) return; // Esperar a que se cargue el userId
+
+    axios.get(`http://localhost:3000/profesores/${userId}`)
       .then((response) => {
         const profesorData = response.data.data;
         setProfesor(profesorData);
@@ -30,11 +31,11 @@ const MisCursos = () => {
           : profesorData.materiaAsignada;
         setMateriaAsignada(materiaId);
 
-        axios.get('http://localhost:3000/cursos')
+        axios.get("http://localhost:3000/cursos")
           .then((response) => {
             const cursosTotales = response.data;
             const cursosFiltrados = cursosTotales.filter(curso => {
-              const incluyeProfesor = curso.profesores.some(prof => prof._id === profesorId);
+              const incluyeProfesor = curso.profesores.some(prof => prof._id === userId);
               const incluyeMateria = curso.materias.some(m => m._id === materiaId);
               return incluyeProfesor && incluyeMateria;
             });
@@ -43,26 +44,25 @@ const MisCursos = () => {
           .catch(() => toast.error("Error al obtener cursos"));
       })
       .catch(() => toast.error("Error al obtener el profesor"));
-  }, [profesorId]);
+  }, [userId]);
 
   const manejarClickCurso = (curso) => {
-  if (cursoActivo === curso._id) {
-    setCursoActivo(null);
-    setShowModal(false);
-    setAlumnosCurso([]);
-  } else {
-    const alumnosOrdenados = [...curso.alumnos].sort((a, b) => {
-      const apellidoComp = a.apellido.localeCompare(b.apellido);
-      if (apellidoComp !== 0) return apellidoComp;
-      return a.nombre.localeCompare(b.nombre);
-    });
+    if (cursoActivo === curso._id) {
+      setCursoActivo(null);
+      setShowModal(false);
+      setAlumnosCurso([]);
+    } else {
+      const alumnosOrdenados = [...curso.alumnos].sort((a, b) => {
+        const apellidoComp = a.apellido.localeCompare(b.apellido);
+        if (apellidoComp !== 0) return apellidoComp;
+        return a.nombre.localeCompare(b.nombre);
+      });
 
-    setCursoActivo(curso._id);
-    setAlumnosCurso(alumnosOrdenados);
-    setShowModal(true);
-  }
-};
-
+      setCursoActivo(curso._id);
+      setAlumnosCurso(alumnosOrdenados);
+      setShowModal(true);
+    }
+  };
 
   const cerrarModal = () => {
     setShowModal(false);
@@ -72,16 +72,14 @@ const MisCursos = () => {
 
   const abrirModalEditar = (alumno) => {
     setAlumnoEditar(alumno);
-
-    // Buscar las notas para la materia asignada
     const materiaAlumno = alumno.materiasAlumno?.find(ma =>
-      typeof ma.materia === 'object'
+      typeof ma.materia === "object"
         ? ma.materia._id === materiaAsignada
         : ma.materia === materiaAsignada
     );
 
     if (!materiaAlumno) {
-      toast.warning("Este alumno no tiene notas cargadas para esta materia. Deben ser cargadas primero desde SubirNotas.");
+      toast.warning("Este alumno no tiene notas cargadas para esta materia.");
       return;
     }
 
@@ -97,15 +95,9 @@ const MisCursos = () => {
     setNota2Editar("");
   };
 
-  // Validar solo enteros entre 1 y 10
   const handleNotaChange = (setter) => (e) => {
-    let val = e.target.value;
-    // Eliminar cualquier carácter no numérico
-    val = val.replace(/\D/g, "");
-    if (val === "") {
-      setter("");
-      return;
-    }
+    let val = e.target.value.replace(/\D/g, "");
+    if (val === "") return setter("");
     let num = parseInt(val, 10);
     if (num > 10) num = 10;
     if (num < 1) num = 1;
@@ -113,7 +105,6 @@ const MisCursos = () => {
   };
 
   const guardarCambiosNotas = async () => {
-    // Validar notas enteras entre 1 y 10
     if (
       nota1Editar === "" || nota2Editar === "" ||
       isNaN(nota1Editar) || isNaN(nota2Editar) ||
@@ -125,47 +116,35 @@ const MisCursos = () => {
     }
 
     try {
-        const res = await axios.put(`http://localhost:3000/alumnos/${alumnoEditar._id}/notas/${materiaAsignada}`,
-      {
+      await axios.put(`http://localhost:3000/alumnos/${alumnoEditar._id}/notas/${materiaAsignada}`, {
         nota1: parseInt(nota1Editar, 10),
         nota2: parseInt(nota2Editar, 10),
-      }
-    );
-
-      // Actualizar estado local
-      setAlumnosCurso((prevAlumnos) => {
-  const actualizados = prevAlumnos.map(alumno => {
-    if (alumno._id === alumnoEditar._id) {
-      const materiasAlumnoActualizadas = alumno.materiasAlumno.map(ma => {
-        const idMateria = typeof ma.materia === 'object' ? ma.materia._id : ma.materia;
-        if (idMateria === materiaAsignada) {
-          return {
-            ...ma,
-            nota1: parseInt(nota1Editar, 10),
-            nota2: parseInt(nota2Editar, 10),
-            promedio: ((parseInt(nota1Editar, 10) + parseInt(nota2Editar, 10)) / 2).toFixed(2),
-          };
-        }
-        return ma;
       });
-      return { ...alumno, materiasAlumno: materiasAlumnoActualizadas };
-    }
-    return alumno;
-  });
 
-  return actualizados.sort((a, b) => {
-    const apellidoComp = a.apellido.localeCompare(b.apellido);
-    if (apellidoComp !== 0) return apellidoComp;
-    return a.nombre.localeCompare(b.nombre);
-  });
-});
-
+      setAlumnosCurso((prevAlumnos) =>
+        prevAlumnos.map((alumno) => {
+          if (alumno._id === alumnoEditar._id) {
+            const materiasActualizadas = alumno.materiasAlumno.map((ma) => {
+              const idMateria = typeof ma.materia === "object" ? ma.materia._id : ma.materia;
+              if (idMateria === materiaAsignada) {
+                return {
+                  ...ma,
+                  nota1: parseInt(nota1Editar, 10),
+                  nota2: parseInt(nota2Editar, 10),
+                  promedio: ((parseInt(nota1Editar, 10) + parseInt(nota2Editar, 10)) / 2).toFixed(2),
+                };
+              }
+              return ma;
+            });
+            return { ...alumno, materiasAlumno: materiasActualizadas };
+          }
+          return alumno;
+        }).sort((a, b) => a.apellido.localeCompare(b.apellido))
+      );
 
       toast.success("Notas actualizadas correctamente");
       cerrarEditarModal();
-
     } catch (error) {
-      console.error(error);
       toast.error("Error al actualizar las notas");
     }
   };
@@ -173,35 +152,35 @@ const MisCursos = () => {
   return (
     <div>
       <h2>Mis Cursos</h2>
-      {profesor ? (
-        <>
-          {cursos.length > 0 ? (
-            cursos.map((curso) => (
-              <div key={curso._id} style={{ marginBottom: "1.5rem" }}>
-                <button
-                  onClick={() => manejarClickCurso(curso)}
-                  style={{
-                    padding: "10px 20px",
-                    backgroundColor: "#0275BC",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: "5px",
-                    cursor: "pointer"
-                  }}
-                >
-                  {curso.nombre}
-                </button>
-              </div>
-            ))
-          ) : (
-            <p>No tienes cursos asignados para esta materia.</p>
-          )}
-        </>
+      {!userId ? (
+        <p>Cargando ID del usuario...</p>
+      ) : profesor ? (
+        cursos.length > 0 ? (
+          cursos.map((curso) => (
+            <div key={curso._id} style={{ marginBottom: "1.5rem" }}>
+              <button
+                onClick={() => manejarClickCurso(curso)}
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#0275BC",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer"
+                }}
+              >
+                {curso.nombre}
+              </button>
+            </div>
+          ))
+        ) : (
+          <p>No tienes cursos asignados para esta materia.</p>
+        )
       ) : (
         <p>Cargando datos del profesor...</p>
       )}
 
-      {/* Modal principal con alumnos */}
+      {/* Modal de alumnos */}
       <Modal show={showModal} onHide={cerrarModal} size="lg" centered>
         <Modal.Header closeButton>
           <Modal.Title>Alumnos del curso</Modal.Title>
@@ -240,7 +219,7 @@ const MisCursos = () => {
                                 className="btn btn-sm btn-outline-primary"
                                 onClick={() => abrirModalEditar(alumno)}
                                 title="Editar notas"
-                                style={{fontSize: "1.2rem"}}
+                                style={{ fontSize: "1.2rem" }}
                               >
                                 ✏️
                               </button>
@@ -268,7 +247,7 @@ const MisCursos = () => {
         </Modal.Footer>
       </Modal>
 
-      {/* Modal para edición de notas */}
+      {/* Modal de edición de notas */}
       <Modal show={showEditarModal} onHide={cerrarEditarModal} centered>
         <Modal.Header closeButton>
           <Modal.Title>Editar notas de {alumnoEditar?.nombre} {alumnoEditar?.apellido}</Modal.Title>
@@ -284,10 +263,6 @@ const MisCursos = () => {
                 step="1"
                 value={nota1Editar}
                 onChange={handleNotaChange(setNota1Editar)}
-                placeholder="Ingrese nota 1"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                style={{ MozAppearance: "textfield" }}
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="nota2">
@@ -299,10 +274,6 @@ const MisCursos = () => {
                 step="1"
                 value={nota2Editar}
                 onChange={handleNotaChange(setNota2Editar)}
-                placeholder="Ingrese nota 2"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                style={{ MozAppearance: "textfield" }}
               />
             </Form.Group>
           </Form>

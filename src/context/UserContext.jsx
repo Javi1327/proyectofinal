@@ -41,7 +41,8 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-<UserContext.Provider value={{ userType, alumnoId, loginAsAlumno, loginAsProfesor, loginAsPreceptor, loginAsAdmin }}>
+    // Agregue userId, nombre y dni al contexto
+<UserContext.Provider value={{ userType, alumnoId, userId, nombre, dni, loginAsAlumno, loginAsProfesor, loginAsPreceptor, loginAsAdmin }}>   
       {children}
     </UserContext.Provider>
   );
