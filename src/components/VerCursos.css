@@ -1,35 +1,58 @@
-.cursos-lista {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px; /* Espacio entre los botones */
-  margin-bottom: 20px;
-}
-
-.curso-btn {
-  background-color: #0275BC;
-  color: white;
-  padding: 10px 20px;
-  border: none;
+.alumnos-container {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
   border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.curso-btn:hover {
-  background-color: #025a91;
+.table-responsive {
+  overflow-x: auto;
 }
 
-.agregar-btn {
-  margin-top: 10px;
-  padding: 8px 16px;
-  background-color: #0275BC;
+.alumnos-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.alumnos-table th {
+  background-color: #343a40;
   color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  padding: 12px;
+  text-align: left;
 }
 
-.agregar-btn:hover {
-  background-color: #025a91;
+.alumnos-table td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.alumnos-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.alumnos-table tr:hover {
+  background-color: #e9ecef;
+}
+
+.no-alumnos {
+  padding: 1rem;
+  background-color: #fff3cd;
+  color: #ff0000;
+  border-radius: 4px;
+  text-align: center;
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+  .alumnos-table {
+    display: block;
+  }
+  
+  .alumnos-table th, 
+  .alumnos-table td {
+    padding: 8px;
+    font-size: 0.9rem;
+  }
 }

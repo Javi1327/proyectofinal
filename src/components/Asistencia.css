@@ -1,63 +1,67 @@
-.asistencia-container {
-    max-width: 600px;
-    margin: auto;
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
+.cursos-grid {
+ max-width: 600px;
+ margin: auto;
+ padding: 20px;
+ background: #f8f9fa;
+ border-radius: 10px;
+ box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
   
-  h2 {
-    text-align: center;
-    color: #0275BC;
-  }
+h2 {
+  text-align: center;
+  color: #0275BC;
+}
   
-  label {
-    font-weight: bold;
-    display: block;
-    margin: 10px 0;
-  }
+label {
+  font-weight: bold;
+  display: block;
+  margin: 10px 0;
+}
   
-  select {
-    width: 100%;
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  }
+select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
   
-  ul {
-    list-style: none;
-    padding: 0;
-  }
+ul {
+  list-style: none;
+  padding: 0;
+}
   
-  li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-  }
+li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
   
-  button {
-    padding: 5px 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    color: white;
-  }
-  
-  button:hover {
-    opacity: 0.8;
-  }
-  
-  button:focus {
-    outline: none;
-  }
-  
-  .presente {
-    background: #28a745;
-  }
-  
-  .ausente {
-    background: #dc3545;
-  }
+.presente {
+  background-color: #5fb962;
+  color: white;
+}
+.presente:hover:not(:disabled) {
+  background-color: #118615;
+}
+.presente.active {
+  background-color: #05b10e;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  transform: scale(0.98);
+}
+.ausente {
+  background-color: #f36d63;
+  color: white;
+}
+.ausente:hover:not(:disabled) {
+  background-color: #d34141;
+}
+.ausente.active {
+  background-color: #fd2222;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  transform: scale(0.98);
+}
+.GuardarAsistecia{
+  margin-bottom: 2%;
+}
