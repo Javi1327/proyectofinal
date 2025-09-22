@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Menu, User, Settings, LogOut, MessageCircle, Home } from "lucide-react";
 import { useUser } from "../context/UserContext";
 import "./Navbar.css";
+//import Perfil from "./Perfil";
 
 const Navbar = () => {
   const { user, logout } = useUser();
@@ -13,6 +14,14 @@ const Navbar = () => {
   if (location.pathname === "/") {
     return null; // No renderiza nada si está en la página de login
   }
+
+  // funcion para serrar secion y salir
+  const handleLogout = () => {
+    // Eliminar token o datos de sesión
+    localStorage.removeItem('token'); // ajusta la clave si usas otra
+    // Redirigir a la página principal o login
+    navigate('/');
+  };
 
   return (
     <nav className="navbar">
@@ -26,7 +35,7 @@ const Navbar = () => {
         <MessageCircle className="navbar-icon" onClick={() => navigate('/alumno/foro')} />
         <User className="navbar-icon" onClick={() => navigate('/perfil')} />
         <Settings className="navbar-icon" onClick={() => navigate('/configuraciones')} />
-        <LogOut className="navbar-icon" onClick={logout} />
+        <LogOut className="navbar-icon" onClick={handleLogout} />
       </div>
     </nav>
   );

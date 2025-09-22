@@ -59,7 +59,7 @@ const VerAlumnos = () => {
       //));
       if (response.ok) {
         // Actualizamos el estado en el frontend
-        setAlumnos(alumnos.filter(alumno => alumno.id !== id)); // Cambiado aquí
+        setAlumnos(alumnos.filter(alumno => alumno._id !== id)); // Cambiado aquí
       } else {
         console.error('Error al eliminar el alumno:', response.statusText);
       }
@@ -167,7 +167,7 @@ const VerAlumnos = () => {
               <td>{alumno.grado}</td>
               <td>
                 <button onClick={() => openEditModal(alumno)}>Editar</button>
-                <button className='eliminar' onClick={() => eliminarAlumno(alumno.id)}>Eliminar</button>
+                <button className='eliminar' onClick={() => eliminarAlumno(alumno._id)}>Eliminar</button>
               </td>
             </tr>
           ))}

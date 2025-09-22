@@ -23,6 +23,7 @@ import CrearMaterias from './components/CrearMaterias';
 import AdminUsuarios from './components/AdminUsuarios';
 import MisCursos from './components/MisCursos';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Perfil from "./components/Perfil";
 
 
 
@@ -34,20 +35,21 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/home" element={<Home />} />
+          <Route path="/perfil" element={<Perfil />} />
           <Route path="/carga-alumnos" element={<CargaAlumnos />} />
-          <Route path="/profesor" element={<ProfesorView />} />
+          <Route path="/profesor/home" element={<ProfesorView />} />
           <Route path="/profesor/subir-notas" element={<SubirNotas />} />
           <Route path="/profesor/mis-cursos" element={<MisCursos/>} />
-          <Route path="/preceptor" element={<PreceptorView />} />
+          <Route path="/preceptor/home" element={<PreceptorView />} />
           <Route path="/preceptor/cargar-alumnos" element={<Alumno />} />
           <Route path="/preceptor/ver-alumnos" element={<VerAlumnos />} />
           <Route path="/preceptor/ver-cursos" element={<VerCursos />} />
           <Route path='/preceptor/Dar-asistencias' element={<Asistencia />} />
-          <Route path="/alumno" element={<AlumnoView />} />
+          <Route path="/alumno/home" element={<AlumnoView />} />
           <Route path="/alumno/ver-notas" element={<VerNotasAlumnos />} />
           <Route path="/alumno/tareas-alumno" element={<TareasAlumno />} />
           <Route path="/alumno/foro" element={<Foro />} />
-          <Route path="/admin" element={<AdminView />} />
+          <Route path="/admin/home" element={<AdminView />} />
           <Route path="/admin/administrar-usuarios" element={<AdminUsuarios/>}/>
           <Route path='/admin/crear-materias' element={<CrearMaterias />} />
         </Routes>
