@@ -7,6 +7,7 @@ const VerAlumnos = () => {
   const backurl = import.meta.env.VITE_URL_BACK;
 
   const [alumnos, setAlumnos] = useState([]);
+  const [cursos, setCursos] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [alumnoToEdit, setAlumnoToEdit] = useState(null);
   const [Nombre, setNombre] = useState('');
@@ -16,7 +17,7 @@ const VerAlumnos = () => {
   const [Telefono, setTelefono] = useState('');
   const [Direccion, setDireccion] = useState('');
   const [FechaNacimiento, setFechaNacimiento] = useState('');
-  const [Grado, setGrado] = useState('');
+  const [Grado, setGrado] = useState(''); // Cambiado a string para simplificar, pero ajusta si es objeto
   const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState('apellido');
   const [sortAsc, setSortAsc] = useState(true);
@@ -24,6 +25,7 @@ const VerAlumnos = () => {
   // Cargar datos desde la API
   useEffect(() => {
     obtenerAlumnos();
+    obtenerCursos();
   }, []);
 
   const obtenerAlumnos = async () => {
@@ -43,6 +45,22 @@ const VerAlumnos = () => {
       alert('No se pudo cargar la lista de alumnos. Por favor, inténtalo de nuevo más tarde.');
     }
   };
+
+  const obtenerCursos = async () => {
+    try {
+      const response = await fetch(`${backurl}cursos`); // Asume que tienes una ruta GET /cursos en el backend
+      if (!response.ok) {
+        throw new Error('Error al obtener cursos');
+      }
+      const result = await response.json();
+      console.log('Respuesta de cursos:', result);
+      setCursos(Array.isArray(result) ? result : []); 
+    } catch (err) {
+      console.error('Error al obtener cursos:', err);
+      setCursos([]);
+    }
+  };
+
 
   // Función para eliminar alumno
   const eliminarAlumno = async (id) => {
@@ -78,7 +96,8 @@ const VerAlumnos = () => {
     setTelefono(alumno.telefono);
     setDireccion(alumno.direccion);
     setFechaNacimiento(alumno.fechaNacimiento);
-    setGrado(alumno.grado);
+    // Asumiendo que grado es un objeto con _id, ajusta si es necesario
+    setGrado(alumno.grado?._id || ''); // Cambiado para usar _id si es objeto
     setIsModalOpen(true);
   };
 
@@ -87,21 +106,43 @@ const VerAlumnos = () => {
     setAlumnoToEdit(null);
   };
 
-  const handleSave = () => {
-    setAlumnos(alumnos.map(alumno =>
-      alumno.id === alumnoToEdit.id ? {
-        ...alumno,
-        nombre: Nombre,
-        apellido: Apellido,
-        correoElectronico: Correo,
-        dni: Dni,
-        telefono: Telefono,
-        direccion: Direccion,
-        fechaNacimiento: FechaNacimiento,
-        grado: Grado,
-      } : alumno
-    ));
-    closeModal();
+  // Función para guardar cambios (ahora envía al backend)
+  const handleSave = async () => {
+    if (!alumnoToEdit) return;
+
+    const updatedAlumno = {
+      nombre: Nombre,
+      apellido: Apellido,
+      correoElectronico: Correo,
+      dni: Dni,
+      telefono: Telefono,
+      direccion: Direccion,
+      fechaNacimiento: FechaNacimiento,
+      grado: Grado, // Asumiendo que envías el _id del grado
+    };
+
+    try {
+      const response = await fetch(`${backurl}alumnos/${alumnoToEdit._id}`, {
+        method: 'PUT', // O PATCH, dependiendo de tu backend
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedAlumno),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        // Actualizar el estado local con los datos del servidor
+        setAlumnos(alumnos.map(alumno =>
+          alumno._id === alumnoToEdit._id ? { ...alumno, ...result.data } : alumno
+        ));
+        closeModal();
+      } else {
+        console.error('Error al actualizar el alumno:', response.statusText);
+        alert('Error al guardar los cambios. Inténtalo de nuevo.');
+      }
+    } catch (err) {
+      console.error('Error al guardar:', err);
+      alert('Error al guardar los cambios. Inténtalo de nuevo.');
+    }
   };
 
   // Filtrar alumnos habilitados y por búsqueda
@@ -156,15 +197,15 @@ const VerAlumnos = () => {
         </thead>
         <tbody>
           {sortedAlumnos.map(alumno => (
-            <tr key={alumno.id}>
+            <tr key={alumno._id}> {/* Cambiado a _id para consistencia */}
               <td>{alumno.nombre}</td>
               <td>{alumno.apellido}</td>
               <td>{alumno.correoElectronico}</td>
               <td>{alumno.dni}</td>
               <td>{alumno.telefono}</td>
               <td>{alumno.direccion}</td>
-              <td>{alumno.fechaNacimiento}</td>
-              <td>{alumno.grado}</td>
+             <td>{alumno.fechaNacimiento ? new Date(alumno.fechaNacimiento).toLocaleDateString('es-ES') : 'N/A'}</td> {/* Muestra "2025-06-04"  */}
+              <td>{alumno.grado?.nombre || 'Sin grado asignado'}</td>
               <td>
                 <button onClick={() => openEditModal(alumno)}>Editar</button>
                 <button className='eliminar' onClick={() => eliminarAlumno(alumno._id)}>Eliminar</button>
@@ -209,7 +250,13 @@ const VerAlumnos = () => {
             </label>
             <label>
               Grado:
-              <input type="text" value={Grado} onChange={(e) => setGrado(e.target.value)} />
+              {/* Cambiado a select para elegir de cursos */}
+              <select value={Grado} onChange={(e) => setGrado(e.target.value)}>
+                <option value="">Seleccionar Grado</option>
+                {cursos.map(curso => (
+                  <option key={curso._id} value={curso._id}>{curso.nombre}</option>
+                ))}
+              </select>
             </label>
             <div className="modal-actions">
               <button className="btn-save" onClick={handleSave}>Guardar</button>

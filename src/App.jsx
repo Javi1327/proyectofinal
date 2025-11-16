@@ -24,6 +24,7 @@ import AdminUsuarios from './components/AdminUsuarios';
 import MisCursos from './components/MisCursos';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Perfil from "./components/Perfil";
+import VerAsistenciasAlumno from './components/VerAsistenciaAlumno';
 
 
 
@@ -48,6 +49,7 @@ const App = () => {
           <Route path="/alumno/home" element={<AlumnoView />} />
           <Route path="/alumno/ver-notas" element={<VerNotasAlumnos />} />
           <Route path="/alumno/tareas-alumno" element={<TareasAlumno />} />
+          <Route path="/alumno/ver-asistencia" element={<VerAsistenciasAlumno />} />
           <Route path="/alumno/foro" element={<Foro />} />
           <Route path="/admin/home" element={<AdminView />} />
           <Route path="/admin/administrar-usuarios" element={<AdminUsuarios/>}/>
