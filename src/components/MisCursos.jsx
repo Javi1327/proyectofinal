@@ -115,6 +115,14 @@ const MisCursos = () => {
       return;
     }
 
+      console.log("Datos enviados a backend:", {
+    alumnoId: alumnoEditar._id,
+    materiaId: materiaAsignada,
+    nota1: parseInt(nota1Editar, 10),
+    nota2: parseInt(nota2Editar, 10),
+    url: `http://localhost:3000/alumnos/${alumnoEditar._id}/notas/${materiaAsignada}`
+  });
+
     try {
       await axios.put(`http://localhost:3000/alumnos/${alumnoEditar._id}/notas/${materiaAsignada}`, {
         nota1: parseInt(nota1Editar, 10),

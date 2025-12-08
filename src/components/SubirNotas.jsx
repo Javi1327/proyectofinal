@@ -4,7 +4,7 @@ import { useUser } from '../context/UserContext';
 
 export default function SubirNotas() {
   const backurl = import.meta.env.VITE_URL_BACK;
-  const { userId, userType } = useUser(); // ⬅️ Obtenemos el ID y tipo de usuario desde el contexto
+  const { userId, userType } = useUser();
 
   const [alumnos, setAlumnos] = useState([]);
   const [gradoSeleccionado, setGradoSeleccionado] = useState('');
@@ -18,7 +18,7 @@ export default function SubirNotas() {
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  // Cargar datos del profesor, materia y cursos asignados
+  // Cargar datos del profesor, materia y cursos asignados (igual)
   useEffect(() => {
     const fetchProfesor = async () => {
       if (userType === "profesor" && userId) {
@@ -37,6 +37,7 @@ export default function SubirNotas() {
     fetchProfesor();
   }, [backurl, userId, userType]);
 
+  // Cargar alumnos del curso seleccionado (CORREGIDO: filtro correcto, estructura del useEffect)
   useEffect(() => {
     const fetchAlumnos = async () => {
       if (gradoSeleccionado) {
@@ -45,7 +46,12 @@ export default function SubirNotas() {
           const res = await fetch(`${backurl}cursos/${gradoSeleccionado}/alumnos`);
           const data = await res.json();
           if (Array.isArray(data.data)) {
-            setAlumnos(data.data);
+            // Filtrar alumnos que NO tengan nota1 ni nota2 en la materia del profesor
+            const alumnosFiltrados = data.data.filter(alumno => {
+              const matAlumno = alumno.materiasAlumno?.find(m => m.materia._id === materia?._id);
+              return !matAlumno || (matAlumno.nota1 === undefined && matAlumno.nota2 === undefined);  // CORREGIDO: sintaxis completa
+            });
+            setAlumnos(alumnosFiltrados);
           } else {
             setAlumnos([]);
           }
@@ -65,9 +71,10 @@ export default function SubirNotas() {
       setMensaje('');
     };
 
-    fetchAlumnos();
-  }, [gradoSeleccionado, backurl]);
+    fetchAlumnos();  // CORREGIDO: llamada dentro del useEffect
+  }, [gradoSeleccionado, backurl, materia]);
 
+  // Cargar datos del alumno seleccionado (igual, pero opcional: ajusta para recargar)
   useEffect(() => {
     const fetchAlumno = async () => {
       if (alumnoSeleccionado) {
@@ -104,6 +111,7 @@ export default function SubirNotas() {
     fetchAlumno();
   }, [alumnoSeleccionado, materia, backurl]);
 
+  // CORREGIDO: Cambiar endpoint, enviar solo notas, agregar validación y recarga
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMensaje('');
@@ -121,28 +129,29 @@ export default function SubirNotas() {
       return;
     }
 
-    const materiasActualizadas = [{
-      materia: materia._id,
+    // NUEVO: Validación extra para rechazar si ya tiene notas
+    const matAlumno = alumnoActual.materiasAlumno.find(m => m.materia._id === materia._id);
+    if (matAlumno && (matAlumno.nota1 !== undefined || matAlumno.nota2 !== undefined)) {
+      setMensaje("Este alumno ya tiene notas cargadas para esta materia. Usa el componente de modificación.");
+      setSubmitting(false);
+      return;
+    }
+
+    // NUEVO: Enviar solo las notas al endpoint específico
+    const datosNota = {
       nota1: parseFloat(nota1),
       nota2: parseFloat(nota2),
-    }];
-
-    const datosNota = {
-      nombre: alumnoActual.nombre,
-      apellido: alumnoActual.apellido,
-      dni: alumnoActual.dni,
-      grado: gradoSeleccionado,
-      direccion: alumnoActual.direccion,
-      telefono: alumnoActual.telefono,
-      correoElectronico: alumnoActual.correoElectronico,
-      fechaNacimiento: alumnoActual.fechaNacimiento,
-      asistencia: alumnoActual.asistencia || [],
-      materiasAlumno: materiasActualizadas,
     };
-    console.log("Datos enviados al backend:", datosNota);
+
+    // LOGS AGREGADOS: Para debuggear IDs y datos enviados
+    console.log("alumnoSeleccionado:", alumnoSeleccionado);
+    console.log("materia._id:", materia?._id);
+    console.log("URL completa:", `${backurl}alumnos/${alumnoSeleccionado}/notas/${materia._id}`);
+    console.log("datosNota:", datosNota);
 
     try {
-      const res = await fetch(`${backurl}alumnos/${alumnoSeleccionado}`, {
+      // CORREGIDO: Endpoint específico para evitar sobrescritura
+      const res = await fetch(`${backurl}alumnos/${alumnoSeleccionado}/notas/${materia._id}`, {
         method: 'PUT',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(datosNota),
@@ -150,6 +159,12 @@ export default function SubirNotas() {
 
       if (res.ok) {
         setMensaje("Nota registrada correctamente");
+        // NUEVO: Recargar datos del alumno para reflejar cambios
+        const updatedRes = await fetch(`${backurl}alumnos/${alumnoSeleccionado}`);
+        const updatedData = await updatedRes.json();
+        if (updatedData?.data) {
+          setAlumnoActual(updatedData.data);
+        }
         setNota1('');
         setNota2('');
         setAlumnoSeleccionado('');
@@ -166,6 +181,7 @@ export default function SubirNotas() {
     }
   };
 
+  // JSX igual, pero agrega un mensaje si no hay alumnos filtrados
   return (
     <div className="subir-notas-container">
       <h2>Subir Calificaciones</h2>
@@ -186,6 +202,7 @@ export default function SubirNotas() {
       {gradoSeleccionado && (
         <div>
           <h3>Alumnos del curso seleccionado</h3>
+          {alumnos.length === 0 && !loading && <p>Solo se muestran alumnos sin notas en esta materia.</p>}  {/* NUEVO: Mensaje explicativo */}
           {loading ? (
             <p>Cargando alumnos...</p>
           ) : (
