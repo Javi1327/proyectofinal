@@ -1,68 +1,90 @@
 import React, { useState, useEffect } from "react";
-import { useUser  } from '../context/UserContext';
-import "./VerNotas.css"; // Asegúrate de que el CSS esté disponible
+import { useUser } from '../context/UserContext';
+import './VerNotasAlumnos.css'
 
 const VerNotasAlumnos = () => {
-  const { alumnoId } = useUser (); // Obtén el ID del alumno del contexto
+  const { alumnoId } = useUser(); // Obtén el ID del alumno del contexto
   const backurl = import.meta.env.VITE_URL_BACK; 
 
   const [notas, setNotas] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [materias, setMaterias] = useState([]);
- // const alumnoId = "e38edc15-c22e-4ea9-b9a0-ed09f9706aae"; // ID del alumno hardcodeado cambiarlo para harlo desde el login
- console.log("ID del alumno:", alumnoId); 
+  const [notasCargadas, setNotasCargadas] = useState(false);
+  console.log("ID del alumno:", alumnoId); 
 
   // Verifica si el alumnoId está disponible
   if (!alumnoId) {
     return <p>Error: No se ha encontrado el ID del alumno. Por favor, inicie sesión nuevamente.</p>;
   }
-  // useEffect para obtener materias
+
+  // useEffect para obtener materias (igual)
   useEffect(() => {
     const fetchMaterias = async () => {
       try {
         const response = await fetch(`${backurl}materias`);
         if (!response.ok) {
-          throw new Error('Error al obtener materias');
+          throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
         }
         const result = await response.json();
-        console.log("Respuesta de materias:", result); // Verifica la respuesta de la API
-        if (Array.isArray(result.data)) { // Asegúrate de que result.data sea un array
-          setMaterias(result.data); // Establece las materias
+        console.log("Respuesta completa de materias:", result);
+        console.log("¿Es array? Array.isArray(result):", Array.isArray(result));
+        console.log("Contenido de result:", JSON.stringify(result, null, 2));
+
+        if (Array.isArray(result)) {
+          setMaterias(result);
+          console.log("Materias cargadas correctamente:", result);
         } else {
-          throw new Error('La respuesta no es un array');
+          throw new Error('La respuesta no es un array.');
         }
       } catch (error) {
         console.error('Error al obtener materias:', error);
-        setError("No se pudieron cargar las materias.");
+        setError(`No se pudieron cargar las materias: ${error.message}`);
       }
     };
   
     fetchMaterias();
-  }, [backurl]); // Este useEffect se ejecuta una vez al montar el componente
+  }, [backurl]);
 
   useEffect(() => {
+    console.log("Intentando fetch de notas...");
     const fetchNotas = async () => {
+      if (notasCargadas) {
+        console.log("Notas ya cargadas, saltando.");
+        return;
+      }
       setLoading(true);
       setError("");
       try {
         const response = await fetch(`${backurl}alumnos/${alumnoId}`);
         if (!response.ok) {
-          throw new Error("Error al obtener las notas");
+          throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
         }
         const data = await response.json();
-        console.log("Datos recibidos:", data); // Para depuración
-        setNotas(data.data.materias || []); // Accede a la propiedad 'materias' dentro de 'data'
+        console.log("ESTRUCTURA COMPLETA DE DATA:", JSON.stringify(data, null, 2));
+        console.log("Materias en data.materiasAlumno:", data.data ? data.data.materiasAlumno : "No existe data.data");
+
+        // Acceso correcto: data.materiasAlumno
+        const notasData = data.data?.materiasAlumno || [];
+        if (notasData.length === 0) {
+          console.warn("No hay notas para este alumno en el backend.");
+          setError("No hay notas disponibles para este alumno. Contacta al administrador.");
+        }
+        setNotas(notasData);
+        setNotasCargadas(true);
+        console.log("Notas cargadas:", notasData);
       } catch (error) {
         console.error("Error al obtener notas:", error);
-        setError("No se pudieron cargar las notas.");
+        setError(`No se pudieron cargar las notas: ${error.message}`);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchNotas();
-  }, [alumnoId, backurl]);
+    if (alumnoId && !notasCargadas) {
+      fetchNotas();
+    }
+  }, [alumnoId, backurl, notasCargadas]);
 
   return (
     <div className="ver-notas-container">
@@ -81,23 +103,20 @@ const VerNotasAlumnos = () => {
         <tbody>
           {notas.length > 0 ? (
             notas.map((materia, index) => {
-              // Buscar el nombre de la materia usando el ID
-              const materiaEncontrada = materias.find(m => m._id === materia.materia);
+              const materiaEncontrada = materias.find(m => m._id === materia.materia._id); // Accede a materia._id
               const nombreMateria = materiaEncontrada ? materiaEncontrada.nombreMateria : "N/A";
 
               return (
                 <tr key={index}>
-                  <td>{nombreMateria}</td> {/* Mostrar el nombre de la materia */}
+                  <td>{nombreMateria}</td>
                   <td>{materia.nota1 != null ? materia.nota1.toFixed(2) : "N/A"}</td>
                   <td>{materia.nota2 != null ? materia.nota2.toFixed(2) : "N/A"}</td>
-                  <td>{((materia.nota1 + materia.nota2) / 2).toFixed(2)}</td> {/* Cálculo del promedio */}
+                  <td>{materia.promedio != null ? materia.promedio.toFixed(2) : "N/A"}</td> {/* Usa promedio del backend */}
                 </tr>
               );
             })
           ) : (
-            <tr>
-              <td colSpan="4">No hay notas disponibles.</td>
-            </tr>
+            !loading && <tr><td colSpan="4">No hay notas disponibles.</td></tr>
           )}
         </tbody>
       </table>
