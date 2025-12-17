@@ -1,124 +1,151 @@
-/* AdminUsuarios.css */
+/* ===============================
+   CONTENEDOR GENERAL
+================================ */
 
 .admin-usuarios-container {
-    margin: 20px;
-  }
-  
-  h2 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .btn-action {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #0275BC;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-  }
-  
-  .btn-action:hover {
-    background-color: #025fa1;
-  }
-  
-  .modal-content {
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-  }
-  
-  .modal-header {
-    background-color: #0275BC;
-    color: white;
-    padding: 15px;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-  }
-  
-  .modal-title {
-    font-size: 24px;
-    font-weight: bold;
-  }
-  
-  .modal-body {
-    padding: 20px;
-  }
-  
-  .form-group {
-    margin-bottom: 20px;
-  }
-  
-  .form-group label {
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .form-group input,
-  .form-group select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-    margin-top: 5px;
-  }
-  
-  .form-group input:focus,
-  .form-group select:focus {
-    border-color: #0275BC;
-    outline: none;
-  }
-  
-  button {
-    font-size: 16px;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #025fa1;
-  }
-  
-  .modal-footer {
-    background-color: #f9f9f9;
-    padding: 10px;
-    text-align: right;
-  }
-  
-  .modal-footer button {
-    margin-left: 10px;
-  }
-  
-  button.secondary {
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-  }
-  
-  button.primary {
-    background-color: #0275BC;
-    color: white;
-    border: none;
-  }
-  
-  button.primary:hover {
-    background-color: #025fa1;
-  }
-  
-  select {
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  select:focus {
-    border-color: #0275BC;
-    outline: none;
-  }
-  
+  margin: 20px;
+}
+
+/* ===============================
+   TITULO
+================================ */
+
+.admin-usuarios-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* ===============================
+   BOTÓN CREAR USUARIO
+================================ */
+
+.admin-usuarios-actions {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.btn-action {
+  padding: 10px 20px;
+  background-color: #0275BC;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.btn-action:hover {
+  background-color: #025fa1;
+}
+
+/* ===============================
+   MODAL
+================================ */
+
+.admin-usuarios-container .modal-content {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+}
+
+.admin-usuarios-container .modal-header {
+  background-color: #0275BC;
+  color: white;
+  padding: 15px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.admin-usuarios-container .modal-title {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.admin-usuarios-container .modal-body {
+  padding: 20px;
+}
+
+.admin-usuarios-container .modal-footer {
+  background-color: #f9f9f9;
+  padding: 10px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* ===============================
+   FORMULARIO
+================================ */
+
+.admin-usuarios-container .form-group {
+  margin-bottom: 16px;
+}
+
+.admin-usuarios-container .form-group label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+}
+
+.admin-usuarios-container .form-group input,
+.admin-usuarios-container .form-group select {
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 15px;
+  margin-top: 4px;
+}
+
+.admin-usuarios-container .form-group input:focus,
+.admin-usuarios-container .form-group select:focus {
+  border-color: #0275BC;
+  outline: none;
+}
+
+/* ===============================
+   BOTONES (LIMITADOS AL COMPONENTE)
+================================ */
+
+.admin-usuarios-container button {
+  font-size: 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.admin-usuarios-container button.btn-primary {
+  background-color: #0275BC;
+  border: none;
+}
+
+.admin-usuarios-container button.btn-primary:hover {
+  background-color: #025fa1;
+}
+
+.admin-usuarios-container button.btn-secondary {
+  background-color: #6c757d;
+  border: none;
+}
+
+.admin-usuarios-container button.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+/* ===============================
+   SELECT REACT-SELECT
+================================ */
+
+.admin-usuarios-container .css-13cymwt-control {
+  border-radius: 5px;
+  border-color: #ccc;
+}
+
+.admin-usuarios-container .css-13cymwt-control:hover {
+  border-color: #0275BC;
+}
+
+.admin-usuarios-container .css-13cymwt-control--is-focused {
+  border-color: #0275BC;
+  box-shadow: none;
+}

@@ -215,7 +215,12 @@ const AdminUsuarios = () => {
   return (
     <div className="admin-usuarios-container">
       <h2>Administrar Usuarios</h2>
-      <button className="btn-action" onClick={handleShow}>Crear Usuario</button>
+      <div className="admin-usuarios-actions">
+        <button className="admin-usuarios-btn" onClick={handleShow}>
+          Crear Usuario
+        </button>
+      </div>
+
 
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
