@@ -1,78 +1,76 @@
 /* src/components/Navbar.css */
 .navbar {
-    background-color: #0275BC; /* Azul principal */
-    color: white;
-    padding: 1rem 2rem; /* Espaciado interno */
-    display: flex;
-    justify-content: space-between; /* Separar a los extremos */
-    align-items: center; /* Centrar verticalmente */
-    position: fixed; /* Fijo en la parte superior */
-    top: 0;
-    width: 100%; /* Ocupar todo el ancho */
-    z-index: 1000; /* Asegurarse que esté por encima de otros elementos */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra sutil */
-  }
-  
-  .navbar .logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  
-  .navbar .menu-icons {
-    display: flex;
-    align-items: center;
-    gap: 2rem; /* Espaciado entre íconos */
-    margin-left: -10px;
-  }
-  
- .navbar .menu-icons svg {
-  cursor: pointer;
-  transition: transform 0.2s ease, color 0.2s ease;
-  width: 24px;  /* Ajusta el tamaño del ícono */
-  height: 24px; /* Ajusta el tamaño del ícono */
-  color: white; /* Asegúrate de que el ícono sea visible con el color adecuado */
+  background-color: #0275BC; /* Azul principal */
+  color: white;
+  padding: 1rem 2rem; /* Espaciado interno */
+  display: flex;
+  justify-content: space-between; /* Separar a los extremos */
+  align-items: center; /* Centrar verticalmente */
+  position: fixed; /* Fijo en la parte superior */
+  top: 0;
+  width: 100%; /* Ocupar todo el ancho */
+  z-index: 1000; /* Asegurarse que esté por encima de otros elementos */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+  height: 60px; /* Altura fija del navbar */
 }
 
-.navbar .menu-icons svg:hover {
+/* Estilos para las secciones del navbar (coinciden con JSX) */
+.navbar-left {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.navbar-center {
+  display: flex;
+  align-items: center;
+  flex: 1; /* Hace que ocupe el espacio central */
+  justify-content: center; /* Centra el texto */
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* Espaciado entre íconos */
+  justify-content: flex-end; /* Asegura que los íconos se alineen a la derecha */
+}
+
+/* Estilos para íconos (coinciden con JSX) */
+.navbar-icon, .navbar-home-icon {
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+  width: 24px;  /* Tamaño del ícono */
+  height: 24px;
+  color: white;
+}
+
+.navbar-icon:hover, .navbar-home-icon:hover {
   transform: scale(1.1);
   color: #d1eaff; /* Azul más claro al pasar el mouse */
 }
 
-  
+.navbar-username {
+  font-weight: bold;
+  font-size: 1rem; /* Ajusta si es necesario */
+}
+
+/* Media query para móviles */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0.8rem 1rem; /* Reducir padding en pantallas chicas */
+    height: 50px; /* Baja la altura del navbar en móviles */
+  }
+
+  .navbar-center {
+    font-size: 0.9rem; /* Reducir tamaño del texto en móviles */
+  }
+
   .navbar-right {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding-right: -10px;
+    gap: 0.5rem; /* Reducir gap entre íconos */
   }
-  .navbar .logout-button {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background-color: transparent;
-    border: 1px solid white;
-    padding: 0.4rem 0.8rem;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.2s ease;
+
+  .navbar-icon, .navbar-home-icon {
+    width: 20px;  /* Reducir el tamaño de los iconos */
+    height: 20px;
   }
-  
-  .navbar .logout-button:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px); /* Efecto de levantamiento */
-  }
-  
-  @media (max-width: 768px) {
-    .navbar {
-      padding: 0.8rem 1rem; /* Reducir padding en pantallas chicas */
-    }
-  
-    .navbar .logo {
-      font-size: 1.2rem;
-    }
-  
-    .navbar .menu-icons {
-      gap: 1rem;
-    }
-  }
+}

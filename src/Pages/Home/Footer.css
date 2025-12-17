@@ -5,13 +5,12 @@
     text-align: center;
     font-family: Arial, sans-serif;
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-    position: absolute;
+
     width: 100%;
-    
-    
-    
+    margin-top: auto; /* ⬅️ CLAVE */
 }
 
+/* Contenedor de filas */
 .footer-row {
     display: flex;
     justify-content: space-around;
@@ -19,6 +18,7 @@
     margin-bottom: 10px;
 }
 
+/* Bloques */
 .footer-links {
     margin: 10px 20px;
 }
@@ -31,7 +31,8 @@
     padding-bottom: 5px;
 }
 
-.footer-links p, .footer-links ul li p {
+.footer-links p,
+.footer-links ul li p {
     margin: 5px 0;
     font-size: 0.9rem;
     line-height: 1.5;
@@ -44,14 +45,11 @@
     margin: 0;
 }
 
-/* Efectos al pasar el mouse */
-.footer-links h4:hover {
-    color: #FFD700;
-    cursor: pointer;
-}
-
+/* Hover */
+.footer-links h4:hover,
 .footer-links p:hover {
     color: #FFD700;
+    cursor: pointer;
 }
 
 /* Responsive */
@@ -60,7 +58,7 @@
         flex-direction: column;
         align-items: center;
     }
-    
+
     .footer-links {
         margin: 10px 0;
     }

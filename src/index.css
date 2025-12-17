@@ -13,6 +13,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Links */
 a {
   font-weight: 500;
   color: #646cff;
@@ -22,19 +23,40 @@ a:hover {
   color: #535bf2;
 }
 
-body {
+/* ✅ BODY CORREGIDO */
+html, body {
   margin: 0;
-  display: flex;
-  place-items: center;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  display: block;          /* ⬅️ CLAVE */
   min-width: 320px;
   min-height: 100vh;
 }
 
+/* React root */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Contenido debajo del navbar */
+.app-content {
+  padding-top: 60px;       /* altura real del navbar */
+  flex: 1;
+}
+
+/* Tipografía */
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
 }
 
+/* Botones */
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -54,6 +76,7 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* Modo claro */
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
@@ -66,5 +89,3 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
-
-
