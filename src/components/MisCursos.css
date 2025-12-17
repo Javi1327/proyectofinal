@@ -1,0 +1,94 @@
+/* ===============================
+   PÁGINA MIS CURSOS
+================================ */
+
+.mis-cursos-page {
+  padding: 2rem;
+}
+
+.mis-cursos-title {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+/* ===============================
+   BOTONES DE CURSOS
+================================ */
+
+.mis-cursos-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.mis-cursos-btn {
+  background-color: #0275BC;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  min-width: 220px;
+  max-width: 320px;
+  text-align: center;
+}
+
+.mis-cursos-btn:hover {
+  background-color: #025a91;
+}
+
+/* ===============================
+   MODAL MIS CURSOS (SOLO ESTE)
+================================ */
+
+/* ancho real del modal */
+.mis-cursos-modal {
+  max-width: 95vw !important;
+  width: 95vw !important;
+}
+
+/* contenido */
+.mis-cursos-modal .modal-content {
+  max-height: 90vh;
+}
+
+/* body con scroll */
+.mis-cursos-modal .modal-body {
+  overflow-y: auto;
+}
+
+/* ===============================
+   TABLA
+================================ */
+
+.mis-cursos-modal table {
+  width: 100%;
+  min-width: 900px;
+}
+
+.mis-cursos-modal th {
+  white-space: nowrap;
+  text-align: center;
+}
+
+.mis-cursos-modal td {
+  white-space: nowrap;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* columna Alumno */
+.mis-cursos-modal th:first-child,
+.mis-cursos-modal td:first-child {
+  white-space: normal;
+  text-align: left;
+  min-width: 220px;
+}
+
+/* scroll horizontal SOLO tabla */
+.mis-cursos-modal .table-responsive {
+  overflow-x: auto;
+}

@@ -1,65 +1,62 @@
 .footer {
-    background-color: #0275BC;
-    color: white;
-    padding: 20px 0;
-    text-align: center;
-    font-family: Arial, sans-serif;
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-
-    width: 100%;
-    margin-top: auto; /* ⬅️ CLAVE */
+  background-color: #0275BC;
+  color: white;
+  padding: 20px 0;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  margin-top: auto;
+  /* CLAVE */
+  position: relative;
+  width: 100%;
 }
 
-/* Contenedor de filas */
 .footer-row {
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    margin-bottom: 10px;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
 }
 
-/* Bloques */
 .footer-links {
-    margin: 10px 20px;
+  margin: 10px 20px;
 }
 
 .footer-links h4 {
-    margin-bottom: 10px;
-    font-size: 1.2rem;
-    border-bottom: 2px solid white;
-    display: inline-block;
-    padding-bottom: 5px;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+  border-bottom: 2px solid white;
+  display: inline-block;
+  padding-bottom: 5px;
 }
 
 .footer-links p,
 .footer-links ul li p {
-    margin: 5px 0;
-    font-size: 0.9rem;
-    line-height: 1.5;
+  margin: 5px 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
 }
 
 .copy {
-    font-size: 0.8rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.3);
-    padding-top: 10px;
-    margin: 0;
+  font-size: 0.8rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  padding-top: 10px;
+  margin: 0;
 }
 
-/* Hover */
 .footer-links h4:hover,
 .footer-links p:hover {
-    color: #FFD700;
-    cursor: pointer;
+  color: #FFD700;
+  cursor: pointer;
 }
 
-/* Responsive */
 @media (max-width: 600px) {
-    .footer-row {
-        flex-direction: column;
-        align-items: center;
-    }
+  .footer-row {
+    flex-direction: column;
+    align-items: center;
+  }
 
-    .footer-links {
-        margin: 10px 0;
-    }
+  .footer-links {
+    margin: 10px 0;
+  }
 }

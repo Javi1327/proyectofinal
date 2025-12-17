@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
+import './CrearMaterias.css';
 
 const CrearMateria = () => {
   const [nombreMateria, setNombreMateria] = useState('');
