@@ -1,36 +1,49 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";  // Agrega para navegación y protección
 import { useUser } from '../context/UserContext';
 
 const VerAsistenciasAlumno = () => {
-  const { alumnoId } = useUser(); // Obtén el ID del alumno del contexto
-  const backurl = import.meta.env.VITE_URL_BACK; 
+  const { user, role } = useUser();  // Cambia alumnoId a user.id
+  const navigate = useNavigate();  // Agrega para protección
+  const backurl = import.meta.env.VITE_URL_BACK;
 
   const [asistencias, setAsistencias] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [filtroMes, setFiltroMes] = useState(''); // Filtro opcional por mes
 
-  console.log("ID del alumno:", alumnoId); 
+  // Protección: Solo alumnos pueden acceder
+  useEffect(() => {
+    if (role !== 'alumno') {
+      navigate('/');
+      return;
+    }
+  }, [role, navigate]);
 
-  // Verifica si el alumnoId está disponible
-  if (!alumnoId) {
+  // Verifica si user.id está disponible
+  if (!user?.id) {
     return <p>Error: No se ha encontrado el ID del alumno. Por favor, inicie sesión nuevamente.</p>;
   }
 
-  // useEffect para obtener asistencias todos los precentes
+  // useEffect para obtener asistencias
   useEffect(() => {
     const fetchAsistencias = async () => {
       setLoading(true);
       setError("");
       try {
-        const response = await fetch(`${backurl}alumnos/${alumnoId}`);
+        const response = await fetch(`${backurl}alumnos/${user.id}`, {  // Cambia alumnoId a user.id
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('accesstoken')}`,  // Agrega token JWT
+            'Content-Type': 'application/json',
+          },
+        });
         if (!response.ok) {
-          throw new Error("Error al obtener las asistencias");
+          throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
         }
         const data = await response.json();
         console.log("Datos recibidos:", data); // Para depuración
         // Accede a 'asistencia' dentro de 'data.data' (según el esquema)
-        const asistenciaRaw = data.data.asistencia || [];
+        const asistenciaRaw = data.data?.asistencia || [];
         // Convierte el array: { fecha: Date, presente: Boolean } -> { fecha: string, estado: string }
         const asistenciaFormateada = asistenciaRaw.map(item => ({
           fecha: new Date(item.fecha).toISOString().split('T')[0], // Formatea a YYYY-MM-DD
@@ -39,14 +52,14 @@ const VerAsistenciasAlumno = () => {
         setAsistencias(asistenciaFormateada);
       } catch (error) {
         console.error("Error al obtener asistencias:", error);
-        setError("No se pudieron cargar las asistencias.");
+        setError(`No se pudieron cargar las asistencias: ${error.message}`);
       } finally {
         setLoading(false);
       }
     };
 
     fetchAsistencias();
-  }, [alumnoId, backurl]);
+  }, [user.id, backurl]);  // Cambia alumnoId a user.id
 
   // Filtrar asistencias por mes (opcional)
   const asistenciasFiltradas = filtroMes
@@ -56,6 +69,7 @@ const VerAsistenciasAlumno = () => {
   return (
     <div className="ver-asistencias-container">
       <h2>Mis Asistencias</h2>
+      <button onClick={() => navigate('/alumno/home')} className="volver-btn">Volver al Panel</button>  // Agrega botón volver
       {loading && <p>Cargando asistencias...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
       
@@ -88,9 +102,7 @@ const VerAsistenciasAlumno = () => {
               </tr>
             ))
           ) : (
-            <tr>
-              <td colSpan="2">No hay asistencias disponibles.</td>
-            </tr>
+            !loading && <tr><td colSpan="2">No hay asistencias disponibles.</td></tr>
           )}
         </tbody>
       </table>

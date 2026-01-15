@@ -53,6 +53,7 @@
 /* contenido */
 .mis-cursos-modal .modal-content {
   max-height: 90vh;
+  width: auto;
 }
 
 /* body con scroll */

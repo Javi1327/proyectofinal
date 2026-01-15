@@ -1,36 +1,46 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";  // Agrega para navegación
 import { useUser } from '../context/UserContext';
-import './VerNotasAlumnos.css'
+import './VerNotasAlumnos.css';
 
 const VerNotasAlumnos = () => {
-  const { alumnoId } = useUser(); // Obtén el ID del alumno del contexto
-  const backurl = import.meta.env.VITE_URL_BACK; 
+  const { user, role } = useUser();  // Cambia alumnoId a user.id
+  const navigate = useNavigate();  // Agrega para protección
+  const backurl = import.meta.env.VITE_URL_BACK;
 
   const [notas, setNotas] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [materias, setMaterias] = useState([]);
   const [notasCargadas, setNotasCargadas] = useState(false);
-  console.log("ID del alumno:", alumnoId); 
 
-  // Verifica si el alumnoId está disponible
-  if (!alumnoId) {
+  // Protección: Solo alumnos pueden acceder
+  useEffect(() => {
+    if (role !== 'alumno') {
+      navigate('/');
+      return;
+    }
+  }, [role, navigate]);
+
+  // Verifica si user.id está disponible
+  if (!user?.id) {
     return <p>Error: No se ha encontrado el ID del alumno. Por favor, inicie sesión nuevamente.</p>;
   }
 
-  // useEffect para obtener materias (igual)
+  // useEffect para obtener materias (igual, pero agrega auth si backend lo requiere)
   useEffect(() => {
     const fetchMaterias = async () => {
       try {
-        const response = await fetch(`${backurl}materias`);
+        const response = await fetch(`${backurl}materias`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('accesstoken')}`,  // Agrega token si backend lo protege
+          },
+        });
         if (!response.ok) {
           throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
         }
         const result = await response.json();
         console.log("Respuesta completa de materias:", result);
-        console.log("¿Es array? Array.isArray(result):", Array.isArray(result));
-        console.log("Contenido de result:", JSON.stringify(result, null, 2));
-
         if (Array.isArray(result)) {
           setMaterias(result);
           console.log("Materias cargadas correctamente:", result);
@@ -42,7 +52,7 @@ const VerNotasAlumnos = () => {
         setError(`No se pudieron cargar las materias: ${error.message}`);
       }
     };
-  
+
     fetchMaterias();
   }, [backurl]);
 
@@ -56,7 +66,12 @@ const VerNotasAlumnos = () => {
       setLoading(true);
       setError("");
       try {
-        const response = await fetch(`${backurl}alumnos/${alumnoId}`);
+        const response = await fetch(`${backurl}alumnos/${user.id}`, {  // Cambia alumnoId a user.id
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('accesstoken')}`,  // Agrega token JWT
+            'Content-Type': 'application/json',
+          },
+        });
         if (!response.ok) {
           throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
         }
@@ -64,7 +79,7 @@ const VerNotasAlumnos = () => {
         console.log("ESTRUCTURA COMPLETA DE DATA:", JSON.stringify(data, null, 2));
         console.log("Materias en data.materiasAlumno:", data.data ? data.data.materiasAlumno : "No existe data.data");
 
-        // Acceso correcto: data.materiasAlumno
+        // Acceso correcto: data.data.materiasAlumno
         const notasData = data.data?.materiasAlumno || [];
         if (notasData.length === 0) {
           console.warn("No hay notas para este alumno en el backend.");
@@ -81,14 +96,16 @@ const VerNotasAlumnos = () => {
       }
     };
 
-    if (alumnoId && !notasCargadas) {
+    if (user.id && !notasCargadas && role === 'alumno') {  // Agrega check de role
       fetchNotas();
     }
-  }, [alumnoId, backurl, notasCargadas]);
+  }, [user.id, backurl, notasCargadas, role]);  // Cambia alumnoId a user.id
+
 
   return (
     <div className="ver-notas-container">
       <h2>Mis Notas</h2>
+      <button onClick={() => navigate('/alumno/home')} className="volver-btn">Volver al Panel</button> 
       {loading && <p>Cargando notas...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
       <table className="notas-table">

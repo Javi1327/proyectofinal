@@ -1,62 +1,51 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUser  } from '../context/UserContext';
+import { useUser } from '../context/UserContext';
+import ChangePassword from './ChangePassword';
 
 export default function Home() {
-  const { userType } = useUser ();
+  const { role } = useUser();  // Quita logout
   const navigate = useNavigate();
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   useEffect(() => {
-    console.log('userType:', userType);
-    if (!userType) return;
+    console.log('role:', role);
+    if (!role) return;
 
-    switch(userType) {
-      case 'alumno':
-        navigate('/alumno/home');
-        break;
-      case 'profesor':
-        navigate('/profesor/home');
-        break;
-      case 'preceptor':
-        navigate('/preceptor/home');
-        break;
-      case 'admin':
-        navigate('/admin/home');
-        break;
-      default:
-        console.error('Tipo de usuario no reconocido');
-    }
-  }, [userType, navigate]);
+    const timer = setTimeout(() => {
+      switch (role) {
+        case 'alumno':
+          navigate('/alumno/home');
+          break;
+        case 'profesor':
+          navigate('/profesor/home');
+          break;
+        case 'preceptor':
+          navigate('/preceptor/home');
+          break;
+        case 'admin':
+          navigate('/admin/home');
+          break;
+        default:
+          console.error('Tipo de usuario no reconocido');
+      }
+    }, 2000);
 
-  if (!userType) {
+    return () => clearTimeout(timer);
+  }, [role, navigate]);
+
+  if (!role) {
     return <div>Cargando...</div>;
   }
 
-  // Opcional: mientras navega, puedes mostrar algo o nada
-  return null;
-}
-
-
-/*
-// src/components/Home.jsx
-import React from 'react';
-//import { useNavigate } from 'react-router-dom';
-import { useUser } from '../context/UserContext'; // Corrección en la ruta
-import AlumnoView from "../pages/AlumnoView";
-import ProfesorView from "../pages/ProfesorView";
-import PreceptorView from "../pages/PreceptorView";
-import AdminView from '../Pages/AdminView';
-
-export default function Home() {
-  const { userType } = useUser();
- 
   return (
-    <div className="p-4">
-      {userType === 'alumno' && <AlumnoView />}
-      {userType === 'profesor' && <ProfesorView />}
-      {userType === 'preceptor' && <PreceptorView />}
-      {userType === 'admin' && <AdminView />}
+    <div>
+      <header style={{ padding: '20px', background: '#333', color: 'white', display: 'flex', justifyContent: 'space-between' }}>
+        <h1>Sistema de Gestión de Alumnos</h1>
+        {/* Quita el div con botones */}
+      </header>
+      <p>Redirigiendo a tu panel...</p>
+      {/* Quita el modal si no lo quieres aquí */}
     </div>
   );
 }
-*/

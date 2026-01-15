@@ -1,76 +1,176 @@
-/* src/components/Navbar.css */
 .navbar {
-  background-color: #0275BC; /* Azul principal */
-  color: white;
-  padding: 1rem 2rem; /* Espaciado interno */
   display: flex;
-  justify-content: space-between; /* Separar a los extremos */
-  align-items: center; /* Centrar verticalmente */
-  position: fixed; /* Fijo en la parte superior */
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #333;
+  color: white;
+  position: fixed;
   top: 0;
-  width: 100%; /* Ocupar todo el ancho */
-  z-index: 1000; /* Asegurarse que esté por encima de otros elementos */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra sutil */
-  height: 60px; /* Altura fija del navbar */
+  left: 0;  /* Asegura que empiece desde el borde izquierdo */
+  right: 0;  /* Asegura que llegue al borde derecho */
+  width: 100%;  /* Mantén 100% */
+  box-sizing: border-box;  /* Incluye padding en el ancho total */
+  z-index: 1000;
 }
 
-/* Estilos para las secciones del navbar (coinciden con JSX) */
 .navbar-left {
-  display: flex;
-  align-items: center;
   cursor: pointer;
 }
 
 .navbar-center {
-  display: flex;
-  align-items: center;
-  flex: 1; /* Hace que ocupe el espacio central */
-  justify-content: center; /* Centra el texto */
+  flex: 1;
+  text-align: center;
 }
 
 .navbar-right {
   display: flex;
   align-items: center;
-  gap: 1rem; /* Espaciado entre íconos */
-  justify-content: flex-end; /* Asegura que los íconos se alineen a la derecha */
+  gap: 10px;
 }
 
-/* Estilos para íconos (coinciden con JSX) */
-.navbar-icon, .navbar-home-icon {
+.navbar-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.navbar-home-icon, .navbar-icon {
   cursor: pointer;
-  transition: transform 0.2s ease, color 0.2s ease;
-  width: 24px;  /* Tamaño del ícono */
-  height: 24px;
-  color: white;
-}
-
-.navbar-icon:hover, .navbar-home-icon:hover {
-  transform: scale(1.1);
-  color: #d1eaff; /* Azul más claro al pasar el mouse */
+  font-size: 1.5rem;
 }
 
 .navbar-username {
-  font-weight: bold;
-  font-size: 1rem; /* Ajusta si es necesario */
+  font-size: 1.1rem;
 }
 
-/* Media query para móviles */
-@media (max-width: 768px) {
-  .navbar {
-    padding: 0.8rem 1rem; /* Reducir padding en pantallas chicas */
-    height: 50px; /* Baja la altura del navbar en móviles */
-  }
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  .navbar-center {
-    font-size: 0.9rem; /* Reducir tamaño del texto en móviles */
-  }
+.modal-content {
+  background: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
 
-  .navbar-right {
-    gap: 0.5rem; /* Reducir gap entre íconos */
-  }
+.login-form input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
 
-  .navbar-icon, .navbar-home-icon {
-    width: 20px;  /* Reducir el tamaño de los iconos */
-    height: 20px;
-  }
+.login-form button {
+  width: 100%;
+  padding: 12px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login-form button:hover {
+  background-color: #45a049;
+}
+
+/* Tu CSS existente... */
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;  /* Para posicionar dropdown */
+}
+
+.settings-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1001;
+  min-width: 150px;
+  list-style: none;  /* Quita bullets de lista */
+  padding: 0;
+  margin: 0;
+}
+
+.settings-dropdown li {
+  padding: 10px;
+  cursor: pointer;
+  color: #333;
+  border-bottom: 1px solid #eee;  /* Separador entre opciones */
+}
+
+.settings-dropdown li:last-child {
+  border-bottom: none;  /* Quita borde del último */
+}
+
+.settings-dropdown li:hover {
+  background: #f0f0f0;
+}
+
+/* Estilos para modal (igual que antes) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1002;
+}
+
+.modal-content {
+  background: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.modal-content button {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 5px;
+}
+
+.modal-content button:hover {
+  background-color: #45a049;
 }
