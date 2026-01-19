@@ -40,7 +40,6 @@ const Navbar = () => {
 
       const data = await response.json();
       const { accesstoken, refreshtoken, role, id, nombre, dni } = data.data;
-
       localStorage.setItem('accesstoken', accesstoken);
       localStorage.setItem('refreshtoken', refreshtoken);
 
@@ -79,7 +78,7 @@ const Navbar = () => {
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
               <h3>Iniciar Sesión</h3>
               <form className="login-form" onSubmit={handleLoginSubmit}>
-                <input type="text" name="username" placeholder="Usuario (ej. alumno, profesor, preceptor, admin)" value={formData.username} onChange={handleInputChange} required />
+                <input type="text" name="username" placeholder="Nombre de Usuario" value={formData.username} onChange={handleInputChange} required />
                 <input type="password" name="password" placeholder="Contraseña" value={formData.password} onChange={handleInputChange} required />
                 <button type="submit">Iniciar Sesión</button>
                 {error && <p style={{ color: 'red' }}>{error}</p>}

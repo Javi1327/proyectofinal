@@ -13,68 +13,100 @@ const ChangePassword = ({ onClose }) => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    // Validación: Nueva contraseña debe tener máximo 20 caracteres
-    if (formData.newPassword.length > 20) {
-      toast.error('La nueva contraseña no puede tener más de 20 caracteres.');
-      return;
-    }
-    
-    if (formData.newPassword !== formData.confirmPassword) {
-      toast.error('Las contraseñas no coinciden');
-      return;
-    }
+  e.preventDefault();
+  
+  // Validaciones
+  if (formData.newPassword.length > 20) {
+    toast.error('La nueva contraseña no puede tener más de 20 caracteres.');
+    return;
+  }
+  if (formData.newPassword !== formData.confirmPassword) {
+    toast.error('Las contraseñas no coinciden');
+    return;
+  }
 
-    try {
-      let token = localStorage.getItem('accesstoken');
-      
-      // Verifica si el token expiró (exp * 1000 es timestamp en ms)
-      if (token && jwtDecode(token).exp * 1000 < Date.now()) {
-        console.log('Token expirado, intentando refrescar...');
-        const refreshResponse = await fetch(`${import.meta.env.VITE_URL_BACK}login/token`, {
-          method: 'POST',
-          headers: { 'x-refresh-token': localStorage.getItem('refreshtoken') }
-        });
-        
-        if (refreshResponse.ok) {
-          const { accesstoken } = await refreshResponse.json();
-          localStorage.setItem('accesstoken', accesstoken);
-          token = accesstoken;
-          console.log('Token refrescado exitosamente');
-        } else {
-          throw new Error('Token expirado. Reloguéate para continuar.');
-        }
-      }
-
-      // Ahora envía la petición con el token válido
-      const response = await fetch(`${import.meta.env.VITE_URL_BACK}login/change-password`, {
+  try {
+    let token = localStorage.getItem('accesstoken');
+    
+    // Refresh si expiró
+    if (token && jwtDecode(token).exp * 1000 < Date.now()) {
+      console.log('Token expirado, intentando refrescar...');
+      const refreshResponse = await fetch(`${import.meta.env.VITE_URL_BACK}login/token`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ currentPassword: formData.currentPassword, newPassword: formData.newPassword }),
+        headers: { 'x-refresh-token': localStorage.getItem('refreshtoken') }
       });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success('Contraseña cambiada exitosamente');
-        onClose();
-      } else {
-        // Si es 401 (no autorizado, asumiendo contraseña incorrecta), mostrar mensaje personalizado
-        if (response.status === 401) {
-          toast.error('Su contraseña actual es incorrecta. Ingrese su contraseña bien.');
-        } else {
-          // Para otros errores (cuando todo está bien pero hay un problema no relacionado con la contraseña), mostrar "Error al cambiar contraseña"
-          toast.error('Error al cambiar contraseña');
+      
+      if (refreshResponse.ok) {
+        const result = await refreshResponse.json();
+        const newAccessToken = result.data.accesstoken; 
+        
+        if (newAccessToken) {
+          localStorage.setItem('accesstoken', newAccessToken);
+          token = newAccessToken;
+          console.log('Token refrescado con éxito');
         }
+      } else {
+        throw new Error('Sesión expirada. Por favor, inicia sesión de nuevo.');
       }
-    } catch (err) {
-      toast.error(err.message);
     }
-  };
+
+    // Logs para el token
+    console.log('Token final a usar:', token);
+    try {
+      const decoded = jwtDecode(token);
+      console.log('Decoded token:', decoded);
+      console.log('Token expira en:', new Date(decoded.exp * 1000));
+      console.log('Ahora es:', new Date());
+    } catch (decodeError) {
+      console.error('Error decodificando token:', decodeError);
+      toast.error('Token corrupto. Inicia sesión de nuevo.');
+      return;
+    }
+
+    // Fetch para cambiar contraseña
+    const response = await fetch(`${import.meta.env.VITE_URL_BACK}login/change-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ currentPassword: formData.currentPassword, newPassword: formData.newPassword }),
+    });
+
+    console.log('Response status:', response.status);
+
+    if (response.ok) {
+      // 1. Mensaje de éxito
+      toast.success('¡Contraseña cambiada con éxito! Por seguridad, inicia sesión nuevamente.');
+
+      // 2. Limpiamos los tokens para que la sesión vieja se cierre
+      setTimeout(() => {
+        localStorage.removeItem('accesstoken');
+        localStorage.removeItem('refreshtoken');
+        
+        // 3. Cerramos el modal y recargamos o redirigimos
+        onClose(); 
+        window.location.href = '/'; // Ajusta esta ruta a tu página de login
+      }, 2500); // Damos tiempo a que lea el toast
+
+    } else {
+      // Tu lógica de errores está bien, solo asegúrate de leer el JSON una sola vez
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.message || errorData.error || 'Error al cambiar contraseña';
+
+      if (response.status === 401 || response.status === 400) {
+        toast.error('Su contraseña actual es incorrecta.');
+      } else if (response.status === 403) {
+        toast.error(`Sesión inválida: ${errorMessage}`);
+      } else {
+        toast.error(errorMessage);
+      }
+    }
+  } catch (err) {
+    console.error("Error completo:", err);
+    toast.error(err.message || 'Error inesperado');
+  }
+};
 
   return (
     <div className="modal-overlay" onClick={onClose}>
