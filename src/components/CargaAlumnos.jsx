@@ -16,6 +16,10 @@ function Alumno() {
     const [Telefono, setTelefono] = useState("");
     const [Direccion, setDireccion] = useState("");
     const [FechaNacimiento, setFechaNacimiento] = useState("");
+    const [CorreoPadre, setCorreoPadre] = useState("");
+    const [CorreoMadre, setCorreoMadre] = useState("");
+    const [TelefonoPadre, setTelefonoPadre] = useState("");
+    const [TelefonoMadre, setTelefonoMadre] = useState("");
     const [Grado, setGrado] = useState("");
     const [mensaje, setMensaje] = useState("");
     const [error, setError] = useState(false);
@@ -23,7 +27,7 @@ function Alumno() {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        if (!Nombre || !Apellido || !Correo || !Dni) {
+        if (!Nombre || !Apellido || !Correo || !Dni || !CorreoPadre || !CorreoMadre || !TelefonoPadre || !TelefonoMadre) {
             setError(true);
             setMensaje("Por favor, completa todos los campos obligatorios.");
             return;
@@ -37,6 +41,10 @@ function Alumno() {
             telefono: Telefono,
             direccion: Direccion,
             fechaNacimiento: FechaNacimiento,
+            correoPadre: CorreoPadre,
+            correoMadre: CorreoMadre,
+            telefonoPadre: TelefonoPadre,
+            telefonoMadre: TelefonoMadre,
             grado: Grado,
             //isHabilitado: true // Añadimos este campo para el estado del alumno
         };
@@ -130,6 +138,26 @@ function Alumno() {
                 <label>
                     Fecha de Nacimiento:
                     <input type="date" value={FechaNacimiento} onChange={(e) => setFechaNacimiento(e.target.value)} required  max={new Date().toISOString().split("T")[0]} />
+                </label>
+
+                <label>
+                    Correo del Padre:
+                    <input type="email" value={CorreoPadre} onChange={(e) => setCorreoPadre(e.target.value)} required maxLength="30"/>
+                </label>
+
+                <label>
+                    Teléfono del Padre:
+                    <input type="tel" value={TelefonoPadre} onChange={(e) => setTelefonoPadre(e.target.value)} required maxLength="15" pattern="\d*" />
+                </label>
+
+                <label>
+                    Correo de la Madre:
+                    <input type="email" value={CorreoMadre} onChange={(e) => setCorreoMadre(e.target.value)} required maxLength="30"/>
+                </label>
+
+                <label>
+                    Teléfono de la Madre:
+                    <input type="tel" value={TelefonoMadre} onChange={(e) => setTelefonoMadre(e.target.value)} required maxLength="15" pattern="\d*" />
                 </label>
 
                 <label>

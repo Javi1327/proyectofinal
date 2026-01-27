@@ -1,58 +1,131 @@
-.alumnos-container {
-  margin-top: 2rem;
-  padding: 1rem;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+/* Estilos para el Monitor de Riesgo */
+.header-alumnos {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.table-responsive {
-  overflow-x: auto;
+h1 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+.referencias {
+  display: flex;
+  gap: 15px;
+  font-size: 0.9em;
 }
 
-.alumnos-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
+.punto {
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
 }
 
-.alumnos-table th {
-  background-color: #343a40;
-  color: white;
-  padding: 12px;
+.verde { background-color: #28a745; }
+.amarillo { background-color: #ffc107; }
+.rojo { background-color: #dc3545; }
+
+.nombre-celda {
   text-align: left;
+  padding-left: 20px !important;
+  font-weight: 500;
 }
 
-.alumnos-table td {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
+.faltas-numero {
+  font-weight: bold;
+  font-size: 1.1em;
 }
 
-.alumnos-table tr:nth-child(even) {
-  background-color: #f2f2f2;
+/* Badges de Riesgo */
+.badge-riesgo {
+  padding: 6px 12px;
+  border-radius: 20px;
+  color: white;
+  font-size: 0.85em;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.riesgo-regular {
+  background-color: #28a745;
+}
+
+.riesgo-aviso {
+  background-color: #ffc107;
+  color: #333;
+}
+
+.riesgo-critico {
+  background-color: #dc3545;
+  animation: parpadeo-suave 2s infinite;
+}
+
+@keyframes parpadeo-suave {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
 }
 
 .alumnos-table tr:hover {
-  background-color: #e9ecef;
+  background-color: #f1f7ff;
 }
 
-.no-alumnos {
-  padding: 1rem;
-  background-color: #fff3cd;
-  color: #ff0000;
-  border-radius: 4px;
+.no-alumnos-box {
+  background-color: #fff4f4;
+  border: 2px dashed #e57373;
+  border-radius: 12px;
+  padding: 40px;
   text-align: center;
+  margin-top: 20px;
+  color: #c62828;
 }
 
-/* Responsive para móviles */
-@media (max-width: 768px) {
-  .alumnos-table {
-    display: block;
-  }
-  
-  .alumnos-table th, 
-  .alumnos-table td {
-    padding: 8px;
-    font-size: 0.9rem;
-  }
+.icon-warning {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+.no-alumnos-box p {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 5px 0;
+  color: black;
+}
+
+.no-alumnos-box small {
+  color: #313131;
+  font-style: italic;
+}
+
+.riesgo-critico {
+  background-color: #dc3545; /* Rojo fuerte */
+  box-shadow: 0 0 10px rgba(220, 53, 69, 0.5);
+}
+
+/* Opcional: una clase extra si quieres que el "LIBRE" sea negro */
+.badge-riesgo[text="LIBRE"] {
+  background-color: #000 !important;
+  color: #fff;
+}
+
+.riesgo-libre {
+  background-color: #000000 !important; /* Negro */
+  color: #ffffff !important;
+  border: 2px solid #ff0000;
+  animation: vibrar 0.5s infinite;
+}
+
+@keyframes vibrar {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(1px); }
+  50% { transform: translateX(-1px); }
+  75% { transform: translateX(1px); }
+  100% { transform: translateX(0); }
+}
+
+.fila-libre {
+  background-color: #fff0f0 !important; /* Fondo rosado suave para la fila completa */
 }

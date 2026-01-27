@@ -8,14 +8,11 @@ const VerCursos = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Obtener todos los cursos con sus alumnos
   useEffect(() => {
     const fetchCursos = async () => {
       try {
         setLoading(true);
         const response = await axios.get('http://localhost:3000/cursos');
-        console.log('Datos de cursos recibidos:', response.data);
-        
         if (response.data && Array.isArray(response.data)) {
           setCursos(response.data);
         } else {
@@ -23,7 +20,6 @@ const VerCursos = () => {
         }
       } catch (err) {
         setError('Error al cargar los cursos');
-        console.error('Error:', err);
       } finally {
         setLoading(false);
       }
@@ -31,20 +27,47 @@ const VerCursos = () => {
     fetchCursos();
   }, []);
 
-  // Obtener alumnos del curso seleccionado directamente del estado
+  // FUNCIÓN CLAVE: Calcula el estado basado en el array de asistencia real
+  const obtenerInfoFaltas = (asistencias = []) => {
+  const totalFaltas = asistencias.filter(a => a.presente === false).length;
+  // El orden de los IF es importante: primero el más grave
+    if (totalFaltas >= 28) {
+      return { 
+        total: totalFaltas, 
+        clase: "riesgo-libre", // Nueva clase CSS
+        texto: "ALUMNO LIBRE" 
+      };
+    } 
+    if (totalFaltas >= 20) {
+      return { 
+        total: totalFaltas, 
+        clase: "riesgo-critico", 
+        texto: "RIESGO EXTREMO" 
+      };
+    } 
+    if (totalFaltas >= 12) {
+      return { 
+        total: totalFaltas, 
+        clase: "riesgo-aviso", 
+        texto: "EN ALERTA" 
+      };
+    }
+    
+    return { total: totalFaltas, clase: "riesgo-regular", texto: "REGULAR" };
+  };
+
   const alumnosDelCurso = cursoSeleccionado 
     ? cursos.find(c => c.nombre === cursoSeleccionado)?.alumnos || []
     : [];
 
-  if (loading) return <div className="loading">Cargando...</div>;
+  if (loading) return <div className="loading">Cargando monitor de cursos...</div>;
   if (error) return <div className="error">{error}</div>;
 
   return (
     <div className="container">
-      <h1>Listado de Cursos</h1>
-      
+      <h1>Monitor de Asistencia por Curso</h1>
       <div className="cursos-container">
-        <h2>Seleccione un curso:</h2>
+        <h2>Seleccione un curso para evaluar riesgo:</h2>
         <div className="cursos-grid">
           {cursos.map((curso) => (
             <button
@@ -59,35 +82,59 @@ const VerCursos = () => {
       </div>
 
       {cursoSeleccionado && (
-        <div className="alumnos-container">
-          <h2>Alumnos de {cursoSeleccionado}</h2>
-          
-          {alumnosDelCurso.length > 0 ? (
-            <div className="table-responsive">
-              <table className="alumnos-table">
-                <thead>
-                  <tr>
-                    <th>N°</th>
-                    <th>Apellido</th>
-                    <th>Nombre</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {alumnosDelCurso.map((alumno, index) => (
-                    <tr key={alumno._id}>
-                      <td>{index + 1}</td>
-                      <td>{alumno.apellido}</td>
-                      <td>{alumno.nombre}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <p className="no-alumnos">No hay alumnos registrados en este curso</p>
-          )}
+  <div className="alumnos-container">
+    <div className="header-alumnos">
+      <h2>Estado de Alumnos: {cursoSeleccionado}</h2>
+      {/* Solo mostramos referencias si hay alumnos */}
+      {alumnosDelCurso.length > 0 && (
+        <div className="referencias">
+           <span className="ref-item"><span className="punto verde"></span> Regular</span>
+           <span className="ref-item"><span className="punto amarillo"></span> Aviso</span>
+           <span className="ref-item"><span className="punto rojo"></span> Riesgo</span>
         </div>
       )}
+    </div>
+    
+    {alumnosDelCurso.length > 0 ? (
+      <div className="table-responsive">
+        <table className="alumnos-table">
+          <thead>
+            <tr>
+              <th>N°</th>
+              <th>Apellido y Nombre</th>
+              <th>Total Faltas</th>
+              <th>Condición</th>
+            </tr>
+          </thead>
+          <tbody>
+            {alumnosDelCurso.map((alumno, index) => {
+              const info = obtenerInfoFaltas(alumno.asistencia);
+              return (
+                <tr key={alumno._id}>
+                  <td>{index + 1}</td>
+                  <td className="nombre-celda">{alumno.apellido}, {alumno.nombre}</td>
+                  <td className="faltas-numero">{info.total}</td>
+                  <td>
+                    <span className={`badge-riesgo ${info.clase}`}>
+                      {info.texto}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    ) : (
+      /* ESTE ES EL MENSAJE MEJORADO */
+      <div className="no-alumnos-box">
+        <div className="icon-warning">⚠️</div>
+        <p>No hay alumnos registrados en <strong>{cursoSeleccionado}</strong>.</p>
+        <small>Puedes agregar alumnos a este curso desde el panel de Administrador.</small>
+      </div>
+    )}
+  </div>
+)}
     </div>
   );
 };
