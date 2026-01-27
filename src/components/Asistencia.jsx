@@ -57,35 +57,46 @@ const Asistencia = () => {
     ? cursos.find(c => c.nombre === cursoSeleccionado)?.alumnos || []
     : [];
 
-  useEffect(() => {
-    if (cursoSeleccionado && alumnosDelCurso.length > 0) {
-      const cargarAsistencias = async () => {
-        setLoading(true);
-        try {
-          const asistenciaInicial = {};
-          await Promise.all(alumnosDelCurso.map(async (alumno) => {
-            const response = await axios.get(`http://localhost:3000/alumnos/${alumno._id}`);
-            const asistenciaAlumno = response.data.asistencia || [];
-            asistenciaInicial[alumno._id] = {};
-            fechasEscolares.forEach(fecha => {
-              const registro = asistenciaAlumno.find(a => a.fecha === fecha);
-              asistenciaInicial[alumno._id][fecha] = registro ? registro.presente : null;
+useEffect(() => {
+  if (cursoSeleccionado && alumnosDelCurso.length > 0) {
+    const cargarAsistencias = async () => {
+      setLoading(true);
+      try {
+        const asistenciaInicial = {};
+       // console.log('Alumnos del curso:', alumnosDelCurso.map(a => a._id));  // Ver IDs de alumnos
+        await Promise.all(alumnosDelCurso.map(async (alumno) => {
+          const response = await axios.get(`http://localhost:3000/alumnos/${alumno._id}`);
+          const asistenciaAlumno = response.data.data?.asistencia || [];
+          if (asistenciaAlumno.length === 0) {
+            console.log('Array vacío para alumno:', alumno._id);  // Confirmar vacío
+          }
+          asistenciaInicial[alumno._id] = {};
+          fechasEscolares.forEach(fecha => {
+            const registro = asistenciaAlumno.find(a => {
+              console.log('Comparando BD:', a.fecha, 'con Generada:', fecha, '¿Igual?', a.fecha === fecha);
+              return a.fecha === fecha;
             });
-          }));
-          setAsistencia(asistenciaInicial);
-        } catch (err) {
-          setError('Error al cargar asistencias');
-        } finally {
-          setLoading(false);
-        }
-      };
-      cargarAsistencias();
-    }
-  }, [cursoSeleccionado, alumnosDelCurso, fechasEscolares]);
+            asistenciaInicial[alumno._id][fecha] = registro ? registro.presente : null;
+         //   console.log('Resultado para fecha:', fecha, '->', asistenciaInicial[alumno._id][fecha]);
+          });
+        }));
+       // console.log('Asistencia inicial completa:', asistenciaInicial);
+        setAsistencia(asistenciaInicial);
+      } catch (err) {
+        console.error('Error en carga:', err);  // Ver errores de red
+        setError('Error al cargar asistencias');
+      } finally {
+        setLoading(false);
+      }
+    };
+    cargarAsistencias();
+  }
+}, [cursoSeleccionado, alumnosDelCurso, fechasEscolares]);
+
 
   const toggleAsistencia = (alumnoId, fecha) => {
   if (fecha !== fechaDeCarga) {
-    toast.warning(`Para editar esta fecha, selecciónala arriba en "Día de Trabajo"`);
+    toast.warning(`Para editar esta fecha, selecciónala la fecha deseada`);
     return;
   }
 
