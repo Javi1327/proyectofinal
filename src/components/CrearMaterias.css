@@ -1,6 +1,7 @@
+/* Contenedor principal */
 .crear-materia-container {
   width: 100%;
-  max-width: 600px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
   background-color: #f8f9fa;
@@ -8,47 +9,237 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.crear-materia-container h2 {
-  text-align: center;
-  color: #0275BC;
+/* Sección del form */
+.form-section {
   margin-bottom: 20px;
 }
 
-form {
+/* Títulos */
+.crear-materia-title,
+.select-title,
+.horarios-title,
+.lista-title {
+  color: #0275BC;
+  margin-bottom: 10px;
+}
+
+.crear-materia-title.editing {
+  color: #ff9800; /* Naranja para edición */
+}
+
+/* Formulario */
+.crear-materia-form {
   display: flex;
   flex-direction: column;
   gap: 15px;
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-input[type="text"] {
+.crear-materia-form.editing {
+  border: 2px solid #ff9800; /* Borde naranja en edición */
+}
+
+/* Inputs y selects */
+.input-nombre,
+.select-cursos,
+.select-curso-horario,
+.select-dia,
+.input-hora {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  font-size: 16px;
+  font-size: 14px;
+  width: 100%;
 }
 
-.select-container .select_control {
-  font-size: 16px;
-  padding: 5px;
+.select-container {
+  margin-bottom: 20px;
 }
 
-button[type="submit"] {
+/* Contenedor de horarios mejorado */
+.horarios-container {
+  border: 1px solid #ccc;
+  border-radius: 8px;  /* Más redondeado */
+  padding: 20px;  /* Más padding */
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);  /* Sombra suave */
+}
+
+.horarios-container h3 {
+  margin-top: 0;
+  margin-bottom: 15px;  /* Más espacio abajo */
+}
+
+/* NUEVO: Header con etiquetas alineadas */
+.horario-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr auto;  /* 5 columnas: curso, día, inicio, fin, acción */
+  gap: 10px;
+  font-weight: bold;
+  color: #0275BC;
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #ddd;
+}
+
+.horario-header span {
+  text-align: center;
+  font-size: 14px;
+}
+
+/* Horarios en grid alineado */
+.horario-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr auto;  /* Mantiene 5 columnas */
+  gap: 10px;
+  align-items: center;  /* Centra verticalmente */
+  align-content: center;  /* Asegura alineación de contenido */
+  margin-bottom: 10px;
   padding: 10px;
-  background-color: #0275BC;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  border: 1px solid #eee;
+  min-height: 50px;  /* Altura mínima para consistencia */
+}
+
+/* Alinear selects e inputs */
+.horario-item select,
+.horario-item input[type="time"] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  text-align: center;
+  height: 36px;  /* Altura fija para todos */
+  box-sizing: border-box;  /* Incluye padding en la altura */
+}
+
+.horario-item button {
+  padding: 8px 12px;
+  background-color: #dc3545;
   color: white;
   border: none;
   border-radius: 4px;
-  font-size: 16px;
+  font-size: 14px;
   cursor: pointer;
+  transition: background-color 0.3s;
+  height: 36px;  /* Misma altura que selects/inputs */
+  box-sizing: border-box;
+}
+
+/* Botones */
+.btn-submit,
+.btn-cancelar,
+.btn-agregar-horario,
+.btn-eliminar-horario,
+.btn-editar,
+.btn-eliminar {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
   transition: background-color 0.3s;
 }
 
-button[type="submit"]:hover {
+.btn-submit {
+  background-color: #0275BC;
+  color: white;
+}
+
+.btn-submit:hover {
   background-color: #025a8b;
 }
 
-p {
-  color: rgb(253, 252, 252);
-  font-size: 14px;
+.btn-cancelar {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-agregar-horario {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-agregar-horario:hover {
+  background-color: #218838;
+}
+
+.btn-eliminar-horario,
+.btn-eliminar {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-eliminar-horario:hover,
+.btn-eliminar:hover {
+  background-color: #c82333;
+}
+
+.btn-editar {
+  background-color: #ff9800;
+  color: white;
+}
+
+.btn-editar:hover {
+  background-color: #e68900;
+}
+
+/* Mensajes */
+.error-message {
+  color: red;
+  font-weight: bold;
   text-align: center;
+}
+
+.success-message {
+  color: green;
+  font-weight: bold;
+  text-align: center;
+}
+
+.loading-message {
+  color: #0275BC;
+  font-style: italic;
+  text-align: center;
+}
+
+/* Lista de materias */
+.lista-materias {
+  list-style-type: none;
+  padding: 0;
+  background-color: #e8f5e8; /* Verde pastel */
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.materia-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 15px;
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  flex-direction: column;
+}
+
+.materia-info p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #202020;
+}
+ 
+.materia-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+.materia-item{
+  background-color: #bee4fc!important;
 }

@@ -54,6 +54,9 @@ const AlumnoView = () => {
         <button onClick={() => handleNavigate("ver-asistencia")} className="funcion-btn">
           Ver Asistencia
         </button>
+        <button onClick={() => handleNavigate("ver-calendario")} className="funcion-btn">
+          Ver calendario académico
+        </button>
         {/* Agrega más botones si quieres */}
       </div>
     </div>

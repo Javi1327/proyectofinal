@@ -15,10 +15,10 @@ import ProfesorView from './pages/ProfesorView';
 import SubirNotas from './components/SubirNotas';
 import MisCursos from './components/MisCursos';
 import PreceptorView from './pages/PreceptorView';
+import AlumnoView from './Pages/AlumnoView';
 import VerCursos from './components/VerCursos';
 import VerAlumnos from './components/VerAlumnos';
 import Asistencia from './components/Asistencia';
-import AlumnoView from './pages/AlumnoView';
 import VerNotasAlumnos from './components/VerNotasAlumnos';
 import TareasAlumno from './components/TareasAlumno';
 import Foro from './components/Foro';
@@ -27,6 +27,7 @@ import CrearMaterias from './components/CrearMaterias';
 import AdminUsuarios from './components/AdminUsuarios';
 import VerAsistenciasAlumno from './components/VerAsistenciaAlumno';
 import CargaAlumnos from './components/CargaAlumnos';
+import MostrarCalendario from './components/MostrarCalendario';
 
 import './App.css';
 
@@ -58,6 +59,7 @@ const App = () => {
               <Route path="/alumno/tareas-alumno" element={<TareasAlumno />} />
               <Route path="/alumno/ver-asistencia" element={<VerAsistenciasAlumno />} />
               <Route path="/alumno/foro" element={<Foro />} />
+              <Route path="/alumno/ver-calendario" element={<MostrarCalendario />} />
 
               <Route path="/admin/home" element={<AdminView />} />
               <Route path="/admin/administrar-usuarios" element={<AdminUsuarios />} />

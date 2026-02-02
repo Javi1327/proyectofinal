@@ -1,0 +1,53 @@
+.calendario-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.calendario-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.volver-btn {
+  display: block;
+  margin: 0 auto 20px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.volver-btn:hover {
+  background-color: #0056b3;
+}
+
+.calendario-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.calendario-table th,
+.calendario-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+.calendario-table th {
+  background-color: #0275BC;
+  font-weight: bold;
+}
+
+.calendario-table tr:nth-child(even) {
+  background-color: #f1f0f0;
+}
+
+.calendario-table tr:hover {
+  background-color: #e9ecef;
+}

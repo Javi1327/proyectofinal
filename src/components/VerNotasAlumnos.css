@@ -1,27 +1,35 @@
 .notas-container {
-    text-align: center;
-    padding: 20px;
-  }
+  text-align: center;
+  padding: 20px;
+}
   
-  .notas-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
+.notas-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
   
-  .notas-table th, .notas-table td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: center;
-  }
+.notas-table th, .notas-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
   
-  .notas-table th {
-    background-color: #0275BC;
-    color: white;
-  }
+.notas-table th {
+  background-color: #0275BC;
+  color: white;
+}
   
-  .notas-table tr:nth-child(even) {
-    background-color: #f2f2f2;
-  }
-  
-  
+.notas-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.notas-table th, .notas-table td {
+  padding: 8px;
+  text-align: center;
+}
+
+.notas-table {
+  width: 100%;
+  border-collapse: collapse;
+}

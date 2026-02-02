@@ -20,8 +20,9 @@
 
 .footer-links {
   margin: 10px 20px;
+  background-color: #0275BC !important;
 }
-
+ 
 .footer-links h4 {
   margin-bottom: 10px;
   font-size: 1.2rem;
@@ -36,7 +37,9 @@
   font-size: 0.9rem;
   line-height: 1.5;
 }
-
+li{
+  background-color: #0275BC !important;
+}
 .copy {
   font-size: 0.8rem;
   border-top: 1px solid rgba(255, 255, 255, 0.3);

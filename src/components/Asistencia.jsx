@@ -13,30 +13,31 @@ const Asistencia = () => {
   const [error, setError] = useState(null);
   const [modalNotif, setModalNotif] = useState({ show: false, alumno: null, mensaje: "" });
   const [fechaDeCarga, setFechaDeCarga] = useState(new Date().toISOString().split('T')[0]);
+  const [mostrarEditor, setMostrarEditor] = useState(false); // Nuevo estado para mostrar/ocultar el editor de fechas
 
   const hoy = new Date().toISOString().split('T')[0];
 
   useEffect(() => {
-  const generarFechas = () => {
-    const fechas = [];
-    // Usamos 2026 para que coincida con tu ciclo actual
-    const anioActual = 2026; 
-    const start = new Date(anioActual, 0, 1); // 1 de Enero
-    const end = new Date(anioActual, 11, 31); // 31 de Diciembre
+    const generarFechas = () => {
+      const fechas = [];
+      // Usamos 2026 para que coincida con tu ciclo actual
+      const anioActual = 2026; 
+      const start = new Date(anioActual, 0, 1); // 1 de Enero
+      const end = new Date(anioActual, 11, 31); // 31 de Diciembre
 
-    let d = new Date(start);
-    while (d <= end) {
-      const day = d.getDay();
-      // Solo Lunes a Viernes
-      if (day !== 0 && day !== 6) {
-        fechas.push(d.toISOString().split('T')[0]);
+      let d = new Date(start);
+      while (d <= end) {
+        const day = d.getDay();
+        // Solo Lunes a Viernes
+        if (day !== 0 && day !== 6) {
+          fechas.push(d.toISOString().split('T')[0]);
+        }
+        d.setDate(d.getDate() + 1);
       }
-      d.setDate(d.getDate() + 1);
-    }
-    setFechasEscolares(fechas);
-  };
-  generarFechas();
-}, []);
+      setFechasEscolares(fechas);
+    };
+    generarFechas();
+  }, []);
 
   useEffect(() => {
     const fetchCursos = async () => {
@@ -57,130 +58,118 @@ const Asistencia = () => {
     ? cursos.find(c => c.nombre === cursoSeleccionado)?.alumnos || []
     : [];
 
-useEffect(() => {
-  if (cursoSeleccionado && alumnosDelCurso.length > 0) {
-    const cargarAsistencias = async () => {
-      setLoading(true);
-      try {
-        const asistenciaInicial = {};
-       // console.log('Alumnos del curso:', alumnosDelCurso.map(a => a._id));  // Ver IDs de alumnos
-        await Promise.all(alumnosDelCurso.map(async (alumno) => {
-          const response = await axios.get(`http://localhost:3000/alumnos/${alumno._id}`);
-          const asistenciaAlumno = response.data.data?.asistencia || [];
-          if (asistenciaAlumno.length === 0) {
-            console.log('Array vacío para alumno:', alumno._id);  // Confirmar vacío
-          }
-          asistenciaInicial[alumno._id] = {};
-          fechasEscolares.forEach(fecha => {
-            const registro = asistenciaAlumno.find(a => {
-              console.log('Comparando BD:', a.fecha, 'con Generada:', fecha, '¿Igual?', a.fecha === fecha);
-              return a.fecha === fecha;
+  useEffect(() => {
+    if (cursoSeleccionado && alumnosDelCurso.length > 0) {
+      const cargarAsistencias = async () => {
+        setLoading(true);
+        try {
+          const asistenciaInicial = {};
+          await Promise.all(alumnosDelCurso.map(async (alumno) => {
+            const response = await axios.get(`http://localhost:3000/alumnos/${alumno._id}`);
+            const asistenciaAlumno = response.data.data?.asistencia || [];
+            asistenciaInicial[alumno._id] = {};
+            fechasEscolares.forEach(fecha => {
+              const registro = asistenciaAlumno.find(a => a.fecha === fecha);
+              asistenciaInicial[alumno._id][fecha] = registro ? registro.presente : null;
             });
-            asistenciaInicial[alumno._id][fecha] = registro ? registro.presente : null;
-         //   console.log('Resultado para fecha:', fecha, '->', asistenciaInicial[alumno._id][fecha]);
-          });
-        }));
-       // console.log('Asistencia inicial completa:', asistenciaInicial);
-        setAsistencia(asistenciaInicial);
-      } catch (err) {
-        console.error('Error en carga:', err);  // Ver errores de red
-        setError('Error al cargar asistencias');
-      } finally {
-        setLoading(false);
-      }
-    };
-    cargarAsistencias();
-  }
-}, [cursoSeleccionado, alumnosDelCurso, fechasEscolares]);
-
+          }));
+          setAsistencia(asistenciaInicial);
+        } catch (err) {
+          console.error('Error en carga:', err);
+          setError('Error al cargar asistencias');
+        } finally {
+          setLoading(false);
+        }
+      };
+      cargarAsistencias();
+    }
+  }, [cursoSeleccionado, alumnosDelCurso, fechasEscolares]);
 
   const toggleAsistencia = (alumnoId, fecha) => {
-  if (fecha !== fechaDeCarga) {
-    toast.warning(`Para editar esta fecha, selecciónala la fecha deseada`);
-    return;
-  }
+    // Nota: El comentario indica que originalmente había una restricción para editar solo la fecha de carga,
+    // pero está comentado. Si quieres reactivarlo, descoméntalo.
+    // if (fecha !== fechaDeCarga) {
+    //   toast.warning(`Para editar esta fecha, selecciónala la fecha deseada`);
+    //   return;
+    // }
 
-  setAsistencia(prev => {
-    const estadoActual = prev[alumnoId]?.[fecha];
-    let nuevoEstado;
-    if (estadoActual === null || estadoActual === undefined) nuevoEstado = true;
-    else if (estadoActual === true) nuevoEstado = false;
-    else nuevoEstado = null;
+    setAsistencia(prev => {
+      const estadoActual = prev[alumnoId]?.[fecha];
+      let nuevoEstado;
+      if (estadoActual === null || estadoActual === undefined) nuevoEstado = true;
+      else if (estadoActual === true) nuevoEstado = false;
+      else nuevoEstado = null;
 
-    return {
-      ...prev,
-      [alumnoId]: { ...prev[alumnoId], [fecha]: nuevoEstado }
-    };
-  });
-};
+      return {
+        ...prev,
+        [alumnoId]: { ...prev[alumnoId], [fecha]: nuevoEstado }
+      };
+    });
+  };
 
-    const guardarAsistencia = async () => {
-      // 1. Verificar si hay AL MENOS un cambio realizado en la columna actual
-      const hayMarcas = alumnosDelCurso.some(alumno => {
-        const estado = asistencia[alumno._id]?.[fechaDeCarga];
-        return estado === true || estado === false;
-      });
+  const guardarAsistencia = async () => {
+    // 1. Verificar si hay AL MENOS un cambio realizado en la columna actual
+    const hayMarcas = alumnosDelCurso.some(alumno => {
+      const estado = asistencia[alumno._id]?.[fechaDeCarga];
+      return estado === true || estado === false;
+    });
 
-      // Si no hay nada marcado (todo gris), mostramos error y detenemos el proceso
-      if (!hayMarcas) {
-        toast.error("❌ No has marcado ninguna asistencia (todos están en gris). Selecciona Presente o Ausente antes de guardar.");
-        return;
-      }
+    // Si no hay nada marcado (todo gris), mostramos error y detenemos el proceso
+    if (!hayMarcas) {
+      toast.error("❌ No has marcado ninguna asistencia (todos están en gris). Selecciona Presente o Ausente antes de guardar.");
+      return;
+    }
 
-      // 2. Si hay marcas, procedemos a contar cuántos quedan en gris para avisar
-      const alumnosEnGris = alumnosDelCurso.filter(alumno => {
-        const estado = asistencia[alumno._id]?.[fechaDeCarga];
-        return estado === null || estado === undefined;
-      });
+    // 2. Si hay marcas, procedemos a contar cuántos quedan en gris para avisar
+    const alumnosEnGris = alumnosDelCurso.filter(alumno => {
+      const estado = asistencia[alumno._id]?.[fechaDeCarga];
+      return estado === null || estado === undefined;
+    });
 
-      if (alumnosEnGris.length > 0) {
+    if (alumnosEnGris.length > 0) {
       toast.info(`ℹ️ Guardando asistencia. Hay ${alumnosEnGris.length} alumnos que quedarán sin registro.`);
     }
     setLoading(true);
 
     try {
-    // CAMBIO CLAVE: Usamos for...of para que sea uno por uno y no se dupliquen
-    for (const alumno of alumnosDelCurso) {
-      const estadoSeleccionado = asistencia[alumno._id]?.[fechaDeCarga];
+      // Usamos for...of para procesar uno por uno y evitar duplicados
+      for (const alumno of alumnosDelCurso) {
+        const estadoSeleccionado = asistencia[alumno._id]?.[fechaDeCarga];
 
-      // Si no hay selección (Gris), saltamos al siguiente
-      if (estadoSeleccionado === null || estadoSeleccionado === undefined) continue;
+        // Si no hay selección (Gris), saltamos al siguiente
+        if (estadoSeleccionado === null || estadoSeleccionado === undefined) continue;
 
-      // 1. Obtenemos los datos frescos del alumno
-      const res = await axios.get(`http://localhost:3000/alumnos/${alumno._id}`);
-      let historial = res.data.data?.asistencia || res.data.asistencia || [];
+        // 1. Obtenemos los datos frescos del alumno
+        const res = await axios.get(`http://localhost:3000/alumnos/${alumno._id}`);
+        let historial = res.data.data?.asistencia || res.data.asistencia || [];
 
-      // 2. FILTRADO AGRESIVO: 
-      // Eliminamos CUALQUIER registro que coincida con la fecha de carga.
-      // Esto borra los 120 objetos repetidos de esa fecha de un solo golpe.
-      historial = historial.filter(reg => {
-        if (!reg.fecha) return false;
-        const fechaRegCorta = reg.fecha.split('T')[0];
-        return fechaRegCorta !== fechaDeCarga;
-      });
+        // 2. FILTRADO AGRESIVO: Eliminamos CUALQUIER registro que coincida con la fecha de carga.
+        historial = historial.filter(reg => {
+          if (!reg.fecha) return false;
+          const fechaRegCorta = reg.fecha.split('T')[0];
+          return fechaRegCorta !== fechaDeCarga;
+        });
 
-      // 3. Insertamos EL ÚNICO registro nuevo
-      historial.push({ 
-        fecha: fechaDeCarga, 
-        presente: estadoSeleccionado 
-      });
+        // 3. Insertamos EL ÚNICO registro nuevo
+        historial.push({ 
+          fecha: fechaDeCarga, 
+          presente: estadoSeleccionado 
+        });
 
-      // 4. Guardamos y ESPERAMOS (await) antes de seguir con el siguiente alumno
-      await axios.put(`http://localhost:3000/alumnos/${alumno._id}`, { 
-        asistencia: historial 
-      });
+        // 4. Guardamos y ESPERAMOS antes de seguir con el siguiente alumno
+        await axios.put(`http://localhost:3000/alumnos/${alumno._id}`, { 
+          asistencia: historial 
+        });
+      }
+
+      toast.success(`✅ Asistencia del ${fechaDeCarga} sincronizada y limpia.`);
+    } catch (error) {
+      console.error("Error al guardar:", error);
+      toast.error("Error en el servidor al procesar la lista.");
+    } finally {
+      setLoading(false);
     }
-
-    toast.success(`✅ Asistencia del ${fechaDeCarga} sincronizada y limpia.`);
-  } catch (error) {
-    console.error("Error al guardar:", error);
-    toast.error("Error en el servidor al procesar la lista.");
-  } finally {
-    setLoading(false);
-  }
-};
-
-
+  };
 
   const contarFaltasEnPantalla = (alumnoId) => {
     return Object.values(asistencia[alumnoId] || {}).filter(val => val === false).length;
@@ -197,16 +186,16 @@ useEffect(() => {
     setModalNotif({ show: false, alumno: null, mensaje: "" });
   };
 
-  // CAMBIO: Agregamos Enero y Febrero a la lista
+  // Agregamos Enero y Febrero a la lista
   const mesesNom = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
   const fechasPorMes = mesesNom.map((mes, index) => {
-  // Filtramos las fechas que pertenecen a este mes real
-  const fechasDelMes = fechasEscolares.filter(fecha => {
-    // Usamos T00:00:00 para que la fecha sea exacta a las 0 horas de ese día
-    const d = new Date(fecha + "T00:00:00");
-    return d.getMonth() === index;
-  });
-  return { mes, fechas: fechasDelMes };
+    // Filtramos las fechas que pertenecen a este mes real
+    const fechasDelMes = fechasEscolares.filter(fecha => {
+      // Usamos T00:00:00 para que la fecha sea exacta a las 0 horas de ese día
+      const d = new Date(fecha + "T00:00:00");
+      return d.getMonth() === index;
+    });
+    return { mes, fechas: fechasDelMes };
   });
 
   const generarCeldasAsistencia = (alumno) => {
@@ -220,7 +209,7 @@ useEffect(() => {
       const estado = asistencia[alumno._id]?.[fecha];
       const claseColor = estado === true ? 'presente' : estado === false ? 'ausente' : 'gris';
 
-      // CAMBIO: Detectamos si es Enero o Febrero para el color del CSS
+      // Detectamos si es Enero o Febrero para el color del CSS
       const esPrueba = mesActual < 2 ? 'mes-prueba' : '';
 
       return (
@@ -249,6 +238,7 @@ useEffect(() => {
         <div className="curso-detalle">
           <h3>Asistencias De {cursoSeleccionado} (Ciclo 2026)</h3>
           <h4>un clic para presente y doble clic para ausente</h4>
+          <h5>Presentes ✅ <span style={{ marginLeft: '40px' }}> Ausentes🟥</span></h5>
           {alumnosDelCurso.length === 0 ? (
             <p className="sinAlumnos">⚠️ Este curso no tiene alumnos.</p>
           ) : (
@@ -319,18 +309,25 @@ useEffect(() => {
               <button onClick={guardarAsistencia} className="guardar-btn">Guardar Solo Hoy</button>
 
               <div className="panel-control-asistencia">
-                <div className="selector-fecha">
-                  <label>📅 (Corrección selccione la fecha a editar.): </label>
-                  <input 
-                    type="date" 
-                    value={fechaDeCarga} 
-                    onChange={(e) => setFechaDeCarga(e.target.value)}
-                    className="input-fecha-carga"
-                  />
-                </div>
-                <button onClick={guardarAsistencia} className="guardar-btn">
-                  Guardar Cambios del día {fechaDeCarga}
+                <button onClick={() => setMostrarEditor(!mostrarEditor)} className="editar-btn">
+                  {mostrarEditor ? 'Ocultar Editor de Fechas' : 'Editar Fechas'}
                 </button>
+                {mostrarEditor && (
+                  <>
+                    <div className="selector-fecha">
+                      <label>📅 Seleccione la fecha a editar: </label>
+                      <input 
+                        type="date" 
+                        value={fechaDeCarga} 
+                        onChange={(e) => setFechaDeCarga(e.target.value)}
+                        className="input-fecha-carga"
+                      />
+                    </div>
+                    <button onClick={guardarAsistencia} className="guardar-btn">
+                      Guardar Cambios del día {fechaDeCarga}
+                    </button>
+                  </>
+                )}
               </div>
             </>
           )}
