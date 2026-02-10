@@ -10,17 +10,12 @@ const ProfesorView = () => {
       <h2>Bienvenido, Profesor</h2>
 
       <div className="botones-container">
+        {/* Botón unificado para gestionar notas (subir, editar, eliminar) */}
         <button
           className="funcion-btn"
-          onClick={() => navigate('/profesor/subir-notas')} // Redirige a la ruta correspondiente
+          onClick={() => navigate('/profesor/gestion-notas')} // Nueva ruta para el componente unificado
         >
-          Subir Notas
-        </button>
-        <button
-          className="funcion-btn"
-          onClick={() => navigate('/profesor/mis-cursos')} // Redirige a la ruta correspondiente
-        >
-          Mis Cursos
+          Gestionar Notas
         </button>
       </div>
     </div>

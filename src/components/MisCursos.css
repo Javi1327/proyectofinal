@@ -25,7 +25,7 @@
 
 .mis-cursos-btn {
   background-color: #0275BC;
-  color: white;
+  color: #fff;
   border: none;
   padding: 12px 20px;
   border-radius: 8px;
@@ -41,24 +41,23 @@
 }
 
 /* ===============================
-   MODAL MIS CURSOS (SOLO ESTE)
+   MODAL GESTIÓN DE NOTAS (ANCHO)
+   🔥 CENTRADO CORRECTO
 ================================ */
 
-/* ancho real del modal */
-.mis-cursos-modal {
-  max-width: 95vw !important;
-  width: 95vw !important;
+.mis-cursos-modal .modal-dialog {
+  max-width: 95vw;
+  width: 95vw;
+  margin: auto;           /* ✅ CENTRA BIEN */
 }
 
-/* contenido */
 .mis-cursos-modal .modal-content {
   max-height: 90vh;
-  width: auto;
 }
 
-/* body con scroll */
 .mis-cursos-modal .modal-body {
   overflow-y: auto;
+  padding: 1rem;
 }
 
 /* ===============================
@@ -67,29 +66,20 @@
 
 .mis-cursos-modal table {
   width: 100%;
-  min-width: 900px;
+  font-size: 0.9rem;
 }
 
-.mis-cursos-modal th {
-  white-space: nowrap;
-  text-align: center;
-}
-
+.mis-cursos-modal th,
 .mis-cursos-modal td {
-  white-space: nowrap;
   text-align: center;
   vertical-align: middle;
+  white-space: nowrap;
 }
 
-/* columna Alumno */
-.mis-cursos-modal th:first-child,
-.mis-cursos-modal td:first-child {
-  white-space: normal;
+/* Columna Alumno */
+.mis-cursos-modal th:nth-child(2),
+.mis-cursos-modal td:nth-child(2) {
   text-align: left;
   min-width: 220px;
-}
-
-/* scroll horizontal SOLO tabla */
-.mis-cursos-modal .table-responsive {
-  overflow-x: auto;
+  white-space: normal;
 }

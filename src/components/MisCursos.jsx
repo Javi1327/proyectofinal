@@ -6,7 +6,7 @@ import { useUser } from "../context/UserContext";
 import "./MisCursos.css";
 
 const MisCursos = () => {
-  const { userId } = useUser();
+  const {user, role} = useUser();
 
   const [profesor, setProfesor] = useState(null);
   const [cursos, setCursos] = useState([]);
@@ -24,9 +24,9 @@ const MisCursos = () => {
      CARGA PROFESOR Y CURSOS
   ============================== */
   useEffect(() => {
-    if (!userId) return;
+    if (!role) return;
 
-    axios.get(`http://localhost:3000/profesores/${userId}`)
+    axios.get(`http://localhost:3000/profesores/${user.id}`)
       .then(res => {
         const prof = res.data.data;
         setProfesor(prof);
@@ -41,7 +41,7 @@ const MisCursos = () => {
       })
       .then(res => {
         const filtrados = res.data.filter(curso =>
-          curso.profesores.some(p => p._id === userId) &&
+          curso.profesores.some(p => p._id === user.id) &&
           curso.materias.some(m =>
             typeof m === "object" ? m._id === materiaAsignada : m === materiaAsignada
           )
@@ -49,8 +49,7 @@ const MisCursos = () => {
         setCursos(filtrados);
       })
       .catch(() => toast.error("Error al cargar datos"));
-  }, [userId, materiaAsignada]);
-
+  }, [user.id, materiaAsignada]);
   /* =============================
      MANEJO DE CURSO
   ============================== */
@@ -158,7 +157,7 @@ const MisCursos = () => {
   <Modal
     show={showModal}
     onHide={cerrarModal}
-    dialogClassName="mis-cursos-modal"
+    dialogClassName="mis-cursos-modaleee"
     size="xl"
     centered
   >
