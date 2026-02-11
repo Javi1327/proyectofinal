@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-//import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './VerAlumnos.css';
 
 const VerAlumnos = () => {
-
   const backurl = import.meta.env.VITE_URL_BACK;
 
   const [alumnos, setAlumnos] = useState([]);
@@ -18,6 +18,11 @@ const VerAlumnos = () => {
   const [Direccion, setDireccion] = useState('');
   const [FechaNacimiento, setFechaNacimiento] = useState('');
   const [Grado, setGrado] = useState(''); // Cambiado a string para simplificar, pero ajusta si es objeto
+  // Nuevos estados para los padres
+  const [correoPadre, setCorreoPadre] = useState('');
+  const [telefonoPadre, setTelefonoPadre] = useState('');
+  const [correoMadre, setCorreoMadre] = useState('');
+  const [telefonoMadre, setTelefonoMadre] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState('apellido');
   const [sortAsc, setSortAsc] = useState(true);
@@ -36,13 +41,12 @@ const VerAlumnos = () => {
       }
       const result = await response.json();
       console.log(result); // Verificamos la estructura de los datos
-      //setAlumnos(data);
       console.log(result.data)
       setAlumnos(Array.isArray(result.data) ? result.data : []);
     } catch (err) {
       console.error('Error al obtener los alumnos:', err);
       setAlumnos([]);
-      alert('No se pudo cargar la lista de alumnos. Por favor, inténtalo de nuevo más tarde.');
+      toast.error('No se pudo cargar la lista de alumnos. Por favor, inténtalo de nuevo más tarde.'); // Cambiado a toast
     }
   };
 
@@ -61,28 +65,24 @@ const VerAlumnos = () => {
     }
   };
 
-
   // Función para eliminar alumno
   const eliminarAlumno = async (id) => {
     try {
-      // Actualizamos el estado en el servidor usando PATCH
-      //await axios.patch(`http://localhost:3001/alumnos/${id}`, { isHabilitado: false });
       const response = await fetch(`${backurl}alumnos/${id}`, {
         method: "DELETE",
         headers: {"Content-Type": "application/json"}
       }) 
-      // Actualizamos el estado en el frontend
-      //setAlumnos(alumnos.map(alumno =>
-      //  alumno.id === id ? { ...alumno, isHabilitado: false } : alumno
-      //));
       if (response.ok) {
         // Actualizamos el estado en el frontend
         setAlumnos(alumnos.filter(alumno => alumno._id !== id)); // Cambiado aquí
+        toast.success('Alumno eliminado correctamente.'); // Toast de éxito agregado
       } else {
         console.error('Error al eliminar el alumno:', response.statusText);
+        toast.error('Error al eliminar el alumno. Inténtalo de nuevo.'); // Toast de error agregado
       }
     } catch (err) {
       console.error('Error al eliminar el alumno:', err);
+      toast.error('Error al eliminar el alumno. Inténtalo de nuevo.'); // Toast de error agregado
     }
   };
   
@@ -96,8 +96,12 @@ const VerAlumnos = () => {
     setTelefono(alumno.telefono);
     setDireccion(alumno.direccion);
     setFechaNacimiento(alumno.fechaNacimiento);
-    // Asumiendo que grado es un objeto con _id, ajusta si es necesario
-    setGrado(alumno.grado?._id || ''); // Cambiado para usar _id si es objeto
+    setGrado(alumno.grado?._id || '');
+    // Nuevos campos de padres
+    setCorreoPadre(alumno.correoPadre || '');
+    setTelefonoPadre(alumno.telefonoPadre || '');
+    setCorreoMadre(alumno.correoMadre || '');
+    setTelefonoMadre(alumno.telefonoMadre || '');
     setIsModalOpen(true);
   };
 
@@ -107,6 +111,8 @@ const VerAlumnos = () => {
   };
 
   // Función para guardar cambios (ahora envía al backend)
+  const fechaLocal = FechaNacimiento ? new Date(FechaNacimiento + 'T00:00:00') : null;
+
   const handleSave = async () => {
     if (!alumnoToEdit) return;
 
@@ -117,33 +123,47 @@ const VerAlumnos = () => {
       dni: Dni,
       telefono: Telefono,
       direccion: Direccion,
-      fechaNacimiento: FechaNacimiento,
-      grado: Grado, // Asumiendo que envías el _id del grado
+      fechaNacimiento: fechaLocal ? fechaLocal.toISOString() : null,
+      grado: Grado,
+      ...(correoPadre && { correoPadre }),
+      ...(telefonoPadre && { telefonoPadre }),
+      ...(correoMadre && { correoMadre }),
+      ...(telefonoMadre && { telefonoMadre }),
     };
+
+    console.log('Enviando datos al backend:', updatedAlumno);
 
     try {
       const response = await fetch(`${backurl}alumnos/${alumnoToEdit._id}`, {
-        method: 'PUT', // O PATCH, dependiendo de tu backend
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedAlumno),
       });
 
+      console.log('Respuesta del servidor - Status:', response.status);
+
       if (response.ok) {
         const result = await response.json();
-        // Actualizar el estado local con los datos del servidor
+        console.log('Contenido completo de result:', JSON.stringify(result, null, 2)); // Log detallado
+        // Ajusta aquí: Si el backend devuelve { data: ... }, usa result.data; si no, usa result
         setAlumnos(alumnos.map(alumno =>
-          alumno._id === alumnoToEdit._id ? { ...alumno, ...result.data } : alumno
+          alumno._id === alumnoToEdit._id ? { ...alumno, ...(result.data || result) } : alumno
         ));
         closeModal();
+        toast.success('Alumno actualizado correctamente.');
       } else {
-        console.error('Error al actualizar el alumno:', response.statusText);
-        alert('Error al guardar los cambios. Inténtalo de nuevo.');
+        console.error('Error en respuesta del servidor:', response.statusText);
+        toast.error('Error al guardar los cambios. Inténtalo de nuevo.');
       }
     } catch (err) {
-      console.error('Error al guardar:', err);
-      alert('Error al guardar los cambios. Inténtalo de nuevo.');
+      console.error('Error en fetch:', err);
+      toast.error('Error al guardar los cambios. Inténtalo de nuevo.');
     }
   };
+
+// ... (resto igual)
+
+// ... (resto igual)
 
   // Filtrar alumnos habilitados y por búsqueda
   const filteredAlumnos = alumnos
@@ -171,6 +191,7 @@ const VerAlumnos = () => {
 
   return (
     <div>
+      <ToastContainer />
       <h2>Lista de Alumnos</h2>
 
       <input
@@ -192,20 +213,30 @@ const VerAlumnos = () => {
             <th>Dirección</th>
             <th>Fecha Nacimiento</th>
             <th>Grado</th>
+            {/* Nuevas columnas para padres */}
+            <th>Correo Padre</th>
+            <th>Teléfono Padre</th>
+            <th>Correo Madre</th>
+            <th>Teléfono Madre</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           {sortedAlumnos.map(alumno => (
-            <tr key={alumno._id}> {/* Cambiado a _id para consistencia */}
+            <tr key={alumno._id}>
               <td>{alumno.nombre}</td>
               <td>{alumno.apellido}</td>
               <td>{alumno.correoElectronico}</td>
               <td>{alumno.dni}</td>
               <td>{alumno.telefono}</td>
               <td>{alumno.direccion}</td>
-             <td>{alumno.fechaNacimiento ? new Date(alumno.fechaNacimiento).toLocaleDateString('es-ES') : 'N/A'}</td> {/* Muestra "2025-06-04"  */}
+              <td>{alumno.fechaNacimiento ? new Date(alumno.fechaNacimiento).toLocaleDateString('es-ES') : 'N/A'}</td>
               <td>{alumno.grado?.nombre || 'Sin grado asignado'}</td>
+              {/* Nuevos td para padres */}
+              <td>{alumno.correoPadre || 'N/A'}</td>
+              <td>{alumno.telefonoPadre || 'N/A'}</td>
+              <td>{alumno.correoMadre || 'N/A'}</td>
+              <td>{alumno.telefonoMadre || 'N/A'}</td>
               <td>
                 <button onClick={() => openEditModal(alumno)}>Editar</button>
                 <button className='eliminar' onClick={() => eliminarAlumno(alumno._id)}>Eliminar</button>
@@ -250,13 +281,29 @@ const VerAlumnos = () => {
             </label>
             <label>
               Grado:
-              {/* Cambiado a select para elegir de cursos */}
               <select value={Grado} onChange={(e) => setGrado(e.target.value)}>
                 <option value="">Seleccionar Grado</option>
                 {cursos.map(curso => (
                   <option key={curso._id} value={curso._id}>{curso.nombre}</option>
                 ))}
               </select>
+            </label>
+            {/* Nuevos labels para padres */}
+            <label>
+              Correo Padre:
+              <input type="email" value={correoPadre} onChange={(e) => setCorreoPadre(e.target.value)} />
+            </label>
+            <label>
+              Teléfono Padre:
+              <input type="text" value={telefonoPadre} onChange={(e) => setTelefonoPadre(e.target.value)} />
+            </label>
+            <label>
+              Correo Madre:
+              <input type="email" value={correoMadre} onChange={(e) => setCorreoMadre(e.target.value)} />
+            </label>
+            <label>
+              Teléfono Madre:
+              <input type="text" value={telefonoMadre} onChange={(e) => setTelefonoMadre(e.target.value)} />
             </label>
             <div className="modal-actions">
               <button className="btn-save" onClick={handleSave}>Guardar</button>

@@ -1,0 +1,308 @@
+/* ProfesorAsistencia.css */
+
+.cursos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.curso-btn {
+  padding: 10px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Contenedor con scroll */
+.tabla-asistencia-container {
+  overflow-x: auto;
+  border: 1px solid #ccc;
+} 
+
+.tabla-asistencia {
+  border-collapse: collapse; /* Une los bordes de celdas contiguas */
+  table-layout: fixed; /* Obliga a que todas las columnas respeten el ancho */
+  width: max-content; /* Permite que la tabla crezca a lo largo sin apretarse */
+}
+
+.tabla-asistencia th, .tabla-asistencia td {
+  width: 40px; /* Ajusta este valor según tu gusto */
+  min-width: 40px;
+  max-width: 40px;
+  border: 1px solid #ddd; /* Línea vertical estándar */
+  padding: 0;
+  margin: 0;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.titulo-mes {
+  background-color: #007bff;
+  color: white;
+  padding: 8px;
+  font-weight: bold;
+  border-bottom: 2px solid #ddd;
+}
+
+/* 4. Marcar fuerte el inicio de cada mes */
+.inicio-mes-header, .inicio-mes-td {
+  border-left: 2px solid #444 !important;
+}
+
+/* Borde grueso vertical para separar meses en columnas de fechas (header) */
+.inicio-mes {
+  border-left: 5px solid black !important;
+}
+
+/* Borde grueso vertical para separar meses en celdas de alumnos (tbody) */
+.inicio-mes-td {
+  border-left: 5px solid black !important;
+}
+
+.celda {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.presente {
+  background-color: rgb(3, 167, 3);
+}
+
+.ausente {
+  background-color: rgb(255, 7, 7);
+}
+
+.notif-btn, .guardar-btn {
+  margin: 5px;
+  padding: 5px 10px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+  width: 400px;
+}
+
+.modal-content textarea {
+  width: 100%;
+}
+
+.sinAlumnos{
+  color: red;
+  font-weight: bold;
+  font-size: 2em;
+}
+
+.loading{
+  font-size: 1em;
+  font-weight: bold;
+  text-align: center;
+}
+
+h2,h3{
+  text-align: center;
+  padding: 10px;
+}
+ 
+
+/* Congelar la primera columna (Nombres de Alumnos) */
+.tabla-asistencia th:first-child,
+.tabla-asistencia td:first-child {
+  position: sticky;
+  left: 0; /* Se queda pegado al borde izquierdo */
+  background-color: rgb(232, 243, 247); /* Color de fondo para que no se trasluzca el texto de abajo */
+  z-index: 2; /* Por encima de las demás celdas */
+  border-right: 2px solid #131212; /* Una línea divisoria más clara */
+  min-width: 200px; /* Tamaño fijo para que no se deforme */
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1); /* Sombra suave para dar efecto de profundidad */
+  color : rgb(61, 58, 58);
+   
+}
+
+/* Ajuste para los encabezados de los meses para que no se encimen */
+.tabla-asistencia thead th {
+  position: sticky;
+  top: 0; /* También podemos dejar el encabezado fijo arriba si quieres */
+  z-index: 1;
+}
+
+/* Asegurar que el nombre del alumno esté alineado a la izquierda */
+.tabla-asistencia td:first-child {
+  text-align: left;
+  padding-left: 10px;
+  font-weight: bold;
+}
+
+/* ... Tus estilos anteriores se mantienen, aquí las mejoras ... */
+
+.asistencia-container { padding: 20px; }
+
+/* Celda por defecto (Gris más limpio) */
+.celda.gris {
+  background-color: #e9ecef;
+  border: 1px solid #dee2e6;
+}
+
+/* Verde vibrante para Presente */
+.celda.presente {
+  background-color: #14ee47 !important; /* Verde sólido */
+  border: 1px solid #1e7e34;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.1); /* Un poco de profundidad */
+}
+
+/* Rojo vibrante para Ausente */
+.celda.ausente {
+  background-color: #f70b23 !important; /* Rojo sólido */
+  border: 1px solid #e9162b;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+}
+
+/* Efecto al pasar el mouse para que sepa dónde va a cliquear */
+.celda:hover {
+  filter: brightness(90%);
+  transform: scale(1.1);
+  transition: all 0.1s ease;
+  z-index: 5;
+}
+
+/* Resaltado de la columna de HOY */
+.hoy-col { background-color: rgba(255, 255, 0, 0.15) !important; }
+.hoy-header { background-color: #ffeb3b !important; color: black; font-weight: bold; }
+
+/* Botón de alerta junto al nombre */
+.alumno-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* En ProfesorAsistencia.css */
+.alerta-btn {
+  background: #ffc107;
+  color: #000;
+  border: 1px solid #d39e00;
+  font-size: 14px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  animation: pulso-alerta 1.5s infinite;
+}
+
+@keyframes pulso-alerta {
+  0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 193, 7, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+}
+
+/* Ajustes Sticky para que no se muevan los textos */
+.alumno-sticky-header, .alumno-fijo-celda {
+  width: 220px !important; /* El ancho que quieras para los nombres */
+  min-width: 220px !important;
+  max-width: 220px !important;
+  position: sticky;
+  left: 0;
+  background-color: white;
+  z-index: 5;
+  border-right: 2px solid #444; /* Línea más gruesa para separar nombres de fechas */
+}
+
+.alumno-sticky-header {
+  position: sticky;
+  left: 0;
+  background-color: #f8f9fa;
+  z-index: 10;
+  border-right: 2px solid #ddd;
+}
+
+/* Mensaje sin alumnos */
+.sinAlumnos {
+  color: #dc3545;
+  text-align: center;
+  border: 2px dashed #dc3545;
+  padding: 20px;
+  background: #fff5f5;
+  border-radius: 10px;
+}
+
+.riesgo-libre {
+  background-color: #000000 !important; /* Negro */
+  color: #ffffff !important;
+  border: 2px solid #ff0000;
+  animation: vibrar 0.5s infinite;
+}
+
+@keyframes vibrar {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(1px); }
+  50% { transform: translateX(-1px); }
+  75% { transform: translateX(1px); }
+  100% { transform: translateX(0); }
+}
+
+.fila-libre {
+  background-color: #fff0f0 !important; /* Fondo rosado suave para la fila completa */
+}
+
+/* Color especial para meses de prueba (Enero y Febrero) */
+.celda.mes-prueba {
+  background-color: #f0f0f5; /* Un gris azulado */
+  border: 1px dashed #bbb;
+  box-shadow: none;
+}
+
+/* Si marcas presente en mes de prueba */
+.celda.presente.mes-prueba {
+  background-color: #8fce9d !important; /* Verde más pálido */
+}
+
+/* Si marcas ausente en mes de prueba */
+.celda.ausente.mes-prueba {
+  background-color: #e3a3a9 !important; /* Rojo más pálido */
+}
+
+/* Opcional: que el encabezado de esos meses sea gris */
+.titulo-mes:nth-child(2), .titulo-mes:nth-child(3) {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+/* Resaltar la columna que se está editando actualmente */
+.columna-activa {
+  background-color: rgba(255, 193, 7, 0.1); /* Un amarillo suave de edición */
+  border: 2px solid #ffc107 !important;
+}
+
+.input-fecha-carga {
+  padding: 8px;
+  border: 3px solid #007bff;
+  border-radius: 5px;
+  font-weight: bold;
+  margin-left: 10px;
+}
+h5{
+  text-align: center;
+  padding: 5px;
+}

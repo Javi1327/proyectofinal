@@ -17,6 +17,9 @@ const ProfesorView = () => {
         >
           Gestionar Notas
         </button>
+        <button onClick={() => navigate('/profesor/ver-asistencia')} className="funcion-btn">
+        Ver Asistencias
+        </button>
       </div>
     </div>
   );

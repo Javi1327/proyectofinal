@@ -29,6 +29,7 @@ import VerAsistenciasAlumno from './components/VerAsistenciaAlumno';
 import CargaAlumnos from './components/CargaAlumnos';
 import MostrarCalendario from './components/MostrarCalendario';
 import GestionNotasUnificado from './components/GestionNotas';
+import AsistenciaProfesor from './components/AsistenciaProfesor';
 
 import './App.css';
 
@@ -49,6 +50,7 @@ const App = () => {
               <Route path="/profesor/subir-notas" element={<SubirNotas />} />
               <Route path="/profesor/mis-cursos" element={<MisCursos />} />
               <Route path="/profesor/gestion-notas" element={<GestionNotasUnificado />} />
+              <Route path="/profesor/ver-asistencia" element={<AsistenciaProfesor />} />
 
               <Route path="/preceptor/home" element={<PreceptorView />} />
               <Route path="/preceptor/ver-cursos" element={<VerCursos />} />

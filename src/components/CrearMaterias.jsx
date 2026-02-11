@@ -228,6 +228,7 @@ const CrearMateria = () => {
 
   return (
     <div className="crear-materia-container">
+      <ToastContainer />
       <div className="form-section">
         <h2 className={`crear-materia-title ${editingMateria ? 'editing' : ''}`}>
           {editingMateria ? 'Editando Materia' : 'Crear Materia'}
