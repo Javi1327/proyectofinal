@@ -29,6 +29,10 @@ const AdminUsuarios = () => {
   const [filtroRol, setFiltroRol] = useState('');
   const [ordenColumna, setOrdenColumna] = useState('');
   const [ordenAscendente, setOrdenAscendente] = useState(true);
+  const [correoPadre, setCorreoPadre] = useState('');
+  const [correoMadre, setCorreoMadre] = useState('');
+  const [telefonoPadre, setTelefonoPadre] = useState('');
+  const [telefonoMadre, setTelefonoMadre] = useState('');
 
   const opcionesCursos = cursosFiltrados.map(curso => ({
     value: curso._id,
@@ -97,7 +101,7 @@ const AdminUsuarios = () => {
   }, []);
 
   useEffect(() => {
-    if (selectedRole === 'profesor') {
+    if (selectedRole === 'profesor' || selectedRole === 'alumno') {
       cargarDatosProfesor();
     }
   }, [selectedRole, cargarDatosProfesor]);
@@ -116,6 +120,11 @@ const AdminUsuarios = () => {
     setFechaNacimiento('');
     setCursoSeleccionado([]);
     setUsuarioEditando(null);
+    // Cambio: Resetear los nuevos states de padres
+    setCorreoPadre('');
+    setCorreoMadre('');
+    setTelefonoPadre('');
+    setTelefonoMadre('');
   };
 
   const handleCloseDetails = () => {
@@ -129,8 +138,8 @@ const AdminUsuarios = () => {
   };
 
   const handleEditar = async (usuario) => {
-    console.log('Editando usuario:', usuario);  // Log adicional: datos del usuario a editar
-    console.log('Rol del usuario:', usuario.rol);  // Log adicional: rol
+    console.log('Editando usuario:', usuario);
+    console.log('Rol del usuario:', usuario.rol);
     setUsuarioEditando(usuario);
     setSelectedRole(usuario.rol);
     setNombre(usuario.nombre);
@@ -143,9 +152,20 @@ const AdminUsuarios = () => {
     setFechaNacimiento(usuario.fechaNacimiento ? new Date(usuario.fechaNacimiento).toISOString().split('T')[0] : '');
     setCursoSeleccionado(usuario.cursosAsignados || []);
 
-    if (usuario.rol === 'profesor') {
+    if (usuario.rol === 'profesor' || usuario.rol === 'alumno') {
       await cargarDatosProfesor();
+    }
+
+    if (usuario.rol === 'profesor') {
       setMateriaSeleccionada(usuario.materiaAsignada || '');
+    }
+
+    // Cambio: Cargar los campos de padres para alumnos
+    if (usuario.rol === 'alumno') {
+      setCorreoPadre(usuario.correoPadre || '');
+      setCorreoMadre(usuario.correoMadre || '');
+      setTelefonoPadre(usuario.telefonoPadre || '');
+      setTelefonoMadre(usuario.telefonoMadre || '');
     }
 
     setShowModal(true);
@@ -251,7 +271,7 @@ const AdminUsuarios = () => {
         }
         break;
       case 'alumno':
-        if (!usuarioEditando && (!grado || !direccion.trim() || !fechaNacimiento)) {
+        if (!usuarioEditando && (!grado || !direccion.trim() || !fechaNacimiento || !correoPadre.trim() || !correoMadre.trim() || !telefonoPadre.trim() || !telefonoMadre.trim())) {  // Cambio: Agregar validación para campos de padres
           toast.error("Todos los campos para alumno son obligatorios.");
           return false;
         }
@@ -317,31 +337,35 @@ const AdminUsuarios = () => {
       }
 
       const newUserData = {
-  nombre,
-  apellido,
-  dni: Number(dni),
-  correoElectronico,
-  telefono: telefono || undefined,  // Mantener como String por defecto
-};
+        nombre,
+        apellido,
+        dni: Number(dni),
+        correoElectronico,
+        telefono: telefono || undefined,  // Cambio: Corregir sintaxis
+      };
 
-if (selectedRole === 'profesor') {
-  newUserData.materiaAsignada = materiaSeleccionada;
-  newUserData.cursosAsignados = Array.isArray(cursoSeleccionado)
-    ? cursoSeleccionado
-    : [cursoSeleccionado];
-  newUserData.telefono = telefono ? Number(telefono) : undefined;  // Convertir a Number para profesor
-} else if (selectedRole === 'alumno') {
-  newUserData.direccion = direccion;
-  newUserData.grado = grado;
-  newUserData.fechaNacimiento = fechaNacimiento ? new Date(fechaNacimiento).toISOString() : null;
-  newUserData.materiasAlumno = [];
-  // telefono queda como String
-} else if (['admin', 'preceptor'].includes(selectedRole)) {
-  newUserData.telefono = telefono ? Number(telefono) : undefined;  // Convertir a Number para admin/preceptor
-  if (isEdit) {
-    newUserData.isHabilitado = usuarioEditando.isHabilitado;  // Agregar isHabilitado en edición
-  }
-}
+      if (selectedRole === 'profesor') {
+        newUserData.materiaAsignada = materiaSeleccionada;
+        newUserData.cursosAsignados = Array.isArray(cursoSeleccionado)
+          ? cursoSeleccionado
+          : [cursoSeleccionado];
+        newUserData.telefono = telefono ? Number(telefono) : undefined;
+      } else if (selectedRole === 'alumno') {
+        newUserData.direccion = direccion;
+        newUserData.grado = grado;
+        newUserData.fechaNacimiento = fechaNacimiento ? new Date(fechaNacimiento).toISOString() : null;
+        newUserData.materiasAlumno = [];
+        // Cambio: Agregar campos de padres
+        newUserData.correoPadre = correoPadre;
+        newUserData.correoMadre = correoMadre;
+        newUserData.telefonoPadre = telefonoPadre;
+        newUserData.telefonoMadre = telefonoMadre;
+      } else if (['admin', 'preceptor'].includes(selectedRole)) {
+        newUserData.telefono = telefono ? Number(telefono) : undefined;
+        if (isEdit) {
+          newUserData.isHabilitado = usuarioEditando.isHabilitado;
+        }
+      }
 
       Object.keys(newUserData).forEach(
         (key) => {
@@ -354,7 +378,6 @@ if (selectedRole === 'profesor') {
         }
       );
 
-      // Logs para debug
       console.log('Datos enviados al backend:', newUserData);
       console.log('Rol seleccionado:', selectedRole);
       console.log('URL:', url);
@@ -368,6 +391,8 @@ if (selectedRole === 'profesor') {
       toast.error("Hubo un error.");
     }
   };
+
+  // Resto del código (estadisticas, usuariosFiltradosOrdenados, return) permanece igual, ya que no cambió.
 
   const estadisticas = {
     total: usuarios.length,
@@ -453,7 +478,7 @@ if (selectedRole === 'profesor') {
             <th>Acciones</th>
           </tr>
         </thead>
-                <tbody>
+        <tbody>
           {usuariosFiltradosOrdenados.map((usuario) => (
             <tr key={usuario._id}>
               <td>{usuario.nombre}</td>
@@ -562,12 +587,31 @@ if (selectedRole === 'profesor') {
                     <Form.Label>Grado</Form.Label>
                     <Form.Control as="select" value={grado} onChange={(e) => setGrado(e.target.value)}>
                       <option value="">Seleccione un grado</option>
-                      {["1A", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5A", "5B", "6A", "6B"].map((g) => (
-                        <option key={g} value={g}>{g}</option>
+                      {cursosFiltrados.map((curso) => (
+                        <option key={curso._id} value={curso._id}>
+                          {curso.nombre}
+                        </option>
                       ))}
                     </Form.Control>
                   </Form.Group>
                 )}
+
+                <Form.Group controlId="formCorreoPadre">
+                  <Form.Label>Correo Padre</Form.Label>
+                  <Form.Control type="email" value={correoPadre} onChange={(e) => setCorreoPadre(e.target.value)} />
+                </Form.Group>
+                <Form.Group controlId="formCorreoMadre">
+                  <Form.Label>Correo Madre</Form.Label>
+                  <Form.Control type="email" value={correoMadre} onChange={(e) => setCorreoMadre(e.target.value)} />
+                </Form.Group>
+                <Form.Group controlId="formTelefonoPadre">
+                  <Form.Label>Teléfono Padre</Form.Label>
+                  <Form.Control type="text" value={telefonoPadre} onChange={(e) => setTelefonoPadre(e.target.value)} />
+                </Form.Group>
+                <Form.Group controlId="formTelefonoMadre">
+                  <Form.Label>Teléfono Madre</Form.Label>
+                  <Form.Control type="text" value={telefonoMadre} onChange={(e) => setTelefonoMadre(e.target.value)} />
+                </Form.Group>
 
                 <Form.Group controlId="formDireccion">
                   <Form.Label>Dirección</Form.Label>
