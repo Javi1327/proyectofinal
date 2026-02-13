@@ -83,21 +83,29 @@ const MostrarCalendario = () => {
           // Aplanar los horarios con validaciones robustas
           const horariosAplanados = [];
           if (Array.isArray(materiasData)) {
+         //   console.log('Materias Data:', JSON.stringify(materiasData, null, 2));  // DEBUG: Ver estructura completa
             materiasData.forEach((materia) => {
               if (materia.horarios && Array.isArray(materia.horarios) && materia.horarios.length > 0) {
                 materia.horarios.forEach((h) => {
-                  if (h && typeof h === 'object' && h._doc) {
-                    const doc = h._doc;
+                  const doc = h._doc || h;
+             //     console.log('Horario h:', JSON.stringify(h, null, 2));  // DEBUG: Ver cada horario
+              //    console.log('Doc.profesor:', doc.profesor);  // DEBUG: Ver qué es profesor
+                  if (doc && typeof doc === 'object') {
                     const diaNormalizado = normalizarDia(doc.diaSemana);
                     const horaInicioNormalizada = normalizarHora(doc.horaInicio);
                     const horaFinNormalizada = normalizarHora(doc.horaFin);
                     const horarioNormalizado = `${horaInicioNormalizada} - ${horaFinNormalizada}`;
+                    // CAMBIO FINAL: Extrae nombre completo usando 'nombre' y 'apellido' del modelo Profesor
+                    const nombreProfesor = doc.profesor && typeof doc.profesor === 'object' && doc.profesor.nombre 
+                      ? `${doc.profesor.nombre} ${doc.profesor.apellido}` 
+                      : 'Sin asignar';
+              //      console.log('Nombre extraído:', nombreProfesor);  // DEBUG: Ver el resultado
                     if (diaNormalizado && horaInicioNormalizada && horaFinNormalizada) {
                       horariosAplanados.push({
                         dia: diaNormalizado,
                         horario: horarioNormalizado,
                         materia: materia.nombreMateria,
-                        profesor: h.profesor || 'Prof Sin asignar',
+                        profesor: nombreProfesor,
                       });
                     }
                   }
@@ -105,6 +113,7 @@ const MostrarCalendario = () => {
               }
             });
           }
+          console.log('Horarios aplanados:', horariosAplanados);  // DEBUG: Ver el array final
           setHorarios(horariosAplanados);
         } catch (error) {
           setError(`No se pudieron cargar los horarios: ${error.message}`);

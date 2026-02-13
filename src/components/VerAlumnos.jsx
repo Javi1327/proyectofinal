@@ -40,25 +40,22 @@ const VerAlumnos = () => {
         throw new Error(`Error en la respuesta del servidor: ${response.statusText}`);
       }
       const result = await response.json();
-      console.log(result); // Verificamos la estructura de los datos
-      console.log(result.data)
       setAlumnos(Array.isArray(result.data) ? result.data : []);
     } catch (err) {
       console.error('Error al obtener los alumnos:', err);
       setAlumnos([]);
-      toast.error('No se pudo cargar la lista de alumnos. Por favor, inténtalo de nuevo más tarde.'); // Cambiado a toast
+      toast.error('No se pudo cargar la lista de alumnos. Por favor, inténtalo de nuevo más tarde.');
     }
   };
 
   const obtenerCursos = async () => {
     try {
-      const response = await fetch(`${backurl}cursos`); // Asume que tienes una ruta GET /cursos en el backend
+      const response = await fetch(`${backurl}cursos`);
       if (!response.ok) {
         throw new Error('Error al obtener cursos');
       }
       const result = await response.json();
-      console.log('Respuesta de cursos:', result);
-      setCursos(Array.isArray(result) ? result : []); 
+      setCursos(Array.isArray(result) ? result : []);
     } catch (err) {
       console.error('Error al obtener cursos:', err);
       setCursos([]);
@@ -73,16 +70,15 @@ const VerAlumnos = () => {
         headers: {"Content-Type": "application/json"}
       }) 
       if (response.ok) {
-        // Actualizamos el estado en el frontend
-        setAlumnos(alumnos.filter(alumno => alumno._id !== id)); // Cambiado aquí
-        toast.success('Alumno eliminado correctamente.'); // Toast de éxito agregado
+        setAlumnos(alumnos.filter(alumno => alumno._id !== id));
+        toast.success('Alumno eliminado correctamente.');
       } else {
         console.error('Error al eliminar el alumno:', response.statusText);
-        toast.error('Error al eliminar el alumno. Inténtalo de nuevo.'); // Toast de error agregado
+        toast.error('Error al eliminar el alumno. Inténtalo de nuevo.');
       }
     } catch (err) {
       console.error('Error al eliminar el alumno:', err);
-      toast.error('Error al eliminar el alumno. Inténtalo de nuevo.'); // Toast de error agregado
+      toast.error('Error al eliminar el alumno. Inténtalo de nuevo.');
     }
   };
   
@@ -131,8 +127,6 @@ const VerAlumnos = () => {
       ...(telefonoMadre && { telefonoMadre }),
     };
 
-    console.log('Enviando datos al backend:', updatedAlumno);
-
     try {
       const response = await fetch(`${backurl}alumnos/${alumnoToEdit._id}`, {
         method: 'PUT',
@@ -140,12 +134,8 @@ const VerAlumnos = () => {
         body: JSON.stringify(updatedAlumno),
       });
 
-      console.log('Respuesta del servidor - Status:', response.status);
-
       if (response.ok) {
         const result = await response.json();
-        console.log('Contenido completo de result:', JSON.stringify(result, null, 2)); // Log detallado
-        // Ajusta aquí: Si el backend devuelve { data: ... }, usa result.data; si no, usa result
         setAlumnos(alumnos.map(alumno =>
           alumno._id === alumnoToEdit._id ? { ...alumno, ...(result.data || result) } : alumno
         ));
@@ -161,17 +151,15 @@ const VerAlumnos = () => {
     }
   };
 
-// ... (resto igual)
-
-// ... (resto igual)
-
   // Filtrar alumnos habilitados y por búsqueda
   const filteredAlumnos = alumnos
     .filter(alumno => alumno.isHabilitado)
-    .filter(alumno =>
-      alumno.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      alumno.grado.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    .filter(alumno => {
+      const gradoId = typeof alumno.grado === 'object' ? alumno.grado?._id : alumno.grado;
+      const gradoNombre = cursos.find(c => c._id === gradoId)?.nombre;
+      return alumno.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
+             (gradoNombre && gradoNombre.toLowerCase().includes(searchTerm.toLowerCase()));
+    });
 
   // Ordenar alumnos
   const sortedAlumnos = filteredAlumnos.sort((a, b) => {
@@ -202,49 +190,58 @@ const VerAlumnos = () => {
         className="search-input"
       />
 
-      <table>
-        <thead>
-          <tr>
-            <th onClick={() => toggleSort('nombre')}>Nombre</th>
-            <th onClick={() => toggleSort('apellido')}>Apellido</th>
-            <th>Correo</th>
-            <th>Dni</th>
-            <th>Teléfono</th>
-            <th>Dirección</th>
-            <th>Fecha Nacimiento</th>
-            <th>Grado</th>
-            {/* Nuevas columnas para padres */}
-            <th>Correo Padre</th>
-            <th>Teléfono Padre</th>
-            <th>Correo Madre</th>
-            <th>Teléfono Madre</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedAlumnos.map(alumno => (
-            <tr key={alumno._id}>
-              <td>{alumno.nombre}</td>
-              <td>{alumno.apellido}</td>
-              <td>{alumno.correoElectronico}</td>
-              <td>{alumno.dni}</td>
-              <td>{alumno.telefono}</td>
-              <td>{alumno.direccion}</td>
-              <td>{alumno.fechaNacimiento ? new Date(alumno.fechaNacimiento).toLocaleDateString('es-ES') : 'N/A'}</td>
-              <td>{alumno.grado?.nombre || 'Sin grado asignado'}</td>
-              {/* Nuevos td para padres */}
-              <td>{alumno.correoPadre || 'N/A'}</td>
-              <td>{alumno.telefonoPadre || 'N/A'}</td>
-              <td>{alumno.correoMadre || 'N/A'}</td>
-              <td>{alumno.telefonoMadre || 'N/A'}</td>
-              <td>
-                <button onClick={() => openEditModal(alumno)}>Editar</button>
-                <button className='eliminar' onClick={() => eliminarAlumno(alumno._id)}>Eliminar</button>
-              </td>
+      {cursos.length === 0 ? (
+        <p>Cargando cursos...</p>
+      ) : (
+        <table>
+          <thead>
+            <tr>
+              <th onClick={() => toggleSort('nombre')}>Nombre</th>
+              <th onClick={() => toggleSort('apellido')}>Apellido</th>
+              <th>Correo</th>
+              <th>Dni</th>
+              <th>Teléfono</th>
+              <th>Dirección</th>
+              <th>Fecha Nacimiento</th>
+              <th>Grado</th>
+              {/* Nuevas columnas para padres */}
+              <th>Correo Padre</th>
+              <th>Teléfono Padre</th>
+              <th>Correo Madre</th>
+              <th>Teléfono Madre</th>
+              <th>Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {sortedAlumnos.map(alumno => {
+              const gradoId = typeof alumno.grado === 'object' ? alumno.grado?._id : alumno.grado;
+              const gradoNombre = cursos.find(c => c._id === gradoId)?.nombre || 'Sin grado asignado';
+              console.log(`Renderizando grado para ${alumno.nombre}: ${gradoNombre}`); // Log temporal para verificar render
+              return (
+                <tr key={alumno._id}>
+                  <td>{alumno.nombre}</td>
+                  <td>{alumno.apellido}</td>
+                  <td>{alumno.correoElectronico}</td>
+                  <td>{alumno.dni}</td>
+                  <td>{alumno.telefono}</td>
+                  <td>{alumno.direccion}</td>
+                  <td>{alumno.fechaNacimiento ? new Date(alumno.fechaNacimiento).toLocaleDateString('es-ES') : 'N/A'}</td>
+                  <td>{gradoNombre}</td>
+                  {/* Nuevos td para padres */}
+                  <td>{alumno.correoPadre || 'N/A'}</td>
+                  <td>{alumno.telefonoPadre || 'N/A'}</td>
+                  <td>{alumno.correoMadre || 'N/A'}</td>
+                  <td>{alumno.telefonoMadre || 'N/A'}</td>
+                  <td>
+                    <button onClick={() => openEditModal(alumno)}>Editar</button>
+                    <button className='eliminar' onClick={() => eliminarAlumno(alumno._id)}>Eliminar</button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
 
       {/* Modal de edición */}
       {isModalOpen && (
